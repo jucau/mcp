@@ -1,0 +1,28 @@
+{
+    "$schema": "vendor/infection/infection/resources/schema.json",
+    // Domain and Application must be fully pinned by the Unit suite alone (use cases + in-memory double):
+    // an escaped mutant is a behaviour no use case test constrains.
+    "source": {
+        "directories": [
+            "app/Library/Domain",
+            "app/Library/Application"
+        ]
+    },
+    // Second killer: what escapes the tests is re-analysed and dies if it breaks a type contract the tests
+    // cannot observe. Larastan needs far more than the container's 128M.
+    "staticAnalysisTool": "phpstan",
+    "staticAnalysisToolOptions": "--memory-limit=1G",
+    // Without a threshold Infection exits 0 whatever survives; these make a survivor fail the gate.
+    "minMsi": 100,
+    "minCoveredMsi": 100,
+    "timeout": 10,
+    "testFramework": "phpunit",
+    "testFrameworkOptions": "--testsuite=Unit",
+    "logs": {
+        "text": "storage/logs/infection.log",
+        "summary": "storage/logs/infection-summary.log"
+    },
+    "mutators": {
+        "@default": true
+    }
+}

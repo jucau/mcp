@@ -16,6 +16,7 @@ Un commit par brique, `make quality` vert à chacun.
 - [x] Rector
 - [x] `webmozart/assert` (+ extension PHPStan)
 - [x] IDE Helper (annotations `@property` des models)
+- [x] Infection (mutation testing, MSI 100 % sur le domaine et l'application)
 - [x] Outils IA : Laravel Boost (MCP + guidelines) et Pao (sortie agent-optimisée)
 
 > Clin d'œil : le premier serveur MCP du projet n'est pas le nôtre, c'est **celui de Boost**. On l'**utilise**

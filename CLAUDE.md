@@ -97,14 +97,21 @@ sous-ensemble. Les outils qui écrivent corrigent au passage : la porte passe **
 correction arrive dans un commit de rattrapage.
 
 Ordre : **ide-helper** → **rector** → **pint** (écrivent ; pint en dernier, il importe et raccourcit les
-noms qualifiés qu'ide-helper et rector écrivent) → **stan** → **ark** → **test**. Configs :
-`config/ide-helper.php`, `rector.php`, `pint.json`, `phpstan.neon` (Larastan, niveau **max**), `phparkitect.php`. **IDE Helper** lit le schéma de la
+noms qualifiés qu'ide-helper et rector écrivent) → **stan** → **ark** → **test** → **infection**.
+Configs : `config/ide-helper.php`, `rector.php`, `pint.json`, `phpstan.neon` (Larastan, niveau **max**),
+`phparkitect.php`, `infection.json5`.
+
+**Infection** (mutation testing) juge `Domain` + `Application` contre la suite **Unit seule**, `minMsi` et
+`minCoveredMsi` à **100** : un mutant survivant est un comportement qu'aucun test de use case ne contraint, et
+fait échouer la porte. PHPStan sert de second tueur. Un mutant **équivalent** (intuable par construction) se
+traite en réécrivant le code, pas en l'ignorant. **IDE Helper** lit le schéma de la
 **BDD de test** (`--env=testing`) : `make test-db` après chaque nouvelle migration.
 
 **Pao** (`laravel/pao`) : quand un **agent** lance la porte, Rector, Pint, PHPStan et PHPUnit répondent **une
 ligne JSON** au lieu de centaines de lignes ANSI ; les runs humains gardent la sortie humaine. Pao se
 déclenche sur `AI_AGENT`, que `docker compose exec` ne transmet pas : le Makefile le relaie (`AGENT_ENV`)
-*uniquement s'il est posé chez l'appelant*.
+*uniquement s'il est posé chez l'appelant*. Il est **désactivé sous Infection** (`PAO_DISABLE=true`) : Infection
+lit la sortie humaine de PHPUnit.
 
 ## Git
 

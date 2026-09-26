@@ -5,13 +5,13 @@ AGENT_ENV = $(if $(AI_AGENT),-e AI_AGENT='$(AI_AGENT)')
 EXEC = $(DC) exec -T $(AGENT_ENV) php
 ARTISAN = $(EXEC) php artisan
 
-.PHONY: quality ide-helper rector pint stan ark test test-db start stop restart build rebuild destroy ps logs shell \
+.PHONY: quality ide-helper rector pint stan ark test infection test-db start stop restart build rebuild destroy ps logs shell \
         migrate fresh seed composer artisan tinker
 
 # The one gate, run before every commit. The order is load-bearing: the writing tools come first, Pint
 # last among them (it imports and shortens the fully-qualified names ide-helper writes), then the
 # read-only checks judge the settled tree.
-quality: ide-helper rector pint stan ark test
+quality: ide-helper rector pint stan ark test infection
 
 # --reset keeps annotations honest with the schema.
 ide-helper:
@@ -37,6 +37,12 @@ ark:
 
 test:
 	$(EXEC) php artisan test
+
+# Not --threads=max: a saturated container kills runs, which Infection counts as detected, silently
+# inflating the MSI (measured on ddd/). PAO_DISABLE: Infection judges a mutant by regexing PHPUnit's human
+# output, and Pao's JSON would make every mutant read as killed.
+infection:
+	$(EXEC) env PAO_DISABLE=true php vendor/bin/infection --threads=4
 
 test-db:
 	$(DC) exec -T postgres psql -U marquepage -d marquepage -tc "SELECT 1 FROM pg_database WHERE datname = 'marquepage_testing'" | grep -q 1 || $(DC) exec -T postgres createdb -U marquepage marquepage_testing

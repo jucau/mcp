@@ -16,6 +16,7 @@
         "barryvdh/laravel-ide-helper": "^3.7",
         "driftingly/rector-laravel": "^2.6",
         "fakerphp/faker": "^1.23",
+        "infection/infection": "^0.35.4",
         "larastan/larastan": "^3.12",
         "laravel/boost": "^2.10",
         "laravel/pail": "^1.2.5",
@@ -87,7 +88,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "infection/extension-installer": true
         }
     },
     "minimum-stability": "stable",
