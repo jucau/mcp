@@ -5,12 +5,19 @@ declare(strict_types=1);
 namespace App\Library\Infrastructure;
 
 use App\Library\Application\Clock;
+use Carbon\CarbonImmutable;
 use DateTimeImmutable;
 
-final class SystemClock implements Clock
+final readonly class SystemClock implements Clock
 {
+    public function __construct(private string $readerTimezone)
+    {
+    }
+
     public function today(): DateTimeImmutable
     {
-        return new DateTimeImmutable('today');
+        // The reader's calendar day, but at midnight in the application timezone like every stored date: a
+        // midnight in Paris is the day before in UTC, and would compare as earlier than a date read back.
+        return new DateTimeImmutable(CarbonImmutable::now($this->readerTimezone)->toDateString());
     }
 }

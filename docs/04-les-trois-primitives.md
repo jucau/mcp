@@ -87,6 +87,8 @@ La bibliothèque ne bouge pas.
 lecture passée (« j'ai fini Dune la semaine dernière »). Sans `on`, c'est l'horloge du serveur qui donne
 « aujourd'hui » (`Clock`). Un modèle ne connaît pas la date de façon fiable : sa description lui interdit de la
 deviner. Même principe que pour l'ISBN et l'id : **ce que le modèle ne sait pas, il ne l'invente pas.**
+« Aujourd'hui » est le jour **du lecteur**, dans son fuseau, pas en UTC
+([ADR-0010](./decisions/0010-instants-en-utc-jours-du-lecteur.md)).
 
 **Ils renvoient le livre à jour**, comme `add_book` : le modèle voit le nouveau statut et les dates, sans avoir à
 relancer une recherche.

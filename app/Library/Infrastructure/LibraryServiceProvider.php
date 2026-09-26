@@ -9,6 +9,7 @@ use App\Library\Application\Clock;
 use App\Library\Domain\Book\BookRepository;
 use App\Library\Infrastructure\Persistence\Eloquent\Queries\EloquentBookQueries;
 use App\Library\Infrastructure\Persistence\Eloquent\Repositories\EloquentBookRepository;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
 final class LibraryServiceProvider extends ServiceProvider
@@ -18,6 +19,6 @@ final class LibraryServiceProvider extends ServiceProvider
     {
         $this->app->bind(BookRepository::class, EloquentBookRepository::class);
         $this->app->bind(BookQueries::class, EloquentBookQueries::class);
-        $this->app->bind(Clock::class, SystemClock::class);
+        $this->app->bind(Clock::class, fn (): SystemClock => new SystemClock(Config::string('library.reader_timezone')));
     }
 }
