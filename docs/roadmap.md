@@ -14,7 +14,7 @@ Un commit par brique, `make quality` vert à chacun.
 - [x] Pint (style)
 - [x] PHPStan / Larastan niveau max
 - [x] Rector
-- [ ] `webmozart/assert` (+ extension PHPStan)
+- [x] `webmozart/assert` (+ extension PHPStan)
 - [ ] Outils IA : Laravel Boost (MCP + guidelines) et Pao (sortie agent-optimisée)
 
 > Clin d'œil : le premier serveur MCP du projet n'est pas le nôtre, c'est **celui de Boost**. On l'**utilise**
