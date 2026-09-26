@@ -22,8 +22,10 @@ use Webmozart\Assert\Assert;
 #[Description('Recommend the next book to read among the ones the user has at home and has not started, based on what they read and how they rated it.')]
 final class RecommendNextReadPrompt extends Prompt
 {
-    public function __construct(private readonly BookQueries $books)
-    {
+    public function __construct(
+        private readonly BookQueries $books,
+        private readonly EmbeddedBooks $embedded,
+    ) {
     }
 
     public function arguments(): array
@@ -43,9 +45,9 @@ final class RecommendNextReadPrompt extends Prompt
             . 'Base your choice on what I read and how I rated it: a rating goes from 1 (disliked) to 5 (loved), and an abandoned book did not hold my interest.',
             $mood === null ? null : 'What I feel like reading: ' . $mood,
             'Name one book and say why in a few sentences, then name a runner-up. If there is nothing to choose from, say so. Answer in the language of our conversation.',
-            "My books to read:\n" . EmbeddedBooks::json($this->books->all(Shelf::ToRead->search())),
-            "What I read:\n" . EmbeddedBooks::json($this->books->all(new BookSearch(readingStatus: ReadingStatus::Read))),
-            "What I abandoned:\n" . EmbeddedBooks::json($this->books->all(new BookSearch(readingStatus: ReadingStatus::Abandoned))),
+            "My books to read:\n" . $this->embedded->json($this->books->all(Shelf::ToRead->search())),
+            "What I read:\n" . $this->embedded->json($this->books->all(new BookSearch(readingStatus: ReadingStatus::Read))),
+            "What I abandoned:\n" . $this->embedded->json($this->books->all(new BookSearch(readingStatus: ReadingStatus::Abandoned))),
         ])));
     }
 }

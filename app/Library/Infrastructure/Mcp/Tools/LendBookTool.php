@@ -38,6 +38,7 @@ final class LendBookTool extends LibraryTool
     public function __construct(
         private readonly LendBookHandler $lendBook,
         private readonly BookQueries $books,
+        private readonly BookPresenter $presenter,
     ) {
     }
 
@@ -53,7 +54,7 @@ final class LendBookTool extends LibraryTool
 
     public function outputSchema(JsonSchema $schema): array
     {
-        return BookPresenter::schema($schema);
+        return $this->presenter->schema($schema);
     }
 
     protected function respond(Request $request): ResponseFactory
@@ -71,6 +72,6 @@ final class LendBookTool extends LibraryTool
         $book = $this->books->find($bookId);
         Assert::isInstanceOf($book, BookView::class);
 
-        return Response::structured(BookPresenter::present($book));
+        return Response::structured($this->presenter->present($book));
     }
 }

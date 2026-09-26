@@ -39,6 +39,7 @@ final class RemoveBookTool extends LibraryTool
     public function __construct(
         private readonly RemoveBookHandler $removeBook,
         private readonly BookQueries $books,
+        private readonly BookPresenter $presenter,
     ) {
     }
 
@@ -51,7 +52,7 @@ final class RemoveBookTool extends LibraryTool
 
     public function outputSchema(JsonSchema $schema): array
     {
-        return BookPresenter::schema($schema);
+        return $this->presenter->schema($schema);
     }
 
     protected function respond(Request $request): ResponseFactory
@@ -67,6 +68,6 @@ final class RemoveBookTool extends LibraryTool
 
         Assert::isInstanceOf($book, BookView::class);
 
-        return Response::structured(BookPresenter::present($book));
+        return Response::structured($this->presenter->present($book));
     }
 }

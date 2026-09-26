@@ -21,8 +21,10 @@ use Webmozart\Assert\Assert;
 #[Description("One book of the user's library, with everything the library knows about it: reading, rating, loan.")]
 final class BookResource extends LibraryResource implements HasUriTemplate
 {
-    public function __construct(private readonly BookQueries $books)
-    {
+    public function __construct(
+        private readonly BookQueries $books,
+        private readonly BookPresenter $presenter,
+    ) {
     }
 
     public function uriTemplate(): UriTemplate
@@ -37,6 +39,6 @@ final class BookResource extends LibraryResource implements HasUriTemplate
 
         $book = $this->books->find($id) ?? throw UnknownBook::withId(BookId::fromString($id));
 
-        return BookPresenter::present($book);
+        return $this->presenter->present($book);
     }
 }

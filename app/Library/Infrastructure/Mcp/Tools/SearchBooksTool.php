@@ -36,8 +36,10 @@ use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 #[IsOpenWorld(false)]
 final class SearchBooksTool extends LibraryTool
 {
-    public function __construct(private readonly BookQueries $books)
-    {
+    public function __construct(
+        private readonly BookQueries $books,
+        private readonly BookPresenter $presenter,
+    ) {
     }
 
     public function schema(JsonSchema $schema): array
@@ -65,7 +67,7 @@ final class SearchBooksTool extends LibraryTool
             'total' => $schema->integer()->required()->description('How many books match, across all pages.'),
             'page' => $schema->integer()->required(),
             'per_page' => $schema->integer()->required(),
-            'books' => $schema->array()->items($schema->object(BookPresenter::schema($schema)))->required(),
+            'books' => $schema->array()->items($schema->object($this->presenter->schema($schema)))->required(),
         ];
     }
 
@@ -98,7 +100,7 @@ final class SearchBooksTool extends LibraryTool
             'total' => $page->total,
             'page' => $page->page,
             'per_page' => $page->perPage,
-            'books' => array_map(BookPresenter::present(...), $page->items),
+            'books' => array_map($this->presenter->present(...), $page->items),
         ]);
     }
 }

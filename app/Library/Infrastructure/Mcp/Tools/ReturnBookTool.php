@@ -38,6 +38,7 @@ final class ReturnBookTool extends LibraryTool
     public function __construct(
         private readonly ReturnBookHandler $returnBook,
         private readonly BookQueries $books,
+        private readonly BookPresenter $presenter,
     ) {
     }
 
@@ -50,7 +51,7 @@ final class ReturnBookTool extends LibraryTool
 
     public function outputSchema(JsonSchema $schema): array
     {
-        return BookPresenter::schema($schema);
+        return $this->presenter->schema($schema);
     }
 
     protected function respond(Request $request): ResponseFactory
@@ -66,6 +67,6 @@ final class ReturnBookTool extends LibraryTool
         $book = $this->books->find($bookId);
         Assert::isInstanceOf($book, BookView::class);
 
-        return Response::structured(BookPresenter::present($book));
+        return Response::structured($this->presenter->present($book));
     }
 }

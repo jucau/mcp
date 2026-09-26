@@ -10,12 +10,12 @@ use App\Library\Domain\Book\ReadingStatus;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\Type;
 
-final class BookPresenter
+final readonly class BookPresenter
 {
     /**
      * @return array<string, Type>
      */
-    public static function schema(JsonSchema $schema): array
+    public function schema(JsonSchema $schema): array
     {
         return [
             'id' => $schema->string()->format('uuid')->required(),
@@ -35,7 +35,7 @@ final class BookPresenter
     /**
      * @return array<string, bool|int|string|null>
      */
-    public static function present(BookView $book): array
+    public function present(BookView $book): array
     {
         return [
             'id' => $book->id,

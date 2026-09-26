@@ -24,6 +24,7 @@ final class ReadingReviewPrompt extends Prompt
     public function __construct(
         private readonly BookQueries $books,
         private readonly Clock $clock,
+        private readonly EmbeddedBooks $embedded,
     ) {
     }
 
@@ -41,7 +42,7 @@ final class ReadingReviewPrompt extends Prompt
 
         return Response::text(implode("\n\n", [
             sprintf('Review my reading year %s: how many books I finished and how many I abandoned, the ones I loved most, and what stands out (authors, themes, the time each book took me). Keep it warm and short. Answer in the language of our conversation.', $year),
-            sprintf("The books I finished or abandoned in %s:\n", $year) . EmbeddedBooks::json($this->books->all(new BookSearch(finishedIn: (int) $year))),
+            sprintf("The books I finished or abandoned in %s:\n", $year) . $this->embedded->json($this->books->all(new BookSearch(finishedIn: (int) $year))),
         ]));
     }
 }

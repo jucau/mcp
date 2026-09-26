@@ -11,13 +11,15 @@ use Laravel\Mcp\Request;
 
 abstract class ShelfResource extends LibraryResource
 {
-    public function __construct(private readonly BookQueries $books)
-    {
+    public function __construct(
+        private readonly BookQueries $books,
+        private readonly BookPresenter $presenter,
+    ) {
     }
 
     final protected function read(Request $request): array
     {
-        return ['books' => array_map(BookPresenter::present(...), $this->books->all($this->shelf()->search()))];
+        return ['books' => array_map($this->presenter->present(...), $this->books->all($this->shelf()->search()))];
     }
 
     abstract protected function shelf(): Shelf;
