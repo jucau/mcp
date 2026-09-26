@@ -31,6 +31,14 @@ que les règles qui valent à chaque instant :
   Les **descriptions** de tools/resources/prompts ne sont pas des commentaires : c'est l'interface que lit le
   modèle, elles se soignent.
 
+## Architecture
+
+**Hexagonale ciblée** ([ADR-0006](docs/decisions/0006-architecture-hexagonale-ciblee.md)) : un context,
+`app/Library/{Domain,Application,Infrastructure}`, namespace `App\Library\…`. Le **serveur MCP est un
+adaptateur primaire** : il vit en `Infrastructure`, traduit et appelle un handler, sans jamais porter de règle
+métier. Les règles de couches (domaine pur, `Application` sans persistance directe ni façade, **aucune couche
+intérieure ne connaît `Laravel\Mcp`**) sont vérifiées par PHPArkitect.
+
 ## Outils IA
 
 - **Laravel Boost** fournit un serveur MCP (schéma de BDD, tinker, recherche dans la doc versionnée…), les
@@ -70,8 +78,8 @@ sous-ensemble. Les outils qui écrivent corrigent au passage : la porte passe **
 correction arrive dans un commit de rattrapage.
 
 Ordre : **ide-helper** → **rector** → **pint** (écrivent ; pint en dernier, il importe et raccourcit les
-noms qualifiés qu'ide-helper et rector écrivent) → **stan** → **test**. Configs : `config/ide-helper.php`,
-`rector.php`, `pint.json`, `phpstan.neon` (Larastan, niveau **max**). **IDE Helper** lit le schéma de la
+noms qualifiés qu'ide-helper et rector écrivent) → **stan** → **ark** → **test**. Configs :
+`config/ide-helper.php`, `rector.php`, `pint.json`, `phpstan.neon` (Larastan, niveau **max**), `phparkitect.php`. **IDE Helper** lit le schéma de la
 **BDD de test** (`--env=testing`) : `make test-db` après chaque nouvelle migration.
 
 **Pao** (`laravel/pao`) : quand un **agent** lance la porte, Rector, Pint, PHPStan et PHPUnit répondent **une
