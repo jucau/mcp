@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Library\Infrastructure\Mcp;
 
+use App\Library\Infrastructure\Mcp\Tools\AbandonReadingTool;
 use App\Library\Infrastructure\Mcp\Tools\AddBookTool;
+use App\Library\Infrastructure\Mcp\Tools\FinishReadingTool;
 use App\Library\Infrastructure\Mcp\Tools\RemoveBookTool;
 use App\Library\Infrastructure\Mcp\Tools\SearchBooksTool;
+use App\Library\Infrastructure\Mcp\Tools\StartReadingTool;
 use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -27,5 +30,8 @@ final class LibraryServer extends Server
         SearchBooksTool::class,
         AddBookTool::class,
         RemoveBookTool::class,
+        StartReadingTool::class,
+        FinishReadingTool::class,
+        AbandonReadingTool::class,
     ];
 }

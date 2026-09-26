@@ -45,8 +45,7 @@ final class RemoveBookTool extends LibraryTool
     public function schema(JsonSchema $schema): array
     {
         return [
-            'book_id' => $schema->string()->format('uuid')->required()
-                ->description('The id of the book, as returned by search_books.'),
+            'book_id' => $this->bookId($schema),
         ];
     }
 

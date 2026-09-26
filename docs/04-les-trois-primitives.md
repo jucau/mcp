@@ -60,3 +60,33 @@ historique) : la suppression n'est pas vraiment réversible.
 que transmettre le refus ([ADR-0008](./decisions/0008-tools-adaptateurs-minces-refus-metier.md)).
 
 **Pas de données de démo** : retirer un livre ne crée aucun état nouveau à montrer.
+
+## `start_reading`, `finish_reading`, `abandon_reading` : le parcours de lecture
+
+Les trois tools font avancer le statut de lecture. Les transitions permises sont des règles du domaine
+([01](./01-domaine.md)) : commencer un livre *à lire* ou *abandonné*, finir un livre *à lire* ou *en cours*,
+abandonner un livre *en cours*. Un livre déjà *lu* ne se recommence pas : la relecture n'est pas modélisée.
+
+| Hint | `start_reading` | `finish_reading` | `abandon_reading` |
+|---|---|---|---|
+| `readOnlyHint` | `false` | `false` | `false` |
+| `destructiveHint` | **`true`** | `false` | `false` |
+| `idempotentHint` | `true` | `true` | `true` |
+| `openWorldHint` | `false` | `false` | `false` |
+
+**Pourquoi `start_reading` est destructif.** Reprendre un livre abandonné efface sa date de fin et sa **note** :
+une nouvelle lecture commence, l'ancienne disparaît. Sur un livre *à lire*, il n'efface rien. Mais un hint dit
+ce que le tool **peut** faire, pas ce qu'il fait à chaque appel. Pour les deux autres, la date de fin qu'ils
+écrivent était vide avant, dans tous les cas permis : ils ajoutent sans rien écraser.
+
+**Pourquoi les trois sont idempotents.** Un deuxième appel trouve le livre déjà dans le statut visé, que le
+domaine refuse de quitter par la même transition (« Cannot finish reading "Dune": its reading status is read. »).
+La bibliothèque ne bouge pas.
+
+**La date, c'est le serveur qui la connaît.** Chaque tool accepte un `on` optionnel (`YYYY-MM-DD`) pour une
+lecture passée (« j'ai fini Dune la semaine dernière »). Sans `on`, c'est l'horloge du serveur qui donne
+« aujourd'hui » (`Clock`). Un modèle ne connaît pas la date de façon fiable : sa description lui interdit de la
+deviner. Même principe que pour l'ISBN et l'id : **ce que le modèle ne sait pas, il ne l'invente pas.**
+
+**Ils renvoient le livre à jour**, comme `add_book` : le modèle voit le nouveau statut et les dates, sans avoir à
+relancer une recherche.

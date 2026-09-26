@@ -54,7 +54,7 @@ Un commit par brique, `make quality` vert à chacun.
   ([04](./04-les-trois-primitives.md), [ADR-0009](./decisions/0009-quatre-annotations-explicites-par-tool.md)) :
   - [x] les annotations de `search_books` et `add_book`
   - [x] `remove_book` (le seul destructif)
-  - [ ] `start_reading`, `finish_reading`, `abandon_reading`
+  - [x] `start_reading`, `finish_reading`, `abandon_reading`
   - [ ] `rate_book`
   - [ ] `lend_book`, `return_book`
   - [ ] `acquire_book`

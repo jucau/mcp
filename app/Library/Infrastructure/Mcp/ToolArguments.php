@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Library\Infrastructure\Mcp;
 
+use DateTimeImmutable;
 use Webmozart\Assert\Assert;
 
 final readonly class ToolArguments
@@ -29,6 +30,13 @@ final readonly class ToolArguments
         Assert::nullOrString($value);
 
         return $value;
+    }
+
+    public function dayOrNull(string $name): ?DateTimeImmutable
+    {
+        $value = $this->stringOrNull($name);
+
+        return $value === null ? null : new DateTimeImmutable($value);
     }
 
     public function boolOrNull(string $name): ?bool
