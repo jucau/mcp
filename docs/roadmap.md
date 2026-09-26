@@ -62,7 +62,8 @@ Un commit par brique, `make quality` vert à chacun.
   ([04](./04-les-trois-primitives.md), [ADR-0011](./decisions/0011-resources-etageres-et-livre.md))
 - [x] **Prompts** avec arguments (`recommend_next_read`, `reading_review`)
   ([04](./04-les-trois-primitives.md), [ADR-0012](./decisions/0012-prompts-donnees-embarquees.md))
-- [ ] L'**`outputSchema`** des réponses structurées, et les **erreurs** métier vs erreurs de protocole
+- [x] L'**`outputSchema`** des réponses structurées, et les **erreurs** métier vs erreurs de protocole
+  ([04](./04-les-trois-primitives.md), [ADR-0013](./decisions/0013-output-schema-verifie-par-les-tests.md))
 
 ## Étape 4 — Transport Streamable HTTP
 

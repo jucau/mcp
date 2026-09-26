@@ -15,6 +15,8 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\BookSchema;
+use Tests\Support\Library\OutputSchema;
 use Tests\TestCase;
 
 final class RemoveBookToolTest extends TestCase
@@ -43,6 +45,7 @@ final class RemoveBookToolTest extends TestCase
                 ],
                 'required' => ['book_id'],
             ],
+            'outputSchema' => BookSchema::BOOK,
             'annotations' => [
                 'readOnlyHint' => false,
                 'destructiveHint' => true,
@@ -59,7 +62,7 @@ final class RemoveBookToolTest extends TestCase
         $dune->startReading(new DateTimeImmutable('2026-09-01'));
         $this->given($dune);
 
-        LibraryServer::tool(RemoveBookTool::class, ['book_id' => $dune->id()->value])
+        $response = LibraryServer::tool(RemoveBookTool::class, ['book_id' => $dune->id()->value])
             ->assertOk()
             ->assertStructuredContent([
                 'id' => $dune->id()->value,
@@ -74,6 +77,8 @@ final class RemoveBookToolTest extends TestCase
                 'lent_to' => null,
                 'lent_on' => null,
             ]);
+
+        OutputSchema::assertRespected($response, 'remove_book');
 
         $this->assertNull($this->app->make(BookQueries::class)->find($dune->id()->value));
     }

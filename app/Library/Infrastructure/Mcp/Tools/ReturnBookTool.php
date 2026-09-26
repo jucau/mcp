@@ -48,6 +48,11 @@ final class ReturnBookTool extends LibraryTool
         ];
     }
 
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return BookPresenter::schema($schema);
+    }
+
     protected function respond(Request $request): ResponseFactory
     {
         $arguments = new ToolArguments($request->validate([

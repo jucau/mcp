@@ -16,6 +16,8 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\BookSchema;
+use Tests\Support\Library\OutputSchema;
 use Tests\TestCase;
 
 final class RateBookToolTest extends TestCase
@@ -50,6 +52,7 @@ final class RateBookToolTest extends TestCase
                 ],
                 'required' => ['book_id', 'rating'],
             ],
+            'outputSchema' => BookSchema::BOOK,
             'annotations' => [
                 'readOnlyHint' => false,
                 'destructiveHint' => true,
@@ -66,12 +69,14 @@ final class RateBookToolTest extends TestCase
         $book->rate(Rating::fromInt(3));
         $this->given($book);
 
-        LibraryServer::tool(RateBookTool::class, ['book_id' => $book->id()->value, 'rating' => 4])
+        $response = LibraryServer::tool(RateBookTool::class, ['book_id' => $book->id()->value, 'rating' => 4])
             ->assertOk()
             ->assertStructuredContent(fn (AssertableJson $json): AssertableJson => $json
                 ->where('id', $book->id()->value)
                 ->where('rating', 4)
                 ->etc());
+
+        OutputSchema::assertRespected($response, 'rate_book');
     }
 
     #[Test]

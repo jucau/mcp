@@ -289,3 +289,40 @@ du lecteur (`Clock`, [ADR-0010](./decisions/0010-instants-en-utc-jours-du-lecteu
 **Le texte du prompt est en anglais**, comme toute l'interface lue par le modèle
 ([ADR-0001](./decisions/0001-code-en-anglais-prose-en-francais.md)). Il demande au modèle de répondre dans la
 langue de la conversation.
+
+## L'`outputSchema` : annoncer la forme du résultat
+
+L'`inputSchema` dit au modèle **quoi envoyer**. L'`outputSchema` dit au client **quoi attendre** : c'est le JSON
+Schema du `structuredContent` que le tool renvoie en cas de succès. Nos tools renvoyaient déjà du contenu
+structuré, mais sans en annoncer la forme. Le client devait deviner, par exemple, que `rating` peut être `null`.
+
+| Tools | `outputSchema` |
+|---|---|
+| les 9 tools qui agissent sur un livre | un **livre** : 11 champs, tous présents, `null` quand l'information manque |
+| `search_books` | une **page** : `total`, `page`, `per_page`, et `books`, une liste de livres |
+
+**Ce que la spec impose, et à qui.** Si un tool déclare un `outputSchema`, le serveur **doit** renvoyer un
+`structuredContent` conforme, et le client **devrait** le valider. En cas d'erreur (`isError: true`), le schéma ne
+s'applique pas : un refus n'est qu'un texte. `laravel/mcp` annonce le schéma mais ne vérifie rien. Rien
+n'empêcherait donc un tool d'annoncer une forme et d'en renvoyer une autre. C'est pourquoi le **cas nominal de
+chaque tool valide sa réponse réelle** contre le schéma qu'il annonce
+([ADR-0013](./decisions/0013-output-schema-verifie-par-les-tests.md)).
+
+**Le schéma d'un livre est écrit à côté de sa présentation** : `BookPresenter::schema()` à côté de
+`BookPresenter::present()`. Qui modifie l'un voit l'autre, et le test de conformité signale tout écart.
+
+## Synthèse : les erreurs, de la plus proche du métier à la plus proche du protocole
+
+| Situation | Primitive | Ce que reçoit le client | Qui peut en tenir compte |
+|---|---|---|---|
+| refus métier (« "Dune" is lent to Marie… ») | tool | `result` avec `isError: true` et le message | le **modèle**, qui peut corriger et réessayer |
+| argument mal formé (`"per_page": "20"`) | tool | `result` avec `isError: true` et le message de validation | le **modèle** |
+| refus métier (id inconnu) | resource | `error` JSON-RPC `-32603`, avec le message | le **host** |
+| argument mal formé (`year: "25"`) | prompt | `error` JSON-RPC `-32602`, avec le message | le **host**, donc l'utilisateur |
+| URI ou nom inconnu | resource, prompt, tool | `error` JSON-RPC `-32602` | le **host** |
+| panne technique (base indisponible) | toutes | `-32603` « An internal server error occurred. » en production | personne : c'est journalisé |
+
+**La règle** : une erreur de **tool** est un **résultat**, parce que c'est le modèle qui a choisi l'appel et qu'il
+peut apprendre de son erreur. Une erreur de **resource** ou de **prompt** est une **erreur de protocole**, parce
+que c'est le host qui a fait la demande. Dans les deux cas, un refus métier garde son message en production
+(`LibraryTool`, `LibraryResource`). Une panne, elle, ne laisse jamais rien fuiter.

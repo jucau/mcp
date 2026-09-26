@@ -13,6 +13,8 @@ use Illuminate\Testing\Fluent\AssertableJson;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\BookSchema;
+use Tests\Support\Library\OutputSchema;
 use Tests\TestCase;
 
 final class AcquireBookToolTest extends TestCase
@@ -41,6 +43,7 @@ final class AcquireBookToolTest extends TestCase
                 ],
                 'required' => ['book_id'],
             ],
+            'outputSchema' => BookSchema::BOOK,
             'annotations' => [
                 'readOnlyHint' => false,
                 'destructiveHint' => false,
@@ -56,12 +59,14 @@ final class AcquireBookToolTest extends TestCase
         $book = Books::aBook(owned: false);
         $this->given($book);
 
-        LibraryServer::tool(AcquireBookTool::class, ['book_id' => $book->id()->value])
+        $response = LibraryServer::tool(AcquireBookTool::class, ['book_id' => $book->id()->value])
             ->assertOk()
             ->assertStructuredContent(fn (AssertableJson $json): AssertableJson => $json
                 ->where('id', $book->id()->value)
                 ->where('owned', true)
                 ->etc());
+
+        OutputSchema::assertRespected($response, 'acquire_book');
     }
 
     #[Test]

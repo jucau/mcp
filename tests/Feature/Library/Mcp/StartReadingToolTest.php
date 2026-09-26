@@ -16,7 +16,9 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\BookSchema;
 use Tests\Support\Library\FrozenClock;
+use Tests\Support\Library\OutputSchema;
 use Tests\TestCase;
 
 final class StartReadingToolTest extends TestCase
@@ -56,6 +58,7 @@ final class StartReadingToolTest extends TestCase
                 ],
                 'required' => ['book_id'],
             ],
+            'outputSchema' => BookSchema::BOOK,
             'annotations' => [
                 'readOnlyHint' => false,
                 'destructiveHint' => true,
@@ -71,7 +74,7 @@ final class StartReadingToolTest extends TestCase
         $book = Books::aBook();
         $this->given($book);
 
-        LibraryServer::tool(StartReadingTool::class, ['book_id' => $book->id()->value])
+        $response = LibraryServer::tool(StartReadingTool::class, ['book_id' => $book->id()->value])
             ->assertOk()
             ->assertStructuredContent(fn (AssertableJson $json): AssertableJson => $json
                 ->where('id', $book->id()->value)
@@ -79,6 +82,8 @@ final class StartReadingToolTest extends TestCase
                 ->where('started_on', '2026-09-27')
                 ->where('finished_on', null)
                 ->etc());
+
+        OutputSchema::assertRespected($response, 'start_reading');
     }
 
     #[Test]

@@ -16,6 +16,8 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\BookSchema;
+use Tests\Support\Library\OutputSchema;
 use Tests\TestCase;
 
 final class SearchBooksToolTest extends TestCase
@@ -61,6 +63,16 @@ final class SearchBooksToolTest extends TestCase
                     'per_page' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 100, 'default' => 20],
                 ],
             ],
+            'outputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'total' => ['type' => 'integer', 'description' => 'How many books match, across all pages.'],
+                    'page' => ['type' => 'integer'],
+                    'per_page' => ['type' => 'integer'],
+                    'books' => ['type' => 'array', 'items' => BookSchema::BOOK],
+                ],
+                'required' => ['total', 'page', 'per_page', 'books'],
+            ],
             'annotations' => [
                 'readOnlyHint' => true,
                 'destructiveHint' => false,
@@ -79,7 +91,7 @@ final class SearchBooksToolTest extends TestCase
         $this->given($dune);
         $this->given(Books::aBook('Hypérion', 'Dan Simmons'));
 
-        LibraryServer::tool(SearchBooksTool::class, ['query' => 'herbert'])
+        $response = LibraryServer::tool(SearchBooksTool::class, ['query' => 'herbert'])
             ->assertOk()
             ->assertStructuredContent([
                 'total' => 1,
@@ -99,6 +111,8 @@ final class SearchBooksToolTest extends TestCase
                     'lent_on' => '2026-09-10',
                 ]],
             ]);
+
+        OutputSchema::assertRespected($response, 'search_books');
     }
 
     #[Test]

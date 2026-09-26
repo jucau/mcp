@@ -15,6 +15,8 @@ use Illuminate\Testing\Fluent\AssertableJson;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\BookSchema;
+use Tests\Support\Library\OutputSchema;
 use Tests\TestCase;
 
 final class ReturnBookToolTest extends TestCase
@@ -42,6 +44,7 @@ final class ReturnBookToolTest extends TestCase
                 ],
                 'required' => ['book_id'],
             ],
+            'outputSchema' => BookSchema::BOOK,
             'annotations' => [
                 'readOnlyHint' => false,
                 'destructiveHint' => true,
@@ -58,13 +61,15 @@ final class ReturnBookToolTest extends TestCase
         $book->lendTo(Borrower::fromString('Marie'), new DateTimeImmutable('2026-09-01'));
         $this->given($book);
 
-        LibraryServer::tool(ReturnBookTool::class, ['book_id' => $book->id()->value])
+        $response = LibraryServer::tool(ReturnBookTool::class, ['book_id' => $book->id()->value])
             ->assertOk()
             ->assertStructuredContent(fn (AssertableJson $json): AssertableJson => $json
                 ->where('id', $book->id()->value)
                 ->where('lent_to', null)
                 ->where('lent_on', null)
                 ->etc());
+
+        OutputSchema::assertRespected($response, 'return_book');
     }
 
     #[Test]

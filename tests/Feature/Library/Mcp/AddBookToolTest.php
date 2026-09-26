@@ -13,6 +13,8 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\BookSchema;
+use Tests\Support\Library\OutputSchema;
 use Tests\TestCase;
 
 final class AddBookToolTest extends TestCase
@@ -50,6 +52,7 @@ final class AddBookToolTest extends TestCase
                 ],
                 'required' => ['title', 'author'],
             ],
+            'outputSchema' => BookSchema::BOOK,
             'annotations' => [
                 'readOnlyHint' => false,
                 'destructiveHint' => false,
@@ -62,7 +65,7 @@ final class AddBookToolTest extends TestCase
     #[Test]
     public function it_adds_an_owned_book_and_returns_it_with_its_id(): void
     {
-        LibraryServer::tool(AddBookTool::class, ['title' => ' Dune ', 'author' => 'Frank Herbert', 'isbn' => '0-441-17271-7'])
+        $response = LibraryServer::tool(AddBookTool::class, ['title' => ' Dune ', 'author' => 'Frank Herbert', 'isbn' => '0-441-17271-7'])
             ->assertOk()
             ->assertStructuredContent(fn (AssertableJson $book): AssertableJson => $book
                 ->whereType('id', 'string')
@@ -76,6 +79,8 @@ final class AddBookToolTest extends TestCase
                 ->where('rating', null)
                 ->where('lent_to', null)
                 ->where('lent_on', null));
+
+        OutputSchema::assertRespected($response, 'add_book');
     }
 
     #[Test]

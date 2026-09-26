@@ -16,7 +16,9 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\BookSchema;
 use Tests\Support\Library\FrozenClock;
+use Tests\Support\Library\OutputSchema;
 use Tests\TestCase;
 
 final class LendBookToolTest extends TestCase
@@ -60,6 +62,7 @@ final class LendBookToolTest extends TestCase
                 ],
                 'required' => ['book_id', 'borrower'],
             ],
+            'outputSchema' => BookSchema::BOOK,
             'annotations' => [
                 'readOnlyHint' => false,
                 'destructiveHint' => false,
@@ -75,13 +78,15 @@ final class LendBookToolTest extends TestCase
         $book = Books::aBook();
         $this->given($book);
 
-        LibraryServer::tool(LendBookTool::class, ['book_id' => $book->id()->value, 'borrower' => ' Marie '])
+        $response = LibraryServer::tool(LendBookTool::class, ['book_id' => $book->id()->value, 'borrower' => ' Marie '])
             ->assertOk()
             ->assertStructuredContent(fn (AssertableJson $json): AssertableJson => $json
                 ->where('id', $book->id()->value)
                 ->where('lent_to', 'Marie')
                 ->where('lent_on', '2026-09-27')
                 ->etc());
+
+        OutputSchema::assertRespected($response, 'lend_book');
     }
 
     #[Test]

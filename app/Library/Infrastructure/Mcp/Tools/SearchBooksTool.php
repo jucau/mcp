@@ -59,6 +59,16 @@ final class SearchBooksTool extends LibraryTool
         ];
     }
 
+    public function outputSchema(JsonSchema $schema): array
+    {
+        return [
+            'total' => $schema->integer()->required()->description('How many books match, across all pages.'),
+            'page' => $schema->integer()->required(),
+            'per_page' => $schema->integer()->required(),
+            'books' => $schema->array()->items($schema->object(BookPresenter::schema($schema)))->required(),
+        ];
+    }
+
     protected function respond(Request $request): ResponseFactory
     {
         $arguments = new ToolArguments($request->validate([
