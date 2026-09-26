@@ -11,6 +11,19 @@
                 "artisan",
                 "boost:mcp"
             ]
+        },
+        "library": {
+            "command": "docker",
+            "args": [
+                "compose",
+                "exec",
+                "-T",
+                "php",
+                "php",
+                "artisan",
+                "mcp:start",
+                "library"
+            ]
         }
     }
 }

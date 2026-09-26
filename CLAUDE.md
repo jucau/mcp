@@ -37,7 +37,9 @@ que les règles qui valent à chaque instant :
 `app/Library/{Domain,Application,Infrastructure}`, namespace `App\Library\…`. Le **serveur MCP est un
 adaptateur primaire** : il vit en `Infrastructure`, traduit et appelle un handler, sans jamais porter de règle
 métier. Les règles de couches (domaine pur, `Application` sans persistance directe ni façade, **aucune couche
-intérieure ne connaît `Laravel\Mcp`**) sont vérifiées par PHPArkitect.
+intérieure ne connaît `Laravel\Mcp`**) sont vérifiées par PHPArkitect. **Un tool = un use case**, il étend
+`LibraryTool`, valide la forme de ses arguments en strict et présente via un presenter partagé
+([ADR-0008](docs/decisions/0008-tools-adaptateurs-minces-refus-metier.md)).
 
 ## Tests
 

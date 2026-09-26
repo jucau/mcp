@@ -40,11 +40,11 @@ Un commit par brique, `make quality` vert à chacun.
 
 *Apprendre : le cycle de vie, `tools/list` / `tools/call`, le JSON Schema d'entrée, l'art de la description.*
 
-- [ ] Installer `laravel/mcp`, un serveur `Library` enregistré en `Mcp::local`
-- [ ] Un tool en **lecture** (`search_books`) et un en **écriture** (`add_book`)
-- [ ] Brancher le serveur sur Claude Code via `.mcp.json` (`docker compose exec -T …`)
-- [ ] Observer les échanges avec le **MCP Inspector**
-- [ ] Tests des tools (`Library::tool(...)->assertOk()`)
+- [x] Installer `laravel/mcp`, un serveur `LibraryServer` enregistré en `Mcp::local`
+- [x] Un tool en **lecture** (`search_books`) et un en **écriture** (`add_book`) ([03](./03-premier-serveur-mcp.md))
+- [x] Brancher le serveur sur Claude Code via `.mcp.json` (`docker compose exec -T …`)
+- [x] Observer les échanges avec le **MCP Inspector** (`make inspector`)
+- [x] Tests des tools (`LibraryServer::tool(...)->assertOk()`)
 
 ## Étape 3 — Les trois primitives
 
@@ -54,7 +54,7 @@ Un commit par brique, `make quality` vert à chacun.
 - [ ] **Annotations** : `IsReadOnly`, `IsDestructive`, `IsIdempotent`
 - [ ] **Resources** : URI fixes et **templates d'URI** (`library://books/{id}`)
 - [ ] **Prompts** avec arguments (`recommend-next-read`, bilan de lecture)
-- [ ] Réponses **structurées** (`outputSchema`) et **erreurs** métier vs erreurs de protocole
+- [ ] L'**`outputSchema`** des réponses structurées, et les **erreurs** métier vs erreurs de protocole
 
 ## Étape 4 — Transport Streamable HTTP
 

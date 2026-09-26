@@ -49,6 +49,7 @@ make test-db                          # crée + migre la BDD de test dédiée
 | `make stan` | l'analyse statique (PHPStan / Larastan niveau max) |
 | `make ark` | les règles d'architecture hexagonale (PHPArkitect) |
 | `make infection` | le mutation testing (Infection) du domaine et de l'application, MSI 100 % exigé |
+| `make inspector` | ouvre le MCP Inspector sur le serveur `library` (Node requis sur l'hôte) |
 | `make test` | PHPUnit (BDD Postgres dédiée `marquepage_testing`) |
 | `make test-db` | (re)crée + migre la BDD de test |
 | `make migrate` / `make fresh` / `make seed` | migrations / reset / reset + données de démo |
@@ -56,6 +57,15 @@ make test-db                          # crée + migre la BDD de test dédiée
 | `make composer ARGS="…"` | une commande composer |
 | `make shell` / `make logs` / `make ps` | shell php / logs / état des conteneurs |
 | `make build` / `make rebuild` / `make destroy` | (re)construire l'image / tout supprimer, volumes compris |
+
+## Utiliser la bibliothèque depuis Claude Code
+
+Le serveur MCP `library` est déclaré dans [`.mcp.json`](.mcp.json) : lancez Claude Code **dans ce dossier**, la
+stack démarrée (`make start`), puis approuvez le serveur au premier lancement. Essayez par exemple « qu'est-ce que
+je suis en train de lire ? » ou « ajoute Le Sorceleur à ma liste d'envies ».
+
+Pour observer les échanges : `make inspector` ouvre le **MCP Inspector** (Node requis sur l'hôte, pour cet outil
+seulement). Détails dans [docs/03](docs/03-premier-serveur-mcp.md).
 
 ## Outils IA
 

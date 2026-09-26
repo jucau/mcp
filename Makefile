@@ -5,7 +5,7 @@ AGENT_ENV = $(if $(AI_AGENT),-e AI_AGENT='$(AI_AGENT)')
 EXEC = $(DC) exec -T $(AGENT_ENV) php
 ARTISAN = $(EXEC) php artisan
 
-.PHONY: quality ide-helper rector pint stan ark test infection test-db start stop restart build rebuild destroy ps logs shell \
+.PHONY: quality ide-helper rector pint stan ark test infection inspector test-db start stop restart build rebuild destroy ps logs shell \
         migrate fresh seed composer artisan tinker
 
 # The one gate, run before every commit. The order is load-bearing: the writing tools come first, Pint
@@ -43,6 +43,10 @@ test:
 # output, and Pao's JSON would make every mutant read as killed.
 infection:
 	$(EXEC) env PAO_DISABLE=true php vendor/bin/infection --threads=4
+
+# Runs on the host (needs Node): the Inspector launches the server exactly as Claude Code does, from .mcp.json.
+inspector:
+	npx -y @modelcontextprotocol/inspector --config .mcp.json --server library
 
 test-db:
 	$(DC) exec -T postgres psql -U marquepage -d marquepage -tc "SELECT 1 FROM pg_database WHERE datname = 'marquepage_testing'" | grep -q 1 || $(DC) exec -T postgres createdb -U marquepage marquepage_testing
