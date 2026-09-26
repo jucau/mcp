@@ -51,6 +51,7 @@ make test-db                          # crée + migre la BDD de test dédiée
 | `make infection` | le mutation testing (Infection) du domaine et de l'application, MSI 100 % exigé |
 | `make inspector` | ouvre le MCP Inspector sur le serveur `library` (Node requis sur l'hôte) |
 | `make test` | PHPUnit (BDD Postgres dédiée `marquepage_testing`) |
+| `make coverage` | la couverture PHPUnit (pcov) : résumé et fichiers incomplets dans le terminal, rapport HTML dans `storage/coverage/index.html` ; hors porte |
 | `make test-db` | (re)crée + migre la BDD de test |
 | `make migrate` / `make fresh` / `make seed` | migrations / reset / reset + données de démo |
 | `make artisan ARGS="…"` | une commande artisan (ex. `make artisan ARGS="migrate:status"`) |

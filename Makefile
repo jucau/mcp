@@ -5,7 +5,7 @@ AGENT_ENV = $(if $(AI_AGENT),-e AI_AGENT='$(AI_AGENT)')
 EXEC = $(DC) exec -T $(AGENT_ENV) php
 ARTISAN = $(EXEC) php artisan
 
-.PHONY: quality ide-helper rector pint stan ark test infection inspector test-db start stop restart build rebuild destroy ps logs shell \
+.PHONY: quality ide-helper rector pint stan ark test coverage infection inspector test-db start stop restart build rebuild destroy ps logs shell \
         migrate fresh seed composer artisan tinker
 
 # The one gate, run before every commit. The order is load-bearing: the writing tools come first, Pint
@@ -37,6 +37,10 @@ ark:
 
 test:
 	$(EXEC) php artisan test
+
+# Outside the gate, on demand. PAO_DISABLE: Pao's one JSON line would swallow the coverage summary.
+coverage:
+	$(EXEC) env PAO_DISABLE=true php vendor/bin/phpunit --coverage-html storage/coverage --coverage-text
 
 # Not --threads=max: a saturated container kills runs, which Infection counts as detected, silently
 # inflating the MSI (measured on ddd/). PAO_DISABLE: Infection judges a mutant by regexing PHPUnit's human
