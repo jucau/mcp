@@ -2,15 +2,18 @@ DC = docker compose
 EXEC = $(DC) exec -T php
 ARTISAN = $(EXEC) php artisan
 
-.PHONY: quality pint test test-db start stop restart build rebuild destroy ps logs shell \
+.PHONY: quality pint stan test test-db start stop restart build rebuild destroy ps logs shell \
         migrate fresh seed composer artisan tinker
 
 # The one gate, run before every commit. The writing tools come first, then the checks judge the settled
 # tree.
-quality: pint test
+quality: pint stan test
 
 pint:
 	$(EXEC) ./vendor/bin/pint --parallel
+
+stan:
+	$(EXEC) ./vendor/bin/phpstan analyse --memory-limit=1G
 
 test:
 	$(EXEC) php artisan test

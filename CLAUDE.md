@@ -61,7 +61,8 @@ Stack : **nginx (8090) → php-fpm 8.5 → postgres 18** ([ADR-0005](docs/decisi
 sous-ensemble. Les outils qui écrivent corrigent au passage : la porte passe **avant** le commit, sinon la
 correction arrive dans un commit de rattrapage.
 
-Ordre : **pint** (écrit) → **test**. Configs : `pint.json`.
+Ordre : **pint** (écrit) → **stan** → **test**. Configs : `pint.json`, `phpstan.neon` (Larastan, niveau
+**max**).
 
 ## Git
 
