@@ -1,5 +1,8 @@
 DC = docker compose
-EXEC = $(DC) exec -T php
+# Pao turns PHPUnit/PHPStan/Rector output into one JSON line when an agent is calling, and it keys off
+# the caller's AI_AGENT — which `docker compose exec` does not forward. Human runs stay human.
+AGENT_ENV = $(if $(AI_AGENT),-e AI_AGENT='$(AI_AGENT)')
+EXEC = $(DC) exec -T $(AGENT_ENV) php
 ARTISAN = $(EXEC) php artisan
 
 .PHONY: quality rector pint stan test test-db start stop restart build rebuild destroy ps logs shell \

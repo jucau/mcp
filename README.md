@@ -53,3 +53,10 @@ make test-db                          # crée + migre la BDD de test dédiée
 | `make composer ARGS="…"` | une commande composer |
 | `make shell` / `make logs` / `make ps` | shell php / logs / état des conteneurs |
 | `make build` / `make rebuild` / `make destroy` | (re)construire l'image / tout supprimer, volumes compris |
+
+## Outils IA
+
+- **Laravel Boost** : un serveur MCP pour l'agent (schéma de BDD, tinker, doc Laravel versionnée…) déclaré
+  dans `.mcp.json`, plus des guidelines ([`AGENTS.md`](AGENTS.md)) et des skills (`.claude/skills/`). Il
+  passe par `docker compose exec` : la stack doit être démarrée (`make start`).
+- **Pao** : quand un agent lance `make quality`, la sortie des outils devient une ligne JSON par outil.

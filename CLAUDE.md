@@ -31,6 +31,14 @@ que les règles qui valent à chaque instant :
   Les **descriptions** de tools/resources/prompts ne sont pas des commentaires : c'est l'interface que lit le
   modèle, elles se soignent.
 
+## Outils IA
+
+- **Laravel Boost** fournit un serveur MCP (schéma de BDD, tinker, recherche dans la doc versionnée…), les
+  guidelines [`AGENTS.md`](AGENTS.md) et les skills de `.claude/skills/`. Sa config est `boost.json`.
+- `.mcp.json` lance Boost **dans le conteneur** (`docker compose exec -T php php artisan boost:mcp`) :
+  `boost:install` le réécrit en `php artisan boost:mcp` local, qui échoue sans PHP sur l'hôte — à restaurer
+  après chaque install.
+
 ## Méthode de travail
 
 - On suit la [roadmap](docs/roadmap.md) **étape par étape**. Chaque concept MCP rencontré est **documenté
@@ -63,6 +71,11 @@ correction arrive dans un commit de rattrapage.
 
 Ordre : **rector** → **pint** (écrivent ; pint en dernier, il reformate ce que rector produit) → **stan** →
 **test**. Configs : `rector.php`, `pint.json`, `phpstan.neon` (Larastan, niveau **max**).
+
+**Pao** (`laravel/pao`) : quand un **agent** lance la porte, Rector, Pint, PHPStan et PHPUnit répondent **une
+ligne JSON** au lieu de centaines de lignes ANSI ; les runs humains gardent la sortie humaine. Pao se
+déclenche sur `AI_AGENT`, que `docker compose exec` ne transmet pas : le Makefile le relaie (`AGENT_ENV`)
+*uniquement s'il est posé chez l'appelant*.
 
 ## Git
 
