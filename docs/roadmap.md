@@ -50,14 +50,14 @@ Un commit par brique, `make quality` vert à chacun.
 
 *Apprendre : qui contrôle quoi — modèle, application, utilisateur.*
 
-- [ ] Un tool par use case restant, **chacun avec ses quatre annotations**, décidées en concevant le tool
+- [x] Un tool par use case restant, **chacun avec ses quatre annotations**, décidées en concevant le tool
   ([04](./04-les-trois-primitives.md), [ADR-0009](./decisions/0009-quatre-annotations-explicites-par-tool.md)) :
   - [x] les annotations de `search_books` et `add_book`
-  - [x] `remove_book` (le seul destructif)
+  - [x] `remove_book`
   - [x] `start_reading`, `finish_reading`, `abandon_reading`
   - [x] `rate_book`
   - [x] `lend_book`, `return_book`
-  - [ ] `acquire_book`
+  - [x] `acquire_book`
 - [ ] **Resources** : URI fixes et **templates d'URI** (`library://books/{id}`)
 - [ ] **Prompts** avec arguments (`recommend-next-read`, bilan de lecture)
 - [ ] L'**`outputSchema`** des réponses structurées, et les **erreurs** métier vs erreurs de protocole

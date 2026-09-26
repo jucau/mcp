@@ -38,7 +38,7 @@ logiciel. La description s'adresse au **modèle**. Un tool destructif le dit don
 que le host protège l'utilisateur, et « only when the user explicitly asks » pour que le modèle ne l'appelle pas
 de sa propre initiative.
 
-## `remove_book` : le seul tool destructif
+## `remove_book` : retirer pour de bon
 
 | Hint | Valeur | Pourquoi |
 |---|---|---|
@@ -103,9 +103,11 @@ relancer une recherche.
 | `openWorldHint` | `false` | il ne touche que la bibliothèque |
 
 **La spec définit « destructif » par son contraire.** `destructiveHint: false` veut dire « uniquement des mises
-à jour **additives** ». Tout ce qui écrase une valeur existante est donc destructif, même une note de 3 qui
-devient 4. C'est le cas de `rate_book`, qui écrase la note précédente. Ce n'est pas le cas de `finish_reading`,
-qui écrit une date de fin toujours vide avant.
+à jour **additives** ». Notre critère : un tool est destructif s'il peut **effacer une information enregistrée**
+(une note, une date, un prêt) que rien ne permet de retrouver. Remplacer une note de 3 par un 4 efface le 3 :
+`rate_book` est destructif. En revanche, un **état qui avance** ne l'est pas : quand `finish_reading` passe le
+statut de `reading` à `read`, il ne perd rien de ce que l'utilisateur a saisi, et la date de fin qu'il écrit
+était vide avant.
 
 **La règle reste dans le domaine.** Le schéma annonce les bornes (`minimum: 1`, `maximum: 5`, lues sur
 `Rating::MIN` et `Rating::MAX`) pour que le modèle ne se trompe pas. Mais c'est le value object `Rating` qui
@@ -142,3 +144,22 @@ la bibliothèque ne change pas.
 **L'emprunteur est un nom libre**, tel que l'utilisateur l'a donné : il n'existe pas de fiche « contact ».
 `lend_book` accepte aussi le `on` optionnel des tools de lecture, et refuse de prêter un livre de la liste
 d'envies. Ce refus vient lui aussi du domaine.
+
+## `acquire_book` : l'idempotence la plus simple
+
+| Hint | Valeur | Pourquoi |
+|---|---|---|
+| `readOnlyHint` | `false` | le livre passe de la liste d'envies aux livres possédés |
+| `destructiveHint` | `false` | un état qui avance, rien d'effacé |
+| `idempotentHint` | `true` | acquérir un livre déjà possédé ne change rien |
+| `openWorldHint` | `false` | il ne touche que la bibliothèque |
+
+**Idempotent sans refus.** Les autres tools idempotents le sont parce que le domaine **refuse** le deuxième appel.
+`acquire_book` l'est au sens le plus simple : `Book::acquire()` n'a pas de garde, donc acquérir un livre déjà
+possédé réussit et renvoie le même livre. Les deux formes respectent la spec, qui ne regarde que l'état de la
+bibliothèque. Elles diffèrent pour le modèle : un refus lui apprend qu'il s'est trompé, une réussite silencieuse
+ne lui apprend rien. Ici c'est sans conséquence : le résultat voulu, « je possède ce livre », est atteint.
+
+**Acquérir n'est pas ajouter.** `acquire_book` concerne un livre **déjà** dans la liste d'envies. Pour un livre
+possédé qui n'est pas encore dans la bibliothèque, c'est `add_book`. La description le dit, pour que le modèle ne
+cherche pas un id qui n'existe pas.

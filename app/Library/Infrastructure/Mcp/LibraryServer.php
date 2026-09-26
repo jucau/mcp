@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Library\Infrastructure\Mcp;
 
 use App\Library\Infrastructure\Mcp\Tools\AbandonReadingTool;
+use App\Library\Infrastructure\Mcp\Tools\AcquireBookTool;
 use App\Library\Infrastructure\Mcp\Tools\AddBookTool;
 use App\Library\Infrastructure\Mcp\Tools\FinishReadingTool;
 use App\Library\Infrastructure\Mcp\Tools\LendBookTool;
@@ -39,5 +40,6 @@ final class LibraryServer extends Server
         RateBookTool::class,
         LendBookTool::class,
         ReturnBookTool::class,
+        AcquireBookTool::class,
     ];
 }
