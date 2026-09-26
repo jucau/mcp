@@ -50,8 +50,10 @@ Un commit par brique, `make quality` vert à chacun.
 
 *Apprendre : qui contrôle quoi — modèle, application, utilisateur.*
 
-- [ ] Tools restants : noter, marquer lu, prêter, rendre
-- [ ] **Annotations** : `IsReadOnly`, `IsDestructive`, `IsIdempotent`
+- [ ] Un tool par use case restant, **chacun avec ses annotations** (`IsReadOnly`, `IsDestructive`,
+  `IsIdempotent`), décidées en concevant le tool plutôt qu'en passe séparée : `start_reading`,
+  `finish_reading`, `abandon_reading`, `rate_book`, `lend_book`, `return_book`, `acquire_book`, `remove_book`
+  (le seul destructif) ; et les annotations des deux premiers tools
 - [ ] **Resources** : URI fixes et **templates d'URI** (`library://books/{id}`)
 - [ ] **Prompts** avec arguments (`recommend-next-read`, bilan de lecture)
 - [ ] L'**`outputSchema`** des réponses structurées, et les **erreurs** métier vs erreurs de protocole
