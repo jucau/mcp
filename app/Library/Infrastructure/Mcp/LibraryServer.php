@@ -7,8 +7,10 @@ namespace App\Library\Infrastructure\Mcp;
 use App\Library\Infrastructure\Mcp\Tools\AbandonReadingTool;
 use App\Library\Infrastructure\Mcp\Tools\AddBookTool;
 use App\Library\Infrastructure\Mcp\Tools\FinishReadingTool;
+use App\Library\Infrastructure\Mcp\Tools\LendBookTool;
 use App\Library\Infrastructure\Mcp\Tools\RateBookTool;
 use App\Library\Infrastructure\Mcp\Tools\RemoveBookTool;
+use App\Library\Infrastructure\Mcp\Tools\ReturnBookTool;
 use App\Library\Infrastructure\Mcp\Tools\SearchBooksTool;
 use App\Library\Infrastructure\Mcp\Tools\StartReadingTool;
 use Laravel\Mcp\Server;
@@ -35,5 +37,7 @@ final class LibraryServer extends Server
         FinishReadingTool::class,
         AbandonReadingTool::class,
         RateBookTool::class,
+        LendBookTool::class,
+        ReturnBookTool::class,
     ];
 }

@@ -56,7 +56,7 @@ Un commit par brique, `make quality` vert à chacun.
   - [x] `remove_book` (le seul destructif)
   - [x] `start_reading`, `finish_reading`, `abandon_reading`
   - [x] `rate_book`
-  - [ ] `lend_book`, `return_book`
+  - [x] `lend_book`, `return_book`
   - [ ] `acquire_book`
 - [ ] **Resources** : URI fixes et **templates d'URI** (`library://books/{id}`)
 - [ ] **Prompts** avec arguments (`recommend-next-read`, bilan de lecture)

@@ -114,3 +114,31 @@ transmet ces refus sans les dupliquer.
 
 **Une note vient de l'utilisateur.** « J'ai adoré » n'est pas un 5 : la description demande au modèle de ne
 jamais déduire une note d'une opinion. Même principe que pour l'ISBN, l'id et la date.
+
+## `lend_book` et `return_book` : un hint qui révèle le modèle
+
+| Hint | `lend_book` | `return_book` |
+|---|---|---|
+| `readOnlyHint` | `false` | `false` |
+| `destructiveHint` | `false` | **`true`** |
+| `idempotentHint` | `true` | `true` |
+| `openWorldHint` | `false` | `false` |
+
+**`lend_book` ajoute, `return_book` efface.** Prêter pose un prêt sur un livre qui n'en avait pas : le domaine
+refuse un second prêt (« already lent »). C'est donc un ajout. Rendre, au contraire, **efface** le prêt :
+l'emprunteur et la date disparaissent, et rien n'en garde la trace. D'après la définition de la spec, c'est
+destructif.
+
+**Le hint révèle une limite du modèle de données.** Qu'un geste aussi banal que « Marie m'a rendu 1984 » soit
+destructif, c'est le signe que la bibliothèque **n'a pas d'historique des prêts** : le prêt est un value object
+remplacé, pas un événement conservé ([ADR-0007](./decisions/0007-un-agregat-book-pret-en-value-object.md)).
+C'est un choix assumé pour garder le domaine petit. Avec un historique, `return_book` deviendrait un ajout
+(« rendu le … »), et son hint passerait à `false`. Bien choisir les annotations oblige à se demander ce que
+chaque tool fait **vraiment** aux données.
+
+**Les deux sont idempotents** : au deuxième appel, le domaine refuse (« already lent », « nothing to return ») et
+la bibliothèque ne change pas.
+
+**L'emprunteur est un nom libre**, tel que l'utilisateur l'a donné : il n'existe pas de fiche « contact ».
+`lend_book` accepte aussi le `on` optionnel des tools de lecture, et refuse de prêter un livre de la liste
+d'envies. Ce refus vient lui aussi du domaine.
