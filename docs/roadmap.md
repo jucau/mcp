@@ -85,8 +85,12 @@ Un commit par brique, `make quality` vert à chacun.
 
 *Apprendre : ce qui circule réellement, sans SDK.*
 
-- [ ] Un mini-client MCP écrit à la main (JSON-RPC brut sur stdio puis HTTP)
-- [ ] Journaliser et commenter une session complète (`initialize` → `tools/call`)
+> Sa partie stdio est faite **avant l'étape 4** : voir d'abord le protocole nu sur un transport connu rend plus
+> visible, ensuite, ce que HTTP y change. Sa partie HTTP suit l'étape 4.
+
+- [x] Un mini-client MCP écrit à la main, sur stdio (`client/`, `make raw-session`) ([05](./05-le-protocole-a-nu.md))
+- [x] Journaliser et commenter une session complète (`initialize` → `tools/call` → resources → prompts → fin)
+- [ ] Le même client sur HTTP, après l'étape 4
 
 ## Plus tard (idées, sans engagement)
 

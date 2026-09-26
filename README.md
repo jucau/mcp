@@ -50,6 +50,7 @@ make test-db                          # crée + migre la BDD de test dédiée
 | `make ark` | les règles d'architecture hexagonale (PHPArkitect) |
 | `make infection` | le mutation testing (Infection) du domaine et de l'application, MSI 100 % exigé |
 | `make inspector` | ouvre le MCP Inspector sur le serveur `library` (Node requis sur l'hôte) |
+| `make raw-session` | un client MCP écrit à la main (`client/`) joue une session complète et affiche chaque ligne JSON-RPC |
 | `make test` | PHPUnit (BDD Postgres dédiée `marquepage_testing`) |
 | `make coverage` | la couverture PHPUnit (pcov) : résumé et fichiers incomplets dans le terminal, rapport HTML dans `storage/coverage/index.html` ; hors porte |
 | `make test-db` | (re)crée + migre la BDD de test |

@@ -9,6 +9,7 @@ return RectorConfig::configure()
     ->withCache(__DIR__ . '/storage/rector')
     ->withPaths([
         __DIR__ . '/app',
+        __DIR__ . '/client',
         __DIR__ . '/database',
         __DIR__ . '/routes',
         __DIR__ . '/tests',
