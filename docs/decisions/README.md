@@ -28,3 +28,4 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0005](./0005-environnement-docker-uniquement.md) | Environnement 100 % Docker, piloté par un Makefile | Accepté |
 | [0006](./0006-architecture-hexagonale-ciblee.md) | Architecture hexagonale ciblée, MCP comme adaptateur primaire | Accepté |
 | [0007](./0007-un-agregat-book-pret-en-value-object.md) | Un seul agrégat `Book`, le prêt en value object | Accepté |
+| [0008](./0008-tools-adaptateurs-minces-refus-metier.md) | Les tools sont des adaptateurs minces qui transmettent les refus métier | Accepté |

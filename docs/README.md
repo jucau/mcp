@@ -23,6 +23,7 @@ Il est juste assez riche pour faire vivre les trois primitives MCP :
 | 00 | [MCP en bref](./00-mcp-en-bref.md) | C'est quoi MCP, à quoi ça sert, quels sont ses concepts ? |
 | 01 | [Le domaine `Library`](./01-domaine.md) | Quel est le modèle, quels invariants protège-t-il, quels cas d'usage ? |
 | 02 | [Langage ubiquitaire](./02-langage-ubiquitaire.md) | Quel mot veut dire quoi, en français et dans le code ? |
+| 03 | [Premier serveur MCP](./03-premier-serveur-mcp.md) | Comment un tool est-il exposé, appelé, testé ? Que circule-t-il vraiment ? |
 | — | [Roadmap](./roadmap.md) | Dans quel ordre construit-on, et qu'apprend-on à chaque étape ? |
 | — | [Décisions (ADR)](./decisions/README.md) | Pourquoi c'est fait comme ça ? |
 
