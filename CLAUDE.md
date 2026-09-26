@@ -52,6 +52,12 @@ intérieure ne connaît `Laravel\Mcp`**) sont vérifiées par PHPArkitect.
 - **Les adaptateurs** (Eloquent) ont leurs tests Feature ; un même **trait de contrat** est joué par le double
   in-memory (Unit) **et** l'adaptateur réel (Feature).
 
+## Données de démo
+
+**Chaque feature livre ses données de démo** dans `LibrarySeeder`, avec des cas variés. L'agrégat se seede
+**via les use cases**, jamais par insertion directe : les données de démo respectent les mêmes invariants
+que les vraies. Lancer : `make seed`.
+
 ## Outils IA
 
 - **Laravel Boost** fournit un serveur MCP (schéma de BDD, tinker, recherche dans la doc versionnée…), les

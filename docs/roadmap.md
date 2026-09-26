@@ -33,7 +33,7 @@ Un commit par brique, `make quality` vert à chacun.
   avec le double in-memory, et couvrent le domaine à travers eux
 - [x] Infrastructure : migration, repository Eloquent, requêtes de lecture ; même trait de contrat que le
   double
-- [ ] Factory et seeder de démo réaliste (possédés / liste d'envies, tous les statuts, des prêts)
+- [x] Seeder de démo réaliste **via les use cases** (possédés / liste d'envies, tous les statuts, des prêts)
 
 ## Étape 2 — Premier serveur MCP, transport stdio
 
