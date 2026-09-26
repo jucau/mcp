@@ -13,7 +13,7 @@ use App\Library\Infrastructure\Mcp\Tools\RemoveBookTool;
 use DateTimeImmutable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\Support\Library\AnnouncedTools;
+use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
 use Tests\TestCase;
 
@@ -49,7 +49,7 @@ final class RemoveBookToolTest extends TestCase
                 'idempotentHint' => true,
                 'openWorldHint' => false,
             ],
-        ], AnnouncedTools::named('remove_book'));
+        ], Announced::tool('remove_book'));
     }
 
     #[Test]

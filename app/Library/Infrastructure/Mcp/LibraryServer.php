@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Library\Infrastructure\Mcp;
 
+use App\Library\Infrastructure\Mcp\Resources\BookResource;
+use App\Library\Infrastructure\Mcp\Resources\LentShelfResource;
+use App\Library\Infrastructure\Mcp\Resources\ReadingShelfResource;
+use App\Library\Infrastructure\Mcp\Resources\ToReadShelfResource;
+use App\Library\Infrastructure\Mcp\Resources\WishlistShelfResource;
 use App\Library\Infrastructure\Mcp\Tools\AbandonReadingTool;
 use App\Library\Infrastructure\Mcp\Tools\AcquireBookTool;
 use App\Library\Infrastructure\Mcp\Tools\AddBookTool;
@@ -41,5 +46,13 @@ final class LibraryServer extends Server
         LendBookTool::class,
         ReturnBookTool::class,
         AcquireBookTool::class,
+    ];
+
+    protected array $resources = [
+        ToReadShelfResource::class,
+        ReadingShelfResource::class,
+        LentShelfResource::class,
+        WishlistShelfResource::class,
+        BookResource::class,
     ];
 }

@@ -1,15 +1,15 @@
 # 04 — Les trois primitives
 
 > Étape 3 de la [roadmap](./roadmap.md). Les tools couvrent maintenant tous les use cases, et chacun dit au
-> client **ce qu'il fait au monde** par ses annotations. Les resources et les prompts viendront compléter ce
-> document.
+> client **ce qu'il fait au monde** par ses annotations. Les resources exposent les étagères et les livres en
+> lecture. Les prompts viendront compléter ce document.
 
 ## Qui contrôle quoi
 
 | Primitive | Contrôlée par | Dans Marque-page |
 |---|---|---|
 | **Tool** | le **modèle**, qui décide de l'appeler | `search_books`, `add_book`, `remove_book`… |
-| **Resource** | l'**application** (le host), qui décide quoi mettre en contexte | à venir : `library://books/{id}` |
+| **Resource** | l'**application** (le host), qui décide quoi mettre en contexte | `library://shelves/reading`, `library://books/{id}` |
 | **Prompt** | l'**utilisateur**, qui le choisit explicitement | à venir : `recommend-next-read` |
 
 ## Les annotations d'un tool
@@ -163,3 +163,93 @@ ne lui apprend rien. Ici c'est sans conséquence : le résultat voulu, « je pos
 **Acquérir n'est pas ajouter.** `acquire_book` concerne un livre **déjà** dans la liste d'envies. Pour un livre
 possédé qui n'est pas encore dans la bibliothèque, c'est `add_book`. La description le dit, pour que le modèle ne
 cherche pas un id qui n'existe pas.
+
+## Les resources : des données, pas des actions
+
+Un tool est une **action** que le modèle décide d'appeler. Une resource est une **donnée**, adressée par une URI,
+que l'**application** (le host) choisit de mettre dans le contexte du modèle.
+
+**« Contrôlée par l'application » veut dire que le host choisit sa politique.** Le protocole ne dit pas qui
+déclenche la lecture. Claude Code en applique deux :
+
+- **l'utilisateur mentionne une resource** comme un fichier (`@library:library://shelves/reading`) : son contenu
+  est joint au message, et le modèle n'a rien eu à décider ;
+- **le modèle lit une resource lui-même**, avec des tools que Claude Code lui fournit (`ListMcpResourcesTool`,
+  `ReadMcpResourceTool`). Ces tools appartiennent au host, pas à notre serveur.
+
+Un autre host pourrait n'en appliquer aucune, ou demander une confirmation avant chaque lecture.
+
+| Méthode | Ce qu'elle renvoie |
+|---|---|
+| `resources/list` | les resources à **URI fixe** : ce que le host peut proposer d'emblée |
+| `resources/templates/list` | les **templates d'URI** (RFC 6570), comme `library://books/{id}` : une famille de resources |
+| `resources/read` | le **contenu** d'une URI : du texte ou du binaire, avec son `mimeType` |
+
+**Quand choisir une resource plutôt qu'un tool ?** Quand la donnée se lit **telle quelle** et se désigne par un
+nom stable. « Mes lectures en cours » est une resource : l'utilisateur la joint à sa question. « Les livres de
+Tolkien que j'ai prêtés » est une recherche avec des critères libres, donc un tool (`search_books`). Les deux
+exposent la même lecture (`BookQueries`) : une resource n'est qu'un autre **adaptateur primaire**.
+
+### Les étagères : quatre URI fixes
+
+| URI | Contenu |
+|---|---|
+| `library://shelves/to-read` | les livres possédés, pas encore commencés, **et à la maison** : un livre prêté ne se choisit pas comme prochaine lecture |
+| `library://shelves/reading` | les lectures en cours |
+| `library://shelves/lent` | les livres prêtés, avec l'emprunteur et la date |
+| `library://shelves/wishlist` | la liste d'envies |
+
+Une étagère n'est qu'une **recherche pré-filtrée** ([02](./02-langage-ubiquitaire.md)). Chaque resource construit
+ses critères de recherche et renvoie **tous** les livres de l'étagère, sans pagination : une resource se lit d'un
+bloc, et la spec ne prévoit pas de paginer son contenu. Le contenu est du JSON (`application/json`), avec le même
+format de livre que les tools (`BookPresenter`).
+
+### Le livre : un template d'URI
+
+`library://books/{id}` désigne n'importe quel livre. Il n'apparaît pas dans `resources/list` (il y en aurait un
+par livre) mais dans `resources/templates/list`. Le client remplace `{id}` par un id, et le SDK passe la variable
+à la resource comme un argument.
+
+**Dans Claude Code, un template sert au modèle, pas à l'utilisateur.** Observé à l'usage :
+
+- l'autocomplétion de `@library:` ne propose que les URI de `resources/list`, jamais les templates ;
+- une mention tapée à la main avec une URI valide (`@library:library://books/758537fa-…`) **n'est pas jointe** :
+  seul le texte arrive, et le modèle doit lire la resource lui-même ;
+- `library://books/` sans id n'est reconnu par aucune resource : « Resource not found ».
+
+Les étagères, à URI fixe, servent donc à l'**utilisateur**, qui les joint à sa question. Le livre, par template,
+sert au **modèle** : il obtient l'id par `search_books` et lit la resource avec son propre tool. C'est ce qui
+justifie les étagères en URI fixes plutôt qu'en template `library://shelves/{shelf}`
+([ADR-0011](./decisions/0011-resources-etageres-et-livre.md)).
+
+**La complétion d'arguments** (`completion/complete`) comblerait ce manque : le client demande au serveur des
+valeurs pour `{id}` à partir de ce que l'utilisateur tape (« dun » → Dune). Elle est dans « Plus tard » de la
+[roadmap](./roadmap.md). Il faudra aussi vérifier qu'un host l'utilise pour les templates.
+
+### Les erreurs d'une resource sont des erreurs de protocole
+
+C'est la grande différence avec les tools. Un tool en échec renvoie un **résultat** marqué `isError`, que le
+modèle lit et dont il peut tenir compte. Une resource en échec renvoie une **erreur JSON-RPC** : il n'y a pas de
+résultat du tout.
+
+| Cas | Tool (`tools/call`) | Resource (`resources/read`) |
+|---|---|---|
+| refus métier (id inconnu) | `result` + `isError: true` | `error`, code `-32603`, avec le message |
+| URI qu'aucune resource ne reconnaît | — | `error`, code `-32602` (paramètre invalide) |
+
+La spec recommande le code `-32002` (*resource not found*) pour une URI inconnue. `laravel/mcp` ne permet pas de
+le choisir : il renvoie `-32603` pour toute erreur levée par une resource. On l'accepte, le message dit
+l'essentiel.
+
+**Le même piège que pour les tools** : une exception levée dans une resource n'est transmise qu'avec
+`APP_DEBUG`, et remplacée en production par « An internal server error occurred. ». Les resources étendent donc
+`LibraryResource`, qui traduit toute `DomainException` en `Response::error($message)`, comme `LibraryTool`
+([ADR-0011](./decisions/0011-resources-etageres-et-livre.md)).
+
+### Pas d'annotations, pas d'abonnement
+
+Une resource peut porter des annotations (`audience`, `priority`, `lastModified`). Aucune ne nous apporte quelque
+chose : l'audience est à la fois l'utilisateur et le modèle (c'est le défaut), et `lastModified` devrait changer
+avec chaque livre, alors que le SDK la fixe par un attribut de classe. La spec prévoit aussi qu'un client
+**s'abonne** à une resource pour être prévenu de ses changements (`resources/subscribe`) : `laravel/mcp` ne
+l'implémente pas.

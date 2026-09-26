@@ -14,7 +14,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Testing\Fluent\AssertableJson;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
-use Tests\Support\Library\AnnouncedTools;
+use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
 use Tests\TestCase;
 
@@ -67,7 +67,7 @@ final class SearchBooksToolTest extends TestCase
                 'idempotentHint' => true,
                 'openWorldHint' => false,
             ],
-        ], AnnouncedTools::named('search_books'));
+        ], Announced::tool('search_books'));
     }
 
     #[Test]

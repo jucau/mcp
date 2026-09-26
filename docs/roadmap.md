@@ -58,7 +58,8 @@ Un commit par brique, `make quality` vert à chacun.
   - [x] `rate_book`
   - [x] `lend_book`, `return_book`
   - [x] `acquire_book`
-- [ ] **Resources** : URI fixes et **templates d'URI** (`library://books/{id}`)
+- [x] **Resources** : URI fixes (les étagères) et **templates d'URI** (`library://books/{id}`)
+  ([04](./04-les-trois-primitives.md), [ADR-0011](./decisions/0011-resources-etageres-et-livre.md))
 - [ ] **Prompts** avec arguments (`recommend-next-read`, bilan de lecture)
 - [ ] L'**`outputSchema`** des réponses structurées, et les **erreurs** métier vs erreurs de protocole
 

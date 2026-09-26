@@ -13,7 +13,7 @@ use DateTimeImmutable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Testing\Fluent\AssertableJson;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\Support\Library\AnnouncedTools;
+use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
 use Tests\TestCase;
 
@@ -48,7 +48,7 @@ final class ReturnBookToolTest extends TestCase
                 'idempotentHint' => true,
                 'openWorldHint' => false,
             ],
-        ], AnnouncedTools::named('return_book'));
+        ], Announced::tool('return_book'));
     }
 
     #[Test]

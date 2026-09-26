@@ -11,7 +11,7 @@ use App\Library\Infrastructure\Mcp\Tools\AcquireBookTool;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Testing\Fluent\AssertableJson;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\Support\Library\AnnouncedTools;
+use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
 use Tests\TestCase;
 
@@ -47,7 +47,7 @@ final class AcquireBookToolTest extends TestCase
                 'idempotentHint' => true,
                 'openWorldHint' => false,
             ],
-        ], AnnouncedTools::named('acquire_book'));
+        ], Announced::tool('acquire_book'));
     }
 
     #[Test]
