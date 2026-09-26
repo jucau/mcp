@@ -14,12 +14,57 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Testing\Fluent\AssertableJson;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
+use Tests\Support\Library\AnnouncedTools;
 use Tests\Support\Library\Books;
 use Tests\TestCase;
 
 final class SearchBooksToolTest extends TestCase
 {
     use DatabaseTransactions;
+
+    #[Test]
+    public function it_announces_its_contract_to_the_model(): void
+    {
+        $this->assertEquals([
+            'name' => 'search_books',
+            'title' => 'Search books',
+            'description' => <<<'TEXT'
+                Search the user's library. Every criterion is optional and they combine: with none, it lists every book.
+                Use it to find a book's id before acting on it, or to answer questions such as "what am I reading?",
+                "what did I lend?" or "which books are on my wishlist?". Results are sorted by title and paginated.
+                TEXT,
+            'inputSchema' => [
+                'type' => 'object',
+                'properties' => [
+                    'query' => [
+                        'type' => 'string',
+                        'description' => 'Words to look for in the title or the author. Every word must match; case and accents are ignored.',
+                    ],
+                    'isbn' => [
+                        'type' => 'string',
+                        'description' => 'The exact ISBN of the book, ISBN-10 or ISBN-13, hyphens allowed.',
+                    ],
+                    'reading_status' => [
+                        'type' => 'string',
+                        'enum' => ['to_read', 'reading', 'read', 'abandoned'],
+                        'description' => 'Only books at this stage: to_read, reading, read or abandoned.',
+                    ],
+                    'owned' => [
+                        'type' => 'boolean',
+                        'description' => 'true: only books the user owns. false: only their wishlist.',
+                    ],
+                    'lent' => [
+                        'type' => 'boolean',
+                        'description' => 'true: only books currently lent to someone. false: only books at home.',
+                    ],
+                    'page' => ['type' => 'integer', 'minimum' => 1, 'default' => 1],
+                    'per_page' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 100, 'default' => 20],
+                ],
+            ],
+            'annotations' => [],
+        ], AnnouncedTools::named('search_books'));
+    }
+
 
     #[Test]
     public function it_returns_the_matching_books_with_everything_the_model_needs_to_act_on_them(): void

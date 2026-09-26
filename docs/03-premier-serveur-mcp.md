@@ -155,3 +155,9 @@ appliquées :
 - **Tests** : `tests/Feature/Library/Mcp/`, avec `LibraryServer::tool(AddBookTool::class, [...])`, qui rejoue un
   vrai `tools/call` contre le serveur, base de données comprise. `assertStructuredContent()` vérifie le contenu
   structuré ; sous sa forme `AssertableJson`, il échoue si une clé n'est pas vérifiée (sauf `->etc()`).
+- **Le contrat annoncé** : `tools/call` n'appelle jamais `schema()`. Un `enum` cassé ou un `maximum` perdu passe
+  donc inaperçu, alors que c'est tout ce que le modèle voit du tool. Chaque tool a un test
+  `it_announces_its_contract_to_the_model`, qui compare son entrée de `tools/list` (nom, titre, description,
+  `inputSchema`, annotations) **à l'identique**, sous sa forme JSON (`Tests\Support\Library\AnnouncedTools`).
+  Changer une description oblige à changer ce test : c'est voulu, un changement de contrat doit se voir dans le
+  diff. `make coverage` a révélé ce trou.
