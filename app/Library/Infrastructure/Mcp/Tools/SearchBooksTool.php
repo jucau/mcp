@@ -18,6 +18,10 @@ use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
+use Laravel\Mcp\Server\Tools\Annotations\IsDestructive;
+use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
+use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
+use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 
 #[Name('search_books')]
 #[Title('Search books')]
@@ -26,6 +30,10 @@ use Laravel\Mcp\Server\Attributes\Title;
     Use it to find a book's id before acting on it, or to answer questions such as "what am I reading?",
     "what did I lend?" or "which books are on my wishlist?". Results are sorted by title and paginated.
     TEXT)]
+#[IsReadOnly]
+#[IsDestructive(false)]
+#[IsIdempotent]
+#[IsOpenWorld(false)]
 final class SearchBooksTool extends LibraryTool
 {
     public function __construct(private readonly BookQueries $books)

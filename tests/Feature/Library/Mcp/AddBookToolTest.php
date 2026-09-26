@@ -50,10 +50,14 @@ final class AddBookToolTest extends TestCase
                 ],
                 'required' => ['title', 'author'],
             ],
-            'annotations' => [],
+            'annotations' => [
+                'readOnlyHint' => false,
+                'destructiveHint' => false,
+                'idempotentHint' => false,
+                'openWorldHint' => false,
+            ],
         ], AnnouncedTools::named('add_book'));
     }
-
 
     #[Test]
     public function it_adds_an_owned_book_and_returns_it_with_its_id(): void

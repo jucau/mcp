@@ -17,6 +17,10 @@ use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
+use Laravel\Mcp\Server\Tools\Annotations\IsDestructive;
+use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
+use Laravel\Mcp\Server\Tools\Annotations\IsOpenWorld;
+use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Webmozart\Assert\Assert;
 
 #[Name('add_book')]
@@ -26,6 +30,10 @@ use Webmozart\Assert\Assert;
     wishlist). Returns the new book with its id. Refused if a book with the same ISBN is already there: search
     for it instead of adding it twice.
     TEXT)]
+#[IsReadOnly(false)]
+#[IsDestructive(false)]
+#[IsIdempotent(false)]
+#[IsOpenWorld(false)]
 final class AddBookTool extends LibraryTool
 {
     public function __construct(

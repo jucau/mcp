@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Library\Infrastructure\Mcp;
 
 use App\Library\Infrastructure\Mcp\Tools\AddBookTool;
+use App\Library\Infrastructure\Mcp\Tools\RemoveBookTool;
 use App\Library\Infrastructure\Mcp\Tools\SearchBooksTool;
 use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
@@ -25,5 +26,6 @@ final class LibraryServer extends Server
     protected array $tools = [
         SearchBooksTool::class,
         AddBookTool::class,
+        RemoveBookTool::class,
     ];
 }

@@ -61,10 +61,14 @@ final class SearchBooksToolTest extends TestCase
                     'per_page' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 100, 'default' => 20],
                 ],
             ],
-            'annotations' => [],
+            'annotations' => [
+                'readOnlyHint' => true,
+                'destructiveHint' => false,
+                'idempotentHint' => true,
+                'openWorldHint' => false,
+            ],
         ], AnnouncedTools::named('search_books'));
     }
-
 
     #[Test]
     public function it_returns_the_matching_books_with_everything_the_model_needs_to_act_on_them(): void
