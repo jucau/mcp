@@ -9,8 +9,8 @@
 Un commit par brique, `make quality` vert à chacun.
 
 - [x] Roadmap et décisions initiales (ce document, [ADR](./decisions/README.md))
-- [ ] Projet Laravel vierge
-- [ ] Stack Docker (nginx → php-fpm 8.5 → postgres 18) et Makefile
+- [x] Projet Laravel vierge
+- [x] Stack Docker (nginx → php-fpm 8.5 → postgres 18) et Makefile
 - [ ] Pint (style)
 - [ ] PHPStan / Larastan niveau max
 - [ ] Rector

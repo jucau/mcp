@@ -25,3 +25,4 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0002](./0002-laravel-mcp-comme-sdk-serveur.md) | `laravel/mcp` comme SDK du serveur | Accepté |
 | [0003](./0003-domaine-autonome-bibliotheque-perso.md) | Un domaine autonome : la bibliothèque personnelle | Accepté |
 | [0004](./0004-stdio-avant-http.md) | Transport stdio d'abord, Streamable HTTP ensuite | Accepté |
+| [0005](./0005-environnement-docker-uniquement.md) | Environnement 100 % Docker, piloté par un Makefile | Accepté |

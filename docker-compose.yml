@@ -1,0 +1,49 @@
+services:
+    nginx:
+        image: nginx:alpine
+        container_name: marquepage-nginx
+        ports:
+            - "8090:80"
+        volumes:
+            - ./:/var/www/html:ro
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+        depends_on:
+            - php
+        networks: [marquepage]
+
+    php:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+        container_name: marquepage-php
+        volumes:
+            - ./:/var/www/html
+        depends_on:
+            postgres:
+                condition: service_healthy
+        networks: [marquepage]
+
+    postgres:
+        image: postgres:18-alpine
+        container_name: marquepage-postgres
+        environment:
+            POSTGRES_DB: marquepage
+            POSTGRES_USER: marquepage
+            POSTGRES_PASSWORD: secret
+        ports:
+            - "5434:5432"
+        volumes:
+            - pgdata:/var/lib/postgresql
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U marquepage -d marquepage"]
+            interval: 5s
+            timeout: 3s
+            retries: 10
+        networks: [marquepage]
+
+volumes:
+    pgdata:
+
+networks:
+    marquepage:
+        driver: bridge

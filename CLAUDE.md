@@ -45,6 +45,22 @@ que les règles qui valent à chaque instant :
   discutable — y compris ses choix de design. Exposer le contre-argument, proposer l'alternative, trancher
   avec un avis franc. Un accord doit être mérité, jamais réflexe.
 
+## Environnement de dev (Docker)
+
+Stack : **nginx (8090) → php-fpm 8.5 → postgres 18** ([ADR-0005](docs/decisions/0005-environnement-docker-uniquement.md)).
+
+- **Tout tourne dans le conteneur `php`** (composer, artisan, outils qualité) ; le **Makefile** pilote
+  l'ensemble : `make artisan ARGS="..."`, `make composer ARGS="..."`.
+- Postgres : service `postgres`, db/user/pass = `marquepage`/`marquepage`/`secret`, exposé sur `5434`.
+- `.env` et `.env.testing` (locaux, non versionnés) ; `.env.example` et `.env.testing.example` versionnés.
+- Tests sur une **BDD dédiée** `marquepage_testing`, forcée par `phpunit.xml`, créée par `make test-db`.
+
+## Qualité (`make`)
+
+**`make quality` est la porte unique**, lancée **en entier** et **verte** avant chaque commit — jamais un
+sous-ensemble. Les outils qui écrivent corrigent au passage : la porte passe **avant** le commit, sinon la
+correction arrive dans un commit de rattrapage.
+
 ## Git
 
 - Ne **commiter / pusher que sur demande explicite** de l'utilisateur.
