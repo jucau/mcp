@@ -26,3 +26,5 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0003](./0003-domaine-autonome-bibliotheque-perso.md) | Un domaine autonome : la bibliothèque personnelle | Accepté |
 | [0004](./0004-stdio-avant-http.md) | Transport stdio d'abord, Streamable HTTP ensuite | Accepté |
 | [0005](./0005-environnement-docker-uniquement.md) | Environnement 100 % Docker, piloté par un Makefile | Accepté |
+| [0006](./0006-architecture-hexagonale-ciblee.md) | Architecture hexagonale ciblée, MCP comme adaptateur primaire | Accepté |
+| [0007](./0007-un-agregat-book-pret-en-value-object.md) | Un seul agrégat `Book`, le prêt en value object | Accepté |

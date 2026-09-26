@@ -23,11 +23,16 @@ Un commit par brique, `make quality` vert à chacun.
 
 ## Étape 1 — Le domaine « bibliothèque »
 
-*Apprendre : un serveur MCP n'est qu'un adaptateur ; le métier vit ailleurs.*
+*Apprendre : un serveur MCP n'est qu'un adaptateur ; le métier vit ailleurs
+([ADR-0006](./decisions/0006-architecture-hexagonale-ciblee.md)).*
 
-- [ ] Documenter le modèle (`Book`, lecture, prêt) et le langage ubiquitaire FR→EN
-- [ ] Migrations, modèles, factories, seeder de démo réaliste
-- [ ] Les cas d'usage en services applicatifs, testés **sans** MCP
+- [x] Documenter le modèle ([01](./01-domaine.md)) et le langage ubiquitaire ([02](./02-langage-ubiquitaire.md))
+- [ ] PHPArkitect dans la porte qualité : les règles de couches avant la première classe
+- [ ] Domaine : l'agrégat `Book`, ses value objects et ses invariants, testés unitairement
+- [ ] Application : les use cases (command + handler) et `BookQueries`, testés avec le double in-memory
+- [ ] Infrastructure : migration, repository Eloquent, requêtes de lecture ; même trait de contrat que le
+  double
+- [ ] Factory et seeder de démo réaliste (possédés / liste d'envies, tous les statuts, des prêts)
 
 ## Étape 2 — Premier serveur MCP, transport stdio
 

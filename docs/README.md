@@ -21,11 +21,13 @@ Il est juste assez riche pour faire vivre les trois primitives MCP :
 | # | Fichier | Question à laquelle il répond |
 |---|---------|-------------------------------|
 | 00 | [MCP en bref](./00-mcp-en-bref.md) | C'est quoi MCP, à quoi ça sert, quels sont ses concepts ? |
+| 01 | [Le domaine `Library`](./01-domaine.md) | Quel est le modèle, quels invariants protège-t-il, quels cas d'usage ? |
+| 02 | [Langage ubiquitaire](./02-langage-ubiquitaire.md) | Quel mot veut dire quoi, en français et dans le code ? |
 | — | [Roadmap](./roadmap.md) | Dans quel ordre construit-on, et qu'apprend-on à chaque étape ? |
 | — | [Décisions (ADR)](./decisions/README.md) | Pourquoi c'est fait comme ça ? |
 
-Les documents du **domaine** (modèle, langage ubiquitaire) et de chaque **étape MCP** s'ajouteront ici au fil de
-la [roadmap](./roadmap.md), **avant** le code qu'ils décrivent.
+Les documents de chaque **étape MCP** s'ajouteront ici au fil de la [roadmap](./roadmap.md), **avant** le code
+qu'ils décrivent.
 
 ## Conventions de cette doc
 
