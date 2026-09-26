@@ -21,7 +21,7 @@ ide-helper:
 	$(ARTISAN) ide-helper:models --env=testing --write --reset --no-interaction
 	# ide-helper isn't fully Larastan-friendly: drop the noisy, unused `@method static …Builder…()` lines
 	# (the `@mixin \Eloquent` already covers them).
-	$(EXEC) sh -c "grep -Rl '@mixin \\\\Eloquent' app | xargs sed -i -E '/ \* @method static /d'"
+	$(EXEC) sh -c "grep -Rl '@mixin \\\\Eloquent' app | xargs -r sed -i -E '/ \* @method static /d'"
 
 pint:
 	$(EXEC) ./vendor/bin/pint --parallel

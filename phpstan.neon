@@ -6,5 +6,7 @@ parameters:
     level: max
     paths:
         - app
+        - database
+        - tests
     tmpDir: storage/phpstan
     treatPhpDocTypesAsCertain: false
