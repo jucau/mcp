@@ -13,7 +13,7 @@ Un commit par brique, `make quality` vert à chacun.
 - [x] Stack Docker (nginx → php-fpm 8.5 → postgres 18) et Makefile
 - [x] Pint (style)
 - [x] PHPStan / Larastan niveau max
-- [ ] Rector
+- [x] Rector
 - [ ] `webmozart/assert` (+ extension PHPStan)
 - [ ] Outils IA : Laravel Boost (MCP + guidelines) et Pao (sortie agent-optimisée)
 
