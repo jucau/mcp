@@ -69,8 +69,10 @@ Stack : **nginx (8090) → php-fpm 8.5 → postgres 18** ([ADR-0005](docs/decisi
 sous-ensemble. Les outils qui écrivent corrigent au passage : la porte passe **avant** le commit, sinon la
 correction arrive dans un commit de rattrapage.
 
-Ordre : **rector** → **pint** (écrivent ; pint en dernier, il reformate ce que rector produit) → **stan** →
-**test**. Configs : `rector.php`, `pint.json`, `phpstan.neon` (Larastan, niveau **max**).
+Ordre : **ide-helper** → **rector** → **pint** (écrivent ; pint en dernier, il importe et raccourcit les
+noms qualifiés qu'ide-helper et rector écrivent) → **stan** → **test**. Configs : `config/ide-helper.php`,
+`rector.php`, `pint.json`, `phpstan.neon` (Larastan, niveau **max**). **IDE Helper** lit le schéma de la
+**BDD de test** (`--env=testing`) : `make test-db` après chaque nouvelle migration.
 
 **Pao** (`laravel/pao`) : quand un **agent** lance la porte, Rector, Pint, PHPStan et PHPUnit répondent **une
 ligne JSON** au lieu de centaines de lignes ANSI ; les runs humains gardent la sortie humaine. Pao se

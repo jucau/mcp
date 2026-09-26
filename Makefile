@@ -5,12 +5,23 @@ AGENT_ENV = $(if $(AI_AGENT),-e AI_AGENT='$(AI_AGENT)')
 EXEC = $(DC) exec -T $(AGENT_ENV) php
 ARTISAN = $(EXEC) php artisan
 
-.PHONY: quality rector pint stan test test-db start stop restart build rebuild destroy ps logs shell \
+.PHONY: quality ide-helper rector pint stan test test-db start stop restart build rebuild destroy ps logs shell \
         migrate fresh seed composer artisan tinker
 
-# The one gate, run before every commit. The writing tools come first, then the checks judge the settled
-# tree.
-quality: rector pint stan test
+# The one gate, run before every commit. The order is load-bearing: the writing tools come first, Pint
+# last among them (it imports and shortens the fully-qualified names ide-helper writes), then the
+# read-only checks judge the settled tree.
+quality: ide-helper rector pint stan test
+
+# --reset keeps annotations honest with the schema.
+ide-helper:
+	$(ARTISAN) ide-helper:generate --env=testing || true
+	$(ARTISAN) ide-helper:eloquent --env=testing
+	$(ARTISAN) ide-helper:meta --env=testing
+	$(ARTISAN) ide-helper:models --env=testing --write --reset --no-interaction
+	# ide-helper isn't fully Larastan-friendly: drop the noisy, unused `@method static …Builder…()` lines
+	# (the `@mixin \Eloquent` already covers them).
+	$(EXEC) sh -c "grep -Rl '@mixin \\\\Eloquent' app | xargs sed -i -E '/ \* @method static /d'"
 
 pint:
 	$(EXEC) ./vendor/bin/pint --parallel

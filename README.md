@@ -42,8 +42,9 @@ make test-db                          # crée + migre la BDD de test dédiée
 | Commande | Effet |
 |----------|-------|
 | `make start` / `make stop` | démarrer / arrêter la stack |
-| `make quality` | la porte unique, verte avant chaque commit : **rector** → **pint** (appliquent) puis **stan** → **test** |
+| `make quality` | la porte unique, verte avant chaque commit : **ide-helper** → **rector** → **pint** (appliquent) puis **stan** → **test** |
 | `make pint` | le style de code (Pint), appliqué |
+| `make ide-helper` | régénère les annotations `@property` des models |
 | `make rector` | les refactorings automatiques (Rector), appliqués |
 | `make stan` | l'analyse statique (PHPStan / Larastan niveau max) |
 | `make test` | PHPUnit (BDD Postgres dédiée `marquepage_testing`) |
