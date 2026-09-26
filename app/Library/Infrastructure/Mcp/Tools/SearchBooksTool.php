@@ -36,7 +36,7 @@ final class SearchBooksTool extends LibraryTool
     {
         return [
             'query' => $schema->string()
-                ->description('Words to look for in the title or the author.'),
+                ->description('Words to look for in the title or the author. Every word must match; case and accents are ignored.'),
             'isbn' => $schema->string()
                 ->description('The exact ISBN of the book, ISBN-10 or ISBN-13, hyphens allowed.'),
             'reading_status' => $schema->string()

@@ -30,11 +30,11 @@ final class EloquentBookQueries implements BookQueries
     {
         $query = BookRecord::query();
 
-        $text = trim($criteria->text ?? '');
-
-        if ($text !== '') {
-            $pattern = $this->containing($text);
-            $query->where(fn (Builder $matching) => $matching->where('title', 'ilike', $pattern)->orWhere('author', 'ilike', $pattern));
+        foreach ($this->words($criteria->text ?? '') as $word) {
+            $pattern = $this->containing($word);
+            $query->where(fn (Builder $matching) => $matching
+                ->whereRaw('unaccent(title) ilike unaccent(?)', [$pattern])
+                ->orWhereRaw('unaccent(author) ilike unaccent(?)', [$pattern]));
         }
 
         if ($criteria->isbn instanceof Isbn) {
@@ -66,6 +66,14 @@ final class EloquentBookQueries implements BookQueries
         }
 
         return new Page($items, $paginator->currentPage(), $paginator->perPage(), $paginator->total());
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function words(string $text): array
+    {
+        return preg_split('/\s+/u', $text, flags: PREG_SPLIT_NO_EMPTY) ?: [];
     }
 
     private function containing(string $text): string

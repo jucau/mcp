@@ -80,6 +80,30 @@ final class EloquentBookQueriesTest extends TestCase
     }
 
     #[Test]
+    public function the_text_matches_whatever_the_accents(): void
+    {
+        $this->add('Hypérion', 'Dan Simmons');
+        $this->add('Cent ans de solitude', 'Gabriel García Márquez');
+        $this->add('Dune', 'Frank Herbert');
+
+        $this->assertSame(['Hypérion'], $this->titles(new BookSearch(text: 'hyperion')));
+        $this->assertSame(['Cent ans de solitude'], $this->titles(new BookSearch(text: 'garcia marquez')));
+        $this->assertSame(['Dune'], $this->titles(new BookSearch(text: 'dûne')));
+    }
+
+    #[Test]
+    public function every_word_of_the_text_must_match_the_title_or_the_author(): void
+    {
+        $this->add('Le Seigneur des anneaux', 'J. R. R. Tolkien');
+        $this->add('Bilbo le Hobbit', 'J. R. R. Tolkien');
+        $this->add('Les Anneaux de Saturne', 'W. G. Sebald');
+
+        $this->assertSame(['Le Seigneur des anneaux'], $this->titles(new BookSearch(text: 'tolkien anneaux')));
+        $this->assertSame(['Le Seigneur des anneaux'], $this->titles(new BookSearch(text: '  anneaux   seigneur ')));
+        $this->assertSame([], $this->titles(new BookSearch(text: 'tolkien saturne')));
+    }
+
+    #[Test]
     public function the_text_never_looks_into_isbns(): void
     {
         $this->add('1984', 'George Orwell');

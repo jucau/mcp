@@ -59,7 +59,7 @@ un JSON Schema d'entrée. **C'est tout ce qu'il voit pour décider d'appeler un 
 ← {"name":"search_books","title":"Search books",
    "description":"Search the user's library. Every criterion is optional and they combine…",
    "inputSchema":{"type":"object","properties":{
-     "query":{"type":"string","description":"Words to look for in the title or the author, or an ISBN…"},
+     "query":{"type":"string","description":"Words to look for in the title or the author. Every word must match…"},
      "reading_status":{"type":"string","enum":["to_read","reading","read","abandoned"],…},
      "per_page":{"type":"integer","minimum":1,"maximum":100,"default":20}, …}}}
 ```
@@ -120,6 +120,20 @@ Un seul champ pour les deux obligerait à deviner ce que l'utilisateur a tapé :
 un bout d'ISBN, et un ISBN-10 n'est pas une sous-chaîne de l'ISBN-13 stocké. Le critère `isbn` passe par le value
 object `Isbn` du domaine : ISBN-10 et ISBN-13 trouvent le même livre, et un ISBN invalide est un refus que le
 modèle peut lire.
+
+`query` est découpé en **mots**, et chaque mot doit se trouver dans le titre **ou** l'auteur : « tolkien anneaux »
+trouve *Le Seigneur des anneaux*. La casse et les **accents** sont ignorés (extension Postgres `unaccent`) :
+« hyperion » trouve *Hypérion*. Pour un humain, rater un accent est une gêne. Pour un modèle, c'est un faux
+négatif qu'il ne peut pas détecter : il conclut avec assurance que le livre n'existe pas, et peut même proposer
+de l'ajouter une deuxième fois.
+
+**Coût assumé : un parcours complet de la table.** Un motif `%mot%` ne peut utiliser aucun index B-tree, avec ou
+sans `unaccent`, et dans tous les moteurs : une collation insensible aux accents (MySQL `utf8mb4_0900_ai_ci`, ou
+une collation ICU non déterministe en Postgres 18) simplifie l'écriture, pas le plan d'exécution. Sur une
+bibliothèque personnelle de quelques milliers de livres, le parcours coûte moins d'une milliseconde. S'il devait
+un jour se voir : une colonne `search_text` sans accents, calculée à la sauvegarde, avec un index GIN `pg_trgm`,
+que `ILIKE '%…%'` sait utiliser. On ne peut pas indexer `unaccent()` directement : la fonction est `STABLE`, pas
+`IMMUTABLE`.
 
 ## Écrire pour un modèle
 
