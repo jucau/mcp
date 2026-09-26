@@ -31,7 +31,7 @@ Un commit par brique, `make quality` vert à chacun.
 - [x] Domaine : l'agrégat `Book`, ses value objects et ses invariants
 - [x] Application : les use cases (command + handler) et `BookQueries` ; **les tests passent par les use cases**,
   avec le double in-memory, et couvrent le domaine à travers eux
-- [ ] Infrastructure : migration, repository Eloquent, requêtes de lecture ; même trait de contrat que le
+- [x] Infrastructure : migration, repository Eloquent, requêtes de lecture ; même trait de contrat que le
   double
 - [ ] Factory et seeder de démo réaliste (possédés / liste d'envies, tous les statuts, des prêts)
 
