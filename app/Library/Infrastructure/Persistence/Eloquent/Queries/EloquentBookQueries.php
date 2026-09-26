@@ -28,6 +28,27 @@ final class EloquentBookQueries implements BookQueries
      */
     public function search(BookSearch $criteria): Page
     {
+        $paginator = $this->matching($criteria)->paginate(perPage: $criteria->perPage, page: $criteria->page);
+
+        $items = [];
+
+        foreach ($paginator->items() as $record) {
+            $items[] = $this->view($record);
+        }
+
+        return new Page($items, $paginator->currentPage(), $paginator->perPage(), $paginator->total());
+    }
+
+    public function all(BookSearch $criteria): array
+    {
+        return array_values(array_map($this->view(...), $this->matching($criteria)->get()->all()));
+    }
+
+    /**
+     * @return Builder<BookRecord>
+     */
+    private function matching(BookSearch $criteria): Builder
+    {
         $query = BookRecord::query();
 
         foreach ($this->words($criteria->text ?? '') as $word) {
@@ -57,15 +78,11 @@ final class EloquentBookQueries implements BookQueries
             $query->whereNull('loan_borrower');
         }
 
-        $paginator = $query->orderBy('title')->orderBy('id')->paginate(perPage: $criteria->perPage, page: $criteria->page);
-
-        $items = [];
-
-        foreach ($paginator->items() as $record) {
-            $items[] = $this->view($record);
+        if ($criteria->finishedIn !== null) {
+            $query->whereBetween('finished_on', [sprintf('%04d-01-01', $criteria->finishedIn), sprintf('%04d-12-31', $criteria->finishedIn)]);
         }
 
-        return new Page($items, $paginator->currentPage(), $paginator->perPage(), $paginator->total());
+        return $query->orderBy('title')->orderBy('id');
     }
 
     /**

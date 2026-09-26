@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Library\Infrastructure\Mcp;
 
+use App\Library\Infrastructure\Mcp\Prompts\ReadingReviewPrompt;
+use App\Library\Infrastructure\Mcp\Prompts\RecommendNextReadPrompt;
 use App\Library\Infrastructure\Mcp\Resources\BookResource;
 use App\Library\Infrastructure\Mcp\Resources\LentShelfResource;
 use App\Library\Infrastructure\Mcp\Resources\ReadingShelfResource;
@@ -54,5 +56,10 @@ final class LibraryServer extends Server
         LentShelfResource::class,
         WishlistShelfResource::class,
         BookResource::class,
+    ];
+
+    protected array $prompts = [
+        RecommendNextReadPrompt::class,
+        ReadingReviewPrompt::class,
     ];
 }

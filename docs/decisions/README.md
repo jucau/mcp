@@ -32,3 +32,4 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0009](./0009-quatre-annotations-explicites-par-tool.md) | Chaque tool déclare explicitement ses quatre annotations | Accepté |
 | [0010](./0010-instants-en-utc-jours-du-lecteur.md) | Les instants en UTC, les jours dans le fuseau du lecteur | Accepté |
 | [0011](./0011-resources-etageres-et-livre.md) | Les resources : quatre étagères fixes, un livre par template, les refus transmis | Accepté |
+| [0012](./0012-prompts-donnees-embarquees.md) | Les prompts embarquent les données de la bibliothèque | Accepté |

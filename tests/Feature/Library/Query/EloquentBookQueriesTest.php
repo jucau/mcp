@@ -182,6 +182,50 @@ final class EloquentBookQueriesTest extends TestCase
         $this->assertSame(5, $page->total);
     }
 
+    #[Test]
+    public function finished_in_a_year_matches_the_books_read_or_abandoned_that_year(): void
+    {
+        $this->finished('Dune', '2025-01-01', '2025-12-31');
+        $this->finished('Fondation', '2025-06-01', '2026-01-01');
+        $abandoned = $this->add('Ulysse', 'James Joyce');
+        $abandoned->startReading(new DateTimeImmutable('2024-11-01'));
+        $abandoned->abandon(new DateTimeImmutable('2025-02-01'));
+
+        $this->books->save($abandoned);
+        $reading = $this->add('Hypérion', 'Dan Simmons');
+        $reading->startReading(new DateTimeImmutable('2025-03-01'));
+
+        $this->books->save($reading);
+
+        $this->assertSame(['Dune', 'Ulysse'], $this->titles(new BookSearch(finishedIn: 2025)));
+        $this->assertSame(['Fondation'], $this->titles(new BookSearch(finishedIn: 2026)));
+    }
+
+    #[Test]
+    public function all_returns_every_matching_book_by_title_whatever_the_page(): void
+    {
+        for ($i = 105; $i >= 1; --$i) {
+            $this->add(sprintf('Tome %03d', $i), 'Divers');
+        }
+
+        $this->add('Hypérion', 'Dan Simmons', owned: false);
+
+        $titles = array_map(static fn (BookView $book): string => $book->title, $this->queries->all(new BookSearch(owned: true, page: 3, perPage: 1)));
+
+        $this->assertCount(105, $titles);
+        $this->assertSame(['Tome 001', 'Tome 002'], array_slice($titles, 0, 2));
+        $this->assertSame('Tome 105', $titles[104]);
+    }
+
+    private function finished(string $title, string $startedOn, string $finishedOn): void
+    {
+        $book = $this->add($title, 'Divers');
+        $book->startReading(new DateTimeImmutable($startedOn));
+        $book->finishReading(new DateTimeImmutable($finishedOn));
+
+        $this->books->save($book);
+    }
+
     private function add(string $title, string $author, ?string $isbn = null, bool $owned = true): Book
     {
         $book = Books::aBook($title, $author, $isbn, $owned);

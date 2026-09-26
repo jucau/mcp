@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Library\Infrastructure\Mcp\Resources;
 
-use App\Library\Application\Book\Query\BookSearch;
-use App\Library\Domain\Book\ReadingStatus;
+use App\Library\Infrastructure\Mcp\Shelf;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -17,8 +16,8 @@ use Laravel\Mcp\Server\Attributes\Uri;
 #[Description('The books the user owns, has at home and has not started yet, sorted by title.')]
 final class ToReadShelfResource extends ShelfResource
 {
-    protected function shelf(int $page, int $perPage): BookSearch
+    protected function shelf(): Shelf
     {
-        return new BookSearch(readingStatus: ReadingStatus::ToRead, owned: true, lent: false, page: $page, perPage: $perPage);
+        return Shelf::ToRead;
     }
 }

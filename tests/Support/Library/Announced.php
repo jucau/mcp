@@ -29,6 +29,14 @@ final class Announced
     }
 
     /**
+     * @return array<array-key, mixed>
+     */
+    public static function prompt(string $name): array
+    {
+        return self::find(self::listed(LibraryServer::prompts()), 'name', $name);
+    }
+
+    /**
      * The SDK has no test helper for resources/templates/list: this is the entry it lists, serialized the same way.
      *
      * @param class-string<Resource> $template

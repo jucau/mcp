@@ -2,7 +2,7 @@
 
 > Étape 3 de la [roadmap](./roadmap.md). Les tools couvrent maintenant tous les use cases, et chacun dit au
 > client **ce qu'il fait au monde** par ses annotations. Les resources exposent les étagères et les livres en
-> lecture. Les prompts viendront compléter ce document.
+> lecture. Les prompts proposent deux conversations prêtes à l'emploi, que l'utilisateur lance lui-même.
 
 ## Qui contrôle quoi
 
@@ -10,7 +10,7 @@
 |---|---|---|
 | **Tool** | le **modèle**, qui décide de l'appeler | `search_books`, `add_book`, `remove_book`… |
 | **Resource** | l'**application** (le host), qui décide quoi mettre en contexte | `library://shelves/reading`, `library://books/{id}` |
-| **Prompt** | l'**utilisateur**, qui le choisit explicitement | à venir : `recommend-next-read` |
+| **Prompt** | l'**utilisateur**, qui le choisit explicitement | `recommend_next_read`, `reading_review` |
 
 ## Les annotations d'un tool
 
@@ -199,8 +199,9 @@ exposent la même lecture (`BookQueries`) : une resource n'est qu'un autre **ada
 | `library://shelves/lent` | les livres prêtés, avec l'emprunteur et la date |
 | `library://shelves/wishlist` | la liste d'envies |
 
-Une étagère n'est qu'une **recherche pré-filtrée** ([02](./02-langage-ubiquitaire.md)). Chaque resource construit
-ses critères de recherche et renvoie **tous** les livres de l'étagère, sans pagination : une resource se lit d'un
+Une étagère n'est qu'une **recherche pré-filtrée** ([02](./02-langage-ubiquitaire.md)), définie une seule fois
+dans l'enum `Shelf`, que les resources et le prompt `recommend_next_read` partagent. Chaque resource renvoie
+**tous** les livres de l'étagère (`BookQueries::all()`), sans pagination : une resource se lit d'un
 bloc, et la spec ne prévoit pas de paginer son contenu. Le contenu est du JSON (`application/json`), avec le même
 format de livre que les tools (`BookPresenter`).
 
@@ -253,3 +254,38 @@ chose : l'audience est à la fois l'utilisateur et le modèle (c'est le défaut)
 avec chaque livre, alors que le SDK la fixe par un attribut de classe. La spec prévoit aussi qu'un client
 **s'abonne** à une resource pour être prévenu de ses changements (`resources/subscribe`) : `laravel/mcp` ne
 l'implémente pas.
+
+## Les prompts : des conversations prêtes à l'emploi
+
+Un prompt est un **modèle de conversation** que le serveur propose et que l'**utilisateur** choisit
+explicitement. Dans Claude Code, chaque prompt devient une commande slash (`/mcp__library__recommend_next_read`).
+Le client appelle `prompts/list` pour les découvrir, puis `prompts/get` avec les arguments de l'utilisateur. Le
+serveur renvoie des **messages** (un rôle `user` ou `assistant`, et un contenu) que le host insère dans la
+conversation.
+
+| | `recommend_next_read` | `reading_review` |
+|---|---|---|
+| Ce qu'il demande | la prochaine lecture, choisie dans l'étagère « à lire » | le bilan d'une année de lecture |
+| Argument | `mood`, optionnel : l'envie du moment (« court », « de la SF »…) | `year`, optionnel : l'année, par défaut l'année en cours |
+| Données embarquées | l'étagère « à lire », les livres lus et abandonnés avec leur note | les livres finis ou abandonnés cette année-là |
+
+**Un argument de prompt est une chaîne, rien de plus.** Contrairement à un tool, un prompt n'a pas de JSON Schema :
+chaque argument n'a qu'un nom, une description et un indicateur `required`. Ni type, ni `enum`, ni bornes.
+`reading_review` reçoit donc l'année comme du texte, et c'est le serveur qui vérifie qu'il s'agit de quatre
+chiffres. Un argument invalide est une **erreur de protocole** (`-32602`), comme pour une resource : il n'y a
+pas de résultat `isError` pour les prompts non plus.
+
+**Les données sont embarquées dans le message.** Le serveur lit lui-même la bibliothèque et place le JSON dans le
+texte du prompt. On aurait pu insérer des liens vers les resources (`resource_link`), mais le host ou le modèle
+auraient alors dû aller les lire, et chaque host ne le fait pas forcément. On aurait aussi pu ne donner qu'une
+consigne (« utilise `search_books` ») : le prompt n'apporterait alors presque rien de plus qu'une phrase tapée par
+l'utilisateur. Un prompt vaut par ce qu'il **prépare côté serveur** : une consigne soignée, plus un contexte
+choisi. Voir [ADR-0012](./decisions/0012-prompts-donnees-embarquees.md).
+
+**« Aujourd'hui » vient encore du serveur.** Sans `year`, `reading_review` prend l'année en cours d'après l'horloge
+du lecteur (`Clock`, [ADR-0010](./decisions/0010-instants-en-utc-jours-du-lecteur.md)). Le 1ᵉʳ janvier à 0 h 30
+à Paris, c'est déjà la nouvelle année.
+
+**Le texte du prompt est en anglais**, comme toute l'interface lue par le modèle
+([ADR-0001](./decisions/0001-code-en-anglais-prose-en-francais.md)). Il demande au modèle de répondre dans la
+langue de la conversation.

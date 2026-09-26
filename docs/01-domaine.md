@@ -131,9 +131,11 @@ comme un mutant qui survit.
 | `LendBook` / `ReturnBook` | prête / récupère un livre |
 | `RemoveBook` | retire un livre (refusé s'il est prêté) |
 
-**Lecture** (`Query/`) : `BookQueries` — `find(BookId)` et `search(critères)` paginé : texte libre (chaque mot
-dans le titre ou l'auteur, sans tenir compte de la casse ni des accents), ISBN exact, statut de lecture, possédé ou non, prêté ou non. Les **étagères** ne sont que des recherches
-pré-filtrées : « à lire », « en cours », « prêtés », « liste d'envies ».
+**Lecture** (`Query/`) : `BookQueries` — `find(BookId)`, `search(critères)` paginé, et `all(critères)` qui renvoie
+tous les livres correspondants. Critères : texte libre (chaque mot dans le titre ou l'auteur, sans tenir compte de
+la casse ni des accents), ISBN exact, statut de lecture, possédé ou non, prêté ou non, fini (lu ou abandonné) une
+année donnée. Les **étagères** ne sont que des recherches pré-filtrées : « à lire » (possédé, pas commencé, à la
+maison), « en cours », « prêtés », « liste d'envies ».
 
 ## Ce que ça donnera en MCP (aperçu de l'étape 2)
 

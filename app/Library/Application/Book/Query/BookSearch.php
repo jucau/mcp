@@ -18,6 +18,7 @@ final readonly class BookSearch
         public ?ReadingStatus $readingStatus = null,
         public ?bool $owned = null,
         public ?bool $lent = null,
+        public ?int $finishedIn = null,
         public int $page = 1,
         public int $perPage = 20,
     ) {
