@@ -92,3 +92,25 @@ deviner. Même principe que pour l'ISBN et l'id : **ce que le modèle ne sait pa
 
 **Ils renvoient le livre à jour**, comme `add_book` : le modèle voit le nouveau statut et les dates, sans avoir à
 relancer une recherche.
+
+## `rate_book` : écraser, c'est détruire
+
+| Hint | Valeur | Pourquoi |
+|---|---|---|
+| `readOnlyHint` | `false` | il enregistre une note |
+| `destructiveHint` | `true` | noter à nouveau **remplace** l'ancienne note |
+| `idempotentHint` | `true` | la même note deux fois donne le même état |
+| `openWorldHint` | `false` | il ne touche que la bibliothèque |
+
+**La spec définit « destructif » par son contraire.** `destructiveHint: false` veut dire « uniquement des mises
+à jour **additives** ». Tout ce qui écrase une valeur existante est donc destructif, même une note de 3 qui
+devient 4. C'est le cas de `rate_book`, qui écrase la note précédente. Ce n'est pas le cas de `finish_reading`,
+qui écrit une date de fin toujours vide avant.
+
+**La règle reste dans le domaine.** Le schéma annonce les bornes (`minimum: 1`, `maximum: 5`, lues sur
+`Rating::MIN` et `Rating::MAX`) pour que le modèle ne se trompe pas. Mais c'est le value object `Rating` qui
+refuse une note hors bornes, et `Book::rate()` qui refuse de noter un livre ni lu ni abandonné. Le tool
+transmet ces refus sans les dupliquer.
+
+**Une note vient de l'utilisateur.** « J'ai adoré » n'est pas un 5 : la description demande au modèle de ne
+jamais déduire une note d'une opinion. Même principe que pour l'ISBN, l'id et la date.

@@ -55,7 +55,7 @@ Un commit par brique, `make quality` vert à chacun.
   - [x] les annotations de `search_books` et `add_book`
   - [x] `remove_book` (le seul destructif)
   - [x] `start_reading`, `finish_reading`, `abandon_reading`
-  - [ ] `rate_book`
+  - [x] `rate_book`
   - [ ] `lend_book`, `return_book`
   - [ ] `acquire_book`
 - [ ] **Resources** : URI fixes et **templates d'URI** (`library://books/{id}`)

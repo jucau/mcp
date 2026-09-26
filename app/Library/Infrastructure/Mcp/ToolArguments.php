@@ -47,7 +47,15 @@ final readonly class ToolArguments
         return $value;
     }
 
-    public function int(string $name, int $default): int
+    public function int(string $name): int
+    {
+        $value = $this->validated[$name] ?? null;
+        Assert::integer($value);
+
+        return $value;
+    }
+
+    public function intOr(string $name, int $default): int
     {
         $value = $this->validated[$name] ?? $default;
         Assert::integer($value);

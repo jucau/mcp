@@ -80,8 +80,8 @@ final class SearchBooksTool extends LibraryTool
             readingStatus: $readingStatus === null ? null : ReadingStatus::from($readingStatus),
             owned: $arguments->boolOrNull('owned'),
             lent: $arguments->boolOrNull('lent'),
-            page: $arguments->int('page', 1),
-            perPage: $arguments->int('per_page', 20),
+            page: $arguments->intOr('page', 1),
+            perPage: $arguments->intOr('per_page', 20),
         ));
 
         return Response::structured([
