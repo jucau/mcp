@@ -28,7 +28,7 @@ Un commit par brique, `make quality` vert à chacun.
 
 - [x] Documenter le modèle ([01](./01-domaine.md)) et le langage ubiquitaire ([02](./02-langage-ubiquitaire.md))
 - [x] PHPArkitect dans la porte qualité : les règles de couches avant la première classe
-- [ ] Domaine : l'agrégat `Book`, ses value objects et ses invariants, testés unitairement
+- [x] Domaine : l'agrégat `Book`, ses value objects et ses invariants
 - [ ] Application : les use cases (command + handler) et `BookQueries`, testés avec le double in-memory
 - [ ] Infrastructure : migration, repository Eloquent, requêtes de lecture ; même trait de contrat que le
   double

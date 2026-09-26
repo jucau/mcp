@@ -39,6 +39,19 @@ adaptateur primaire** : il vit en `Infrastructure`, traduit et appelle un handle
 métier. Les règles de couches (domaine pur, `Application` sans persistance directe ni façade, **aucune couche
 intérieure ne connaît `Laravel\Mcp`**) sont vérifiées par PHPArkitect.
 
+## Tests
+
+École **classiciste**, **par les use cases** :
+
+- **On teste un use case, pas une classe** : le handler, avec le double in-memory. Le domaine (agrégat, value
+  objects, invariants) est couvert **à travers** les use cases : pas de tests unitaires du domaine.
+- **Arrange par le domaine, act par le seul use case testé** : l'état initial se construit avec `Book` et ses
+  comportements (`Tests\Support\Library\Books::aBook()`), jamais en appelant un autre use case.
+- **Doubles d'état, jamais de mocks d'interaction** : `Mockery` et `createMock` sont interdits.
+- **Asserter l'effet observable**, relu depuis le repository, jamais un mécanisme.
+- **Les adaptateurs** (Eloquent) ont leurs tests Feature ; un même **trait de contrat** est joué par le double
+  in-memory (Unit) **et** l'adaptateur réel (Feature).
+
 ## Outils IA
 
 - **Laravel Boost** fournit un serveur MCP (schéma de BDD, tinker, recherche dans la doc versionnée…), les

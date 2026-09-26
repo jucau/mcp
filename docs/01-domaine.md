@@ -86,8 +86,8 @@ où elle en est de chacun, ce qu'elle en a pensé, et à qui elle les a prêtés
 Les dates sont **passées** au domaine, jamais lues par lui (pas de « maintenant » caché) : c'est ce qui rend
 les invariants testables.
 
-**Erreurs de domaine** : `InvalidTitle`, `InvalidAuthor`, `InvalidIsbn`, `InvalidRating`,
-`InvalidBorrower`, `ReadingTransitionNotAllowed`, `FinishedBeforeStarted`, `BookNotFinished`,
+**Erreurs de domaine** : `InvalidBookId`, `InvalidText`, `InvalidIsbn`, `InvalidRating`,
+`ReadingTransitionNotAllowed`, `FinishedBeforeStarted`, `BookNotFinished`,
 `BookNotOwned`, `BookAlreadyLent`, `BookNotLent`, `BookLent`, `DuplicateIsbn`, `UnknownBook`. Chacune porte
 un message **compréhensible par un humain… et par un modèle** : à l'étape 3, c'est ce texte qui remontera au
 LLM dans une erreur de tool.
@@ -105,12 +105,18 @@ que `ddd/` (ADR-0007 de Comptoir).
 | VO | Règle |
 |---|---|
 | `BookId` | UUID valide |
-| `Title`, `Author` | chaîne *trimée* non vide, 255 caractères max |
+| `Title`, `Author`, `Borrower` | un `Text` : chaîne *trimée* non vide, 255 caractères max |
 | `Isbn` | accepte ISBN-10 ou ISBN-13, avec ou sans tirets ; vérifie la clé ; **normalise en ISBN-13** |
 | `Rating` | entier de 1 à 5 |
-| `Borrower` | chaîne *trimée* non vide |
 | `Loan` | `Borrower` + `lentOn` |
 | `ReadingStatus` | enum `to_read`, `reading`, `read`, `abandoned` |
+
+**C'est le constructeur qui garde l'invariant**, pas le constructeur nommé. Le constructeur est le seul
+passage obligé : un constructeur nommé ajouté demain ne pourra pas l'éviter, alors qu'il pourrait oublier une
+validation qu'on lui aurait confiée. Le constructeur nommé se contente de **normaliser** l'entrée (*trim*,
+minuscules, tirets retirés), puis il délègue. Il ne refait pas les vérifications que sa normalisation
+garantit déjà : un contrôle qu'aucun chemin ne peut faire échouer est du code mort, et Infection le signale
+comme un mutant qui survit.
 
 ## Cas d'usage
 
