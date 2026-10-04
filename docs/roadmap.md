@@ -81,15 +81,13 @@ exposé.*
 
 *Apprendre : un serveur MCP distant est une API exposée ; OAuth 2.1 et découverte des métadonnées.*
 
-- [ ] **Le domaine multi-lecteurs**, sans aucun protocole : chaque livre appartient à un lecteur (`ReaderId`),
+- [x] **Le domaine multi-lecteurs**, sans aucun protocole : chaque livre appartient à un lecteur (`ReaderId`),
   les ports ne voient que les livres du lecteur qui demande, l'ISBN est unique par lecteur ; seeder à plusieurs
   lecteurs ([01](./01-domaine.md), [ADR-0018](./decisions/0018-un-lecteur-par-livre-sans-compte-dans-le-domaine.md))
 - [x] **OAuth 2.1 sur HTTP** (Passport) : métadonnées de la ressource et du serveur d'autorisation, `401` et
   découverte, le compte traduit en lecteur ; en stdio, le lecteur vient de l'environnement ; le fuseau devient une
   donnée du compte ([07](./07-authentification.md), [ADR-0019](./decisions/0019-comptes-en-infrastructure-lecteur-ferme-par-defaut.md),
   [ADR-0020](./decisions/0020-passport-serveur-d-autorisation-destinataire-implicite.md))
-- [ ] **Scopes par tool** et *step-up* (`403 insufficient_scope`)
-- [ ] Plus tard : les *Client ID Metadata Documents* côté serveur d'autorisation
 
 ## Étape 6 — Voir le protocole à nu
 
@@ -109,3 +107,7 @@ exposé.*
 - Notifications de progression pour un tool long (import d'une liste de livres)
 - *MCP Apps* : un tool qui rend une interface (`RendersApp`)
 - Un tool qui s'appuie sur une API ouverte (métadonnées ISBN) : `openWorldHint`
+- Des **scopes par tool** et le *step-up* (`403 insufficient_scope`) : `laravel/mcp` n'en gère qu'un (`mcp:use`),
+  il faudra déclarer et annoncer les nôtres ([07](./07-authentification.md))
+- Les ***Client ID Metadata Documents*** côté serveur d'autorisation : Claude Code s'en passe aujourd'hui (il a
+  utilisé l'enregistrement dynamique), mais la spec déprécie ce dernier
