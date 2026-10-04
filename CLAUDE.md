@@ -119,9 +119,10 @@ lit la sortie humaine de PHPUnit.
 
 - Ne **commiter / pusher que sur demande explicite** de l'utilisateur.
 - **Commits fonctionnels uniquement** : jamais de commit « fix » qui rattrape le précédent. On **amende**
-  (ou on *squash*) **tant que le commit n'est pas poussé**. Une fois poussé, `main` ne se réécrit plus :
-  **jamais de force-push**, la correction devient un nouveau commit fonctionnel (son gitmoji dit sa nature :
-  🐛, ♻️…), pas un « fix » du précédent.
+  (ou on *squash*) **tant que le commit n'est pas poussé**. Une fois poussé, par défaut, la correction devient un
+  nouveau commit fonctionnel (son gitmoji dit sa nature : 🐛, ♻️…), pas un « fix » du précédent. `main` poussé ne
+  se réécrit que **sur demande explicite de l'utilisateur** : *fixup* sur les commits d'origine, **porte verte sur chaque
+  commit réécrit**, branche de sauvegarde locale, puis `--force-with-lease`, jamais `--force`.
 - **Commits : gitmoji, anglais, titre seul** — l'emoji de la nature du changement suivi directement du
   message, **aucun corps**, **aucun co-auteur**. Ex. : `📝 document the MCP primitives`, `✨ add the
   search_books tool`, `🔧 add PHPStan`.
