@@ -106,7 +106,8 @@ exposé.*
 *Apprendre : le mécanisme phare de la spec `2026-07-28`, quand le serveur a besoin de l'utilisateur au milieu d'un
 appel.*
 
-- [ ] Mettre à jour les dépendances (Laravel, Boost, Infection, `json-schema` ; PHPUnit 13 à part, majeure)
+- [x] Mettre à jour les dépendances (Laravel, Boost, Infection, `json-schema` ; PHPUnit 13 à part, majeure), et
+  faire échouer la suite sur le moindre warning, notice ou dépréciation (`failOnAllIssues`)
 - [ ] **Les requêtes en plusieurs allers-retours (MRTR)** : `remove_book` demande confirmation avant de supprimer
   (*elicitation*). Le serveur répond `input_required`, le client rejoue la requête avec la réponse
 
