@@ -10,6 +10,7 @@ use App\Library\Domain\Book\Isbn;
 use App\Library\Domain\Book\ReaderId;
 use App\Library\Domain\Book\ReadingStatus;
 use App\Library\Infrastructure\Auth\User;
+use App\Library\Infrastructure\Reader\CurrentReader;
 use Database\Seeders\AccountSeeder;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\LibrarySeeder;
@@ -60,6 +61,16 @@ final class DemoLibrarySeederTest extends TestCase
             User::query()->orderBy('email')->pluck('email', 'reader_id')->all(),
         );
         $this->assertTrue(Hash::check(AccountSeeder::PASSWORD, User::query()->where('email', 'julien@marque-page.test')->firstOrFail()->password));
+    }
+
+    #[Test]
+    public function the_demo_seeds_without_a_current_reader_as_every_book_names_its_own(): void
+    {
+        unset($this->app[CurrentReader::class]);
+
+        $this->seed(DatabaseSeeder::class);
+
+        $this->assertSame(23, $this->booksOn(ReaderId::fromString(LibrarySeeder::JULIEN), new BookSearch()));
     }
 
     private function booksOn(ReaderId $reader, BookSearch $shelf): int

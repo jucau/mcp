@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Tests\Feature\Library;
 
 use App\Library\Application\Clock;
+use App\Library\Infrastructure\Reader\CurrentReader;
 use App\Library\Infrastructure\SystemClock;
 use DateTimeImmutable;
 use DateTimeZone;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -18,7 +20,7 @@ final class SystemClockTest extends TestCase
     {
         $this->travelTo(new DateTimeImmutable('2026-09-26 22:30', new DateTimeZone('UTC')));
 
-        $this->assertEquals(new DateTimeImmutable('2026-09-27'), new SystemClock('Europe/Paris')->today());
+        $this->assertEquals(new DateTimeImmutable('2026-09-27'), new SystemClock(fn (): string => 'Europe/Paris')->today());
     }
 
     #[Test]
@@ -26,7 +28,7 @@ final class SystemClockTest extends TestCase
     {
         $this->travelTo(new DateTimeImmutable('2026-09-27 02:00', new DateTimeZone('UTC')));
 
-        $this->assertEquals(new DateTimeImmutable('2026-09-26'), new SystemClock('America/New_York')->today());
+        $this->assertEquals(new DateTimeImmutable('2026-09-26'), new SystemClock(fn (): string => 'America/New_York')->today());
     }
 
     #[Test]
@@ -36,5 +38,15 @@ final class SystemClockTest extends TestCase
         $this->travelTo(new DateTimeImmutable('2026-09-26 22:30', new DateTimeZone('UTC')));
 
         $this->assertEquals(new DateTimeImmutable('2026-09-27'), $this->app->make(Clock::class)->today());
+    }
+
+    #[Test]
+    public function without_a_current_reader_there_is_no_today(): void
+    {
+        unset($this->app[CurrentReader::class]);
+
+        $this->expectException(BindingResolutionException::class);
+
+        $this->app->make(Clock::class)->today();
     }
 }

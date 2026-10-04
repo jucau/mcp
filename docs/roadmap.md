@@ -101,6 +101,15 @@ exposé.*
 - [x] Le même client sur HTTP, après l'étape 4, en session **moderne** : `server/discover`, en-têtes, `-32022`
   (`client/HttpMcpClient.php`, `make raw-http-session`)
 
+## Étape 7 — Entretenir, puis les allers-retours
+
+*Apprendre : le mécanisme phare de la spec `2026-07-28`, quand le serveur a besoin de l'utilisateur au milieu d'un
+appel.*
+
+- [ ] Mettre à jour les dépendances (Laravel, Boost, Infection, `json-schema` ; PHPUnit 13 à part, majeure)
+- [ ] **Les requêtes en plusieurs allers-retours (MRTR)** : `remove_book` demande confirmation avant de supprimer
+  (*elicitation*). Le serveur répond `input_required`, le client rejoue la requête avec la réponse
+
 ## Plus tard (idées, sans engagement)
 
 - Complétions d'arguments (`completion/complete`)

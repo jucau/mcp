@@ -6,11 +6,15 @@ namespace App\Library\Infrastructure;
 
 use App\Library\Application\Clock;
 use Carbon\CarbonImmutable;
+use Closure;
 use DateTimeImmutable;
 
 final readonly class SystemClock implements Clock
 {
-    public function __construct(private string $readerTimezone)
+    /**
+     * @param Closure(): string $readerTimezone
+     */
+    public function __construct(private Closure $readerTimezone)
     {
     }
 
@@ -18,6 +22,6 @@ final readonly class SystemClock implements Clock
     {
         // The reader's calendar day, but at midnight in the application timezone like every stored date: a
         // midnight in Paris is the day before in UTC, and would compare as earlier than a date read back.
-        return new DateTimeImmutable(CarbonImmutable::now($this->readerTimezone)->toDateString());
+        return new DateTimeImmutable(CarbonImmutable::now(($this->readerTimezone)())->toDateString());
     }
 }

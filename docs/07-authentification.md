@@ -89,10 +89,14 @@ Tout le reste est de l'infrastructure :
 - **`CurrentReader`** répond à « quel lecteur sert-on ? », de deux façons :
   - **en HTTP**, le compte authentifié par le token (`auth:api`), et **rien d'autre** ;
   - **en stdio**, le lecteur configuré (`LIBRARY_READER`), comme le veut la spec.
-- **Fermé par défaut.** Le choix ne se fait pas en regardant si un utilisateur est connecté (une route HTTP mal
-  protégée retomberait alors sur le lecteur de l'environnement, et servirait la bibliothèque du lecteur configuré à n'importe
-  qui). La route HTTP installe explicitement la version « compte authentifié », qui **échoue** s'il n'y a pas de
-  compte. Un oubli donne une erreur, jamais une fuite.
+- **Fermé par défaut, des deux côtés** ([ADR-0021](./decisions/0021-chaque-transport-choisit-son-lecteur.md)).
+  Il n'existe **aucun lecteur par défaut** : c'est `LibraryServer`, au démarrage, qui choisit selon son transport
+  (stdio → configuré, HTTP → authentifié). Tout autre point d'entrée (une commande, un job, une autre route) n'a
+  pas de lecteur et **échoue**, au lieu de servir le lecteur configuré. Et le lecteur authentifié ne se rabat jamais sur la
+  configuration : sans compte, il échoue aussi. Un oubli donne une erreur, jamais une fuite.
+- **Pourquoi pas d'OAuth en stdio ?** La frontière de confiance de stdio, c'est la machine : qui peut lancer
+  `mcp:start` a déjà le conteneur, le `.env` et la base. Un parcours OAuth devant ce processus ne protégerait rien.
+  `LIBRARY_READER` n'authentifie personne : il choisit une bibliothèque, pour quelqu'un qui a déjà tous les droits.
 - **Le fuseau horaire** devient une donnée du compte, comme l'annonçait
   l'[ADR-0010](./decisions/0010-instants-en-utc-jours-du-lecteur.md) : « aujourd'hui » se calcule dans le fuseau du
   lecteur servi. En stdio, il reste `LIBRARY_READER_TIMEZONE`.

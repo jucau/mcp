@@ -39,5 +39,6 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0016](./0016-http-sans-etat-deux-eres-origin-valide.md) | Un endpoint HTTP sans état, qui sert les deux époques du protocole et valide l'`Origin`' | Accepté |
 | [0017](./0017-refus-de-resource-en-parametres-invalides.md) | Un refus de resource est une erreur de paramètres (`-32602`), pas une erreur interne | Accepté |
 | [0018](./0018-un-lecteur-par-livre-sans-compte-dans-le-domaine.md) | Un lecteur par livre, et aucun compte dans le domaine | Accepté |
-| [0019](./0019-comptes-en-infrastructure-lecteur-ferme-par-defaut.md) | Des comptes en infrastructure, et un lecteur courant fermé par défaut | Accepté |
+| [0019](./0019-comptes-en-infrastructure-lecteur-ferme-par-defaut.md) | Des comptes en infrastructure, et un lecteur courant fermé par défaut | Accepté, lecteur par défaut remplacé par 0021 |
 | [0020](./0020-passport-serveur-d-autorisation-destinataire-implicite.md) | Passport comme serveur d'autorisation, et un destinataire de token implicite | Accepté |
+| [0021](./0021-chaque-transport-choisit-son-lecteur.md) | Chaque transport choisit son lecteur, et aucun lecteur n'est servi par défaut | Accepté |

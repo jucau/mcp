@@ -1,6 +1,7 @@
 # ADR-0019 — Des comptes en infrastructure, et un lecteur courant fermé par défaut
 
-- **Statut** : Accepté (2026-10-04)
+- **Statut** : Accepté (2026-10-04). Le choix du lecteur par défaut est remplacé par
+  [ADR-0021](./0021-chaque-transport-choisit-son-lecteur.md).
 
 ## Contexte
 

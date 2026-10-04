@@ -21,10 +21,16 @@ use App\Library\Infrastructure\Mcp\Tools\RemoveBookTool;
 use App\Library\Infrastructure\Mcp\Tools\ReturnBookTool;
 use App\Library\Infrastructure\Mcp\Tools\SearchBooksTool;
 use App\Library\Infrastructure\Mcp\Tools\StartReadingTool;
+use App\Library\Infrastructure\Reader\AuthenticatedReader;
+use App\Library\Infrastructure\Reader\ConfiguredReader;
+use App\Library\Infrastructure\Reader\CurrentReader;
+use Illuminate\Container\Container;
 use Laravel\Mcp\Server;
 use Laravel\Mcp\Server\Attributes\Instructions;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Version;
+use Laravel\Mcp\Server\Transport\HttpTransport;
+use Laravel\Mcp\Server\Transport\StdioTransport;
 
 #[Name('Marque-page')]
 #[Version('0.1.0')]
@@ -62,4 +68,18 @@ final class LibraryServer extends Server
         RecommendNextReadPrompt::class,
         ReadingReviewPrompt::class,
     ];
+
+    #[\Override]
+    protected function boot(): void
+    {
+        $reader = match (true) {
+            $this->transport instanceof StdioTransport => ConfiguredReader::class,
+            $this->transport instanceof HttpTransport => AuthenticatedReader::class,
+            default => null,
+        };
+
+        if ($reader !== null) {
+            Container::getInstance()->bind(CurrentReader::class, $reader);
+        }
+    }
 }
