@@ -24,18 +24,20 @@ final class HttpMcpClient
         private readonly Closure $post,
         private readonly Closure $transcript,
         private readonly string $version = self::VERSION,
+        private readonly ?string $token = null,
     ) {
     }
 
     /**
      * @param Closure(string): void $transcript
      */
-    public static function over(string $endpoint, Closure $transcript, string $version = self::VERSION): self
+    public static function over(string $endpoint, Closure $transcript, string $version = self::VERSION, ?string $token = null): self
     {
         return new self(
             static fn (array $headers, string $body): HttpReply => self::curl($endpoint, $headers, $body),
             $transcript,
             $version,
+            $token,
         );
     }
 
@@ -85,6 +87,10 @@ final class HttpMcpClient
             'Mcp-Method' => $method,
         ];
 
+        if ($this->token !== null) {
+            $headers['Authorization'] = 'Bearer ' . $this->token;
+        }
+
         $nameField = self::NAMED_METHODS[$method] ?? null;
         $name = $nameField === null ? null : ($params[$nameField] ?? null);
 
@@ -128,8 +134,9 @@ final class HttpMcpClient
     private function describe(array $headers): string
     {
         $mcpHeaders = array_filter($headers, static fn (string $name): bool => stripos($name, 'mcp') !== false, ARRAY_FILTER_USE_KEY);
+        $authorization = isset($headers['Authorization']) ? ' Authorization: Bearer …' : '';
 
-        return implode(' ', self::lines($mcpHeaders));
+        return implode(' ', self::lines($mcpHeaders)) . $authorization;
     }
 
     /**

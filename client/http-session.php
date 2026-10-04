@@ -16,7 +16,8 @@ $step = static function (string $title): void {
     echo "\n# ", $title, "\n";
 };
 
-$client = HttpMcpClient::over(ENDPOINT, $print);
+$token = getenv('MCP_TOKEN') ?: null;
+$client = HttpMcpClient::over(ENDPOINT, $print, token: $token);
 
 $step('No handshake: discover the server, if we want to');
 $client->request('server/discover');
@@ -40,6 +41,9 @@ $step('An unknown method: a JSON-RPC error, and a 404');
 $client->request('books/burn');
 
 $step('A version the server does not speak: a 400 that lists the ones it does');
-HttpMcpClient::over(ENDPOINT, $print, version: '1900-01-01')->request('tools/list');
+HttpMcpClient::over(ENDPOINT, $print, version: '1900-01-01', token: $token)->request('tools/list');
+
+$step('Without a token: a 401 that says where to learn how to get one');
+HttpMcpClient::over(ENDPOINT, $print)->request('tools/list');
 
 $step('Nothing to close: there was no session');

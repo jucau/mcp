@@ -57,7 +57,7 @@ $post = static function (string $method, array $params, bool $modern) use ($http
         $body['id'] = 1;
     }
 
-    $headers = ['Content-Type: application/json', 'Accept: application/json, text/event-stream'];
+    $headers = ['Content-Type: application/json', 'Accept: application/json, text/event-stream', 'Authorization: Bearer ' . getenv('MCP_TOKEN')];
 
     if ($modern) {
         $headers[] = 'MCP-Protocol-Version: ' . MODERN;

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 use App\Library\Infrastructure\Mcp\LibraryServer;
 use App\Library\Infrastructure\Mcp\RejectForeignOrigins;
+use App\Library\Infrastructure\Mcp\ServeTheAuthenticatedReader;
 use Laravel\Mcp\Facades\Mcp;
 
 Mcp::local('library', LibraryServer::class);
-Mcp::web('/mcp', LibraryServer::class)->middleware(RejectForeignOrigins::class);
+
+Mcp::oauthRoutes();
+Mcp::web('/mcp', LibraryServer::class)->middleware([RejectForeignOrigins::class, 'auth:api', ServeTheAuthenticatedReader::class]);

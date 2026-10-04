@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Library\Infrastructure\Mcp;
+namespace App\Library\Infrastructure\Reader;
 
 use App\Library\Domain\Book\ReaderId;
 use Illuminate\Contracts\Config\Repository;
 use Webmozart\Assert\Assert;
 
-final readonly class CurrentReader
+final readonly class ConfiguredReader implements CurrentReader
 {
     public function __construct(private Repository $config)
     {
@@ -20,5 +20,13 @@ final readonly class CurrentReader
         Assert::stringNotEmpty($reader, 'No reader configured: set LIBRARY_READER to the id of the reader to serve.');
 
         return ReaderId::fromString($reader);
+    }
+
+    public function timezone(): string
+    {
+        $timezone = $this->config->get('library.reader_timezone');
+        Assert::stringNotEmpty($timezone);
+
+        return $timezone;
     }
 }

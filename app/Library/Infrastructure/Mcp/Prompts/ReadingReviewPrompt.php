@@ -7,7 +7,7 @@ namespace App\Library\Infrastructure\Mcp\Prompts;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookSearch;
 use App\Library\Application\Clock;
-use App\Library\Infrastructure\Mcp\CurrentReader;
+use App\Library\Infrastructure\Reader\CurrentReader;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;

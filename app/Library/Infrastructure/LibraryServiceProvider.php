@@ -7,10 +7,16 @@ namespace App\Library\Infrastructure;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Clock;
 use App\Library\Domain\Book\BookRepository;
+use App\Library\Infrastructure\Auth\IssueToken;
 use App\Library\Infrastructure\Persistence\Eloquent\Queries\EloquentBookQueries;
 use App\Library\Infrastructure\Persistence\Eloquent\Repositories\EloquentBookRepository;
-use Illuminate\Support\Facades\Config;
+use App\Library\Infrastructure\Reader\ConfiguredReader;
+use App\Library\Infrastructure\Reader\CurrentReader;
+use Carbon\CarbonInterval;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\Response;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\Passport;
 
 final class LibraryServiceProvider extends ServiceProvider
 {
@@ -19,6 +25,16 @@ final class LibraryServiceProvider extends ServiceProvider
     {
         $this->app->bind(BookRepository::class, EloquentBookRepository::class);
         $this->app->bind(BookQueries::class, EloquentBookQueries::class);
-        $this->app->bind(Clock::class, fn (): SystemClock => new SystemClock(Config::string('library.reader_timezone')));
+        $this->app->bind(CurrentReader::class, ConfiguredReader::class);
+        $this->app->bind(Clock::class, fn (Application $app): SystemClock => new SystemClock($app->make(CurrentReader::class)->timezone()));
+    }
+
+    public function boot(): void
+    {
+        $this->commands([IssueToken::class]);
+
+        Passport::authorizationView(static fn (array $parameters): Response => response()->view('auth.authorize', $parameters));
+        Passport::tokensExpireIn(CarbonInterval::hour());
+        Passport::refreshTokensExpireIn(CarbonInterval::days(30));
     }
 }

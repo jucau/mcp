@@ -84,7 +84,7 @@ exposé.*
 - [ ] **Le domaine multi-lecteurs**, sans aucun protocole : chaque livre appartient à un lecteur (`ReaderId`),
   les ports ne voient que les livres du lecteur qui demande, l'ISBN est unique par lecteur ; seeder à plusieurs
   lecteurs ([01](./01-domaine.md), [ADR-0018](./decisions/0018-un-lecteur-par-livre-sans-compte-dans-le-domaine.md))
-- [ ] **OAuth 2.1 sur HTTP** (Passport) : métadonnées de la ressource et du serveur d'autorisation, `401` et
+- [x] **OAuth 2.1 sur HTTP** (Passport) : métadonnées de la ressource et du serveur d'autorisation, `401` et
   découverte, le compte traduit en lecteur ; en stdio, le lecteur vient de l'environnement ; le fuseau devient une
   donnée du compte ([07](./07-authentification.md), [ADR-0019](./decisions/0019-comptes-en-infrastructure-lecteur-ferme-par-defaut.md),
   [ADR-0020](./decisions/0020-passport-serveur-d-autorisation-destinataire-implicite.md))

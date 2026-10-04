@@ -13,10 +13,13 @@ use DateTimeImmutable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Testing\TestResponse;
+use Laravel\Passport\Passport;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Support\Library\Accounts;
 use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
 use Tests\Support\Library\ReadContent;
+use Tests\Support\Library\Readers;
 use Tests\TestCase;
 
 final class BookResourceTest extends TestCase
@@ -103,6 +106,8 @@ final class BookResourceTest extends TestCase
      */
     private function readOverHttp(string $uri): TestResponse
     {
+        Passport::actingAs(Accounts::of(Readers::ME));
+
         return $this->postJson('/mcp', ['jsonrpc' => '2.0', 'id' => 1, 'method' => 'resources/read', 'params' => ['uri' => $uri]]);
     }
 }

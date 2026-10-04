@@ -166,7 +166,8 @@ Ce que le client fait à chaque requête :
 - il encode `Mcp-Name` en `=?base64?…?=` si la valeur n'est pas de l'ASCII sûr (un accent, un espace en bord) ;
 - dans un flux SSE, il ignore les notifications (sans `id`) et rend le message qui porte **son** `id`.
 
-Il n'a ni `notify()` ni `close()` : le mode moderne ne définit aucune notification du client sur HTTP, et il n'y a
+Depuis l'authentification ([07](./07-authentification.md)), il envoie aussi un token (`Authorization: Bearer …`),
+que sa transcription ne recopie jamais. Il n'a ni `notify()` ni `close()` : le mode moderne ne définit aucune notification du client sur HTTP, et il n'y a
 pas de session à fermer.
 
 ### La session, commentée

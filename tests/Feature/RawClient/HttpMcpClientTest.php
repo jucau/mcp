@@ -6,10 +6,13 @@ namespace Tests\Feature\RawClient;
 
 use App\Library\Domain\Book\BookRepository;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Laravel\Passport\Passport;
 use PHPUnit\Framework\Attributes\Test;
 use RawClient\HttpMcpClient;
 use RawClient\HttpReply;
+use Tests\Support\Library\Accounts;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\Readers;
 use Tests\TestCase;
 
 final class HttpMcpClientTest extends TestCase
@@ -71,6 +74,29 @@ final class HttpMcpClientTest extends TestCase
     }
 
     #[Test]
+    public function it_sends_its_token_but_never_writes_it_in_the_transcript(): void
+    {
+        $sent = [];
+        $client = new HttpMcpClient(
+            static function (array $headers, string $body) use (&$sent): HttpReply {
+                $sent = $headers;
+
+                return new HttpReply(200, 'application/json', '{"jsonrpc":"2.0","id":1,"result":{}}');
+            },
+            function (string $line): void {
+                $this->transcript[] = $line;
+            },
+            token: 's3cr3t',
+        );
+
+        $client->request('tools/list');
+
+        $this->assertSame('Bearer s3cr3t', $sent['Authorization'] ?? null);
+        $this->assertSame('→ POST MCP-Protocol-Version: 2026-07-28 Mcp-Method: tools/list Authorization: Bearer …', $this->transcript[0]);
+        $this->assertStringNotContainsString('s3cr3t', implode("\n", $this->transcript));
+    }
+
+    #[Test]
     public function a_version_the_server_does_not_speak_is_refused_with_the_ones_it_does(): void
     {
         $answer = $this->client(version: '1900-01-01')->request('tools/list');
@@ -107,6 +133,8 @@ final class HttpMcpClientTest extends TestCase
 
     private function client(string $version = HttpMcpClient::VERSION): HttpMcpClient
     {
+        Passport::actingAs(Accounts::of(Readers::ME));
+
         return new HttpMcpClient(
             fn (array $headers, string $body): HttpReply => $this->viaTheKernel($headers, $body),
             function (string $line): void {

@@ -9,8 +9,12 @@ use App\Library\Application\Book\Query\BookSearch;
 use App\Library\Domain\Book\Isbn;
 use App\Library\Domain\Book\ReaderId;
 use App\Library\Domain\Book\ReadingStatus;
+use App\Library\Infrastructure\Auth\User;
+use Database\Seeders\AccountSeeder;
+use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\LibrarySeeder;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Hash;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -44,6 +48,18 @@ final class DemoLibrarySeederTest extends TestCase
         $this->assertSame(1, $this->booksOn($camille, $dune));
         $this->assertSame(1, $this->booksOn(ReaderId::fromString(LibrarySeeder::JULIEN), $dune));
         $this->assertSame(1, $this->booksOn($camille, new BookSearch(lent: true)));
+    }
+
+    #[Test]
+    public function each_demo_account_opens_the_library_of_its_reader(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $this->assertSame(
+            [LibrarySeeder::CAMILLE => 'camille@marque-page.test', LibrarySeeder::JULIEN => 'julien@marque-page.test'],
+            User::query()->orderBy('email')->pluck('email', 'reader_id')->all(),
+        );
+        $this->assertTrue(Hash::check(AccountSeeder::PASSWORD, User::query()->where('email', 'julien@marque-page.test')->firstOrFail()->password));
     }
 
     private function booksOn(ReaderId $reader, BookSearch $shelf): int

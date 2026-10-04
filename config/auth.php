@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Models\User;
+use App\Library\Infrastructure\Auth\User;
 
 return [
     'defaults' => [
@@ -13,6 +13,11 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
+            'provider' => 'users',
+        ],
+
+        'api' => [
+            'driver' => 'passport',
             'provider' => 'users',
         ],
     ],
