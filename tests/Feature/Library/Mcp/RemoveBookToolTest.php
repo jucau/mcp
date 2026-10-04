@@ -6,6 +6,7 @@ namespace Tests\Feature\Library\Mcp;
 
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookSearch;
+use App\Library\Application\Book\Query\BookView;
 use App\Library\Domain\Book\Book;
 use App\Library\Domain\Book\BookRepository;
 use App\Library\Infrastructure\Mcp\LibraryServer;
@@ -17,6 +18,7 @@ use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
 use Tests\Support\Library\BookSchema;
 use Tests\Support\Library\OutputSchema;
+use Tests\Support\Library\Readers;
 use Tests\TestCase;
 
 final class RemoveBookToolTest extends TestCase
@@ -80,7 +82,20 @@ final class RemoveBookToolTest extends TestCase
 
         OutputSchema::assertRespected($response, 'remove_book');
 
-        $this->assertNull($this->app->make(BookQueries::class)->find($dune->id()->value));
+        $this->assertNull($this->app->make(BookQueries::class)->find(Readers::me(), $dune->id()->value));
+    }
+
+    #[Test]
+    public function the_book_of_another_reader_is_unknown_and_stays_in_their_library(): void
+    {
+        config(['app.debug' => false]);
+        $theirs = Books::aBook(reader: Readers::someoneElse());
+        $this->given($theirs);
+
+        LibraryServer::tool(RemoveBookTool::class, ['book_id' => $theirs->id()->value])
+            ->assertHasErrors([sprintf('No book with id "%s" in the library.', $theirs->id()->value)]);
+
+        $this->assertInstanceOf(BookView::class, $this->app->make(BookQueries::class)->find(Readers::someoneElse(), $theirs->id()->value));
     }
 
     #[Test]
@@ -94,7 +109,7 @@ final class RemoveBookToolTest extends TestCase
         LibraryServer::tool(RemoveBookTool::class, ['book_id' => $dune->id()->value])
             ->assertHasErrors([sprintf('No book with id "%s" in the library.', $dune->id()->value)]);
 
-        $this->assertSame(1, $this->app->make(BookQueries::class)->search(new BookSearch())->total);
+        $this->assertSame(1, $this->app->make(BookQueries::class)->search(Readers::me(), new BookSearch())->total);
     }
 
     #[Test]

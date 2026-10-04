@@ -7,6 +7,7 @@ namespace App\Library\Infrastructure\Mcp\Prompts;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookSearch;
 use App\Library\Domain\Book\ReadingStatus;
+use App\Library\Infrastructure\Mcp\CurrentReader;
 use App\Library\Infrastructure\Mcp\Shelf;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
@@ -25,6 +26,7 @@ final class RecommendNextReadPrompt extends Prompt
     public function __construct(
         private readonly BookQueries $books,
         private readonly EmbeddedBooks $embedded,
+        private readonly CurrentReader $reader,
     ) {
     }
 
@@ -45,9 +47,9 @@ final class RecommendNextReadPrompt extends Prompt
             . 'Base your choice on what I read and how I rated it: a rating goes from 1 (disliked) to 5 (loved), and an abandoned book did not hold my interest.',
             $mood === null ? null : 'What I feel like reading: ' . $mood,
             'Name one book and say why in a few sentences, then name a runner-up. If there is nothing to choose from, say so. Answer in the language of our conversation.',
-            "My books to read:\n" . $this->embedded->json($this->books->all(Shelf::ToRead->search())),
-            "What I read:\n" . $this->embedded->json($this->books->all(new BookSearch(readingStatus: ReadingStatus::Read))),
-            "What I abandoned:\n" . $this->embedded->json($this->books->all(new BookSearch(readingStatus: ReadingStatus::Abandoned))),
+            "My books to read:\n" . $this->embedded->json($this->books->all($this->reader->id(), Shelf::ToRead->search())),
+            "What I read:\n" . $this->embedded->json($this->books->all($this->reader->id(), new BookSearch(readingStatus: ReadingStatus::Read))),
+            "What I abandoned:\n" . $this->embedded->json($this->books->all($this->reader->id(), new BookSearch(readingStatus: ReadingStatus::Abandoned))),
         ])));
     }
 }

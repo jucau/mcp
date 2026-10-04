@@ -10,6 +10,7 @@ final class Book
 {
     private function __construct(
         private readonly BookId $id,
+        private readonly ReaderId $reader,
         private readonly Title $title,
         private readonly Author $author,
         private readonly ?Isbn $isbn,
@@ -22,13 +23,14 @@ final class Book
     ) {
     }
 
-    public static function add(BookId $id, Title $title, Author $author, ?Isbn $isbn, bool $owned): self
+    public static function add(BookId $id, ReaderId $reader, Title $title, Author $author, ?Isbn $isbn, bool $owned): self
     {
-        return new self($id, $title, $author, $isbn, $owned, ReadingStatus::ToRead, null, null, null, null);
+        return new self($id, $reader, $title, $author, $isbn, $owned, ReadingStatus::ToRead, null, null, null, null);
     }
 
     public static function reconstitute(
         BookId $id,
+        ReaderId $reader,
         Title $title,
         Author $author,
         ?Isbn $isbn,
@@ -39,7 +41,7 @@ final class Book
         ?Rating $rating,
         ?Loan $loan,
     ): self {
-        return new self($id, $title, $author, $isbn, $owned, $readingStatus, $startedOn, $finishedOn, $rating, $loan);
+        return new self($id, $reader, $title, $author, $isbn, $owned, $readingStatus, $startedOn, $finishedOn, $rating, $loan);
     }
 
     public function acquire(): void
@@ -116,6 +118,11 @@ final class Book
     public function id(): BookId
     {
         return $this->id;
+    }
+
+    public function reader(): ReaderId
+    {
+        return $this->reader;
     }
 
     public function title(): Title

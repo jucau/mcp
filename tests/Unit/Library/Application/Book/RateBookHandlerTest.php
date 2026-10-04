@@ -9,9 +9,11 @@ use App\Library\Application\Book\RateBook\RateBookHandler;
 use App\Library\Domain\Book\BookNotFinished;
 use App\Library\Domain\Book\InvalidRating;
 use App\Library\Domain\Book\ReadingStatus;
+use App\Library\Domain\Book\UnknownBook;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\Readers;
 use Tests\Unit\Library\Application\UseCaseTestCase;
 
 final class RateBookHandlerTest extends UseCaseTestCase
@@ -64,8 +66,18 @@ final class RateBookHandlerTest extends UseCaseTestCase
         }
     }
 
+    #[Test]
+    public function the_book_of_another_reader_cannot_be_rated(): void
+    {
+        $id = $this->given($this->bookIn(ReadingStatus::Read, Readers::someoneElse()));
+
+        $this->expectException(UnknownBook::class);
+
+        $this->rate($id, 4);
+    }
+
     private function rate(string $id, int $rating): void
     {
-        (new RateBookHandler($this->books))->handle(new RateBook($id, $rating));
+        (new RateBookHandler($this->books))->handle(new RateBook(Readers::ME, $id, $rating));
     }
 }

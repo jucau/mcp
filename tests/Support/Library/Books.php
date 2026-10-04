@@ -8,6 +8,7 @@ use App\Library\Domain\Book\Author;
 use App\Library\Domain\Book\Book;
 use App\Library\Domain\Book\BookId;
 use App\Library\Domain\Book\Isbn;
+use App\Library\Domain\Book\ReaderId;
 use App\Library\Domain\Book\Title;
 
 final class Books
@@ -17,9 +18,11 @@ final class Books
         string $author = 'Frank Herbert',
         ?string $isbn = null,
         bool $owned = true,
+        ?ReaderId $reader = null,
     ): Book {
         return Book::add(
             BookId::generate(),
+            $reader ?? Readers::me(),
             Title::fromString($title),
             Author::fromString($author),
             $isbn === null ? null : Isbn::fromString($isbn),

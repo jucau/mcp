@@ -12,9 +12,11 @@ use App\Library\Domain\Book\Borrower;
 use App\Library\Domain\Book\InvalidText;
 use App\Library\Domain\Book\Loan;
 use App\Library\Domain\Book\Title;
+use App\Library\Domain\Book\UnknownBook;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\Readers;
 use Tests\Unit\Library\Application\UseCaseTestCase;
 
 final class LendBookHandlerTest extends UseCaseTestCase
@@ -69,8 +71,18 @@ final class LendBookHandlerTest extends UseCaseTestCase
         $this->lend($id, 'Paul');
     }
 
+    #[Test]
+    public function the_book_of_another_reader_cannot_be_lent(): void
+    {
+        $id = $this->given(Books::aBook(reader: Readers::someoneElse()));
+
+        $this->expectException(UnknownBook::class);
+
+        $this->lend($id, 'Marie');
+    }
+
     private function lend(string $id, string $borrower, ?DateTimeImmutable $on = null): void
     {
-        (new LendBookHandler($this->books, $this->clock))->handle(new LendBook($id, $borrower, $on));
+        (new LendBookHandler($this->books, $this->clock))->handle(new LendBook(Readers::ME, $id, $borrower, $on));
     }
 }

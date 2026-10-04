@@ -7,6 +7,7 @@ namespace App\Library\Application\Book\AcquireBook;
 final readonly class AcquireBook
 {
     public function __construct(
+        public string $readerId,
         public string $bookId,
     ) {
     }

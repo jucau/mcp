@@ -13,6 +13,7 @@ use App\Library\Domain\Book\UnknownBook;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\Readers;
 
 trait BookRepositoryContract
 {
@@ -30,7 +31,7 @@ trait BookRepositoryContract
 
         $repository->save($book);
 
-        $this->assertEquals($book, $repository->get($book->id()));
+        $this->assertEquals($book, $repository->get($book->reader(), $book->id()));
     }
 
     #[Test]
@@ -41,7 +42,7 @@ trait BookRepositoryContract
 
         $repository->save($book);
 
-        $this->assertEquals($book, $repository->get($book->id()));
+        $this->assertEquals($book, $repository->get($book->reader(), $book->id()));
     }
 
     #[Test]
@@ -49,7 +50,7 @@ trait BookRepositoryContract
     {
         $this->expectException(UnknownBook::class);
 
-        $this->bookRepository()->get(BookId::generate());
+        $this->bookRepository()->get(Readers::me(), BookId::generate());
     }
 
     #[Test]
@@ -64,7 +65,7 @@ trait BookRepositoryContract
         $book->markAsReturned();
         $repository->save($book);
 
-        $this->assertNull($repository->get($book->id())->loan());
+        $this->assertNull($repository->get($book->reader(), $book->id())->loan());
     }
 
     #[Test]
@@ -74,15 +75,52 @@ trait BookRepositoryContract
         $book = Books::aBook();
         $repository->save($book);
 
-        $repository->remove($book->id());
+        $repository->remove($book->reader(), $book->id());
 
         $this->expectException(UnknownBook::class);
 
-        $repository->get($book->id());
+        $repository->get($book->reader(), $book->id());
     }
 
     #[Test]
-    public function two_books_cannot_share_an_isbn(): void
+    public function the_book_of_another_reader_is_unknown(): void
+    {
+        $repository = $this->bookRepository();
+        $book = Books::aBook(reader: Readers::someoneElse());
+        $repository->save($book);
+
+        $this->expectException(UnknownBook::class);
+
+        $repository->get(Readers::me(), $book->id());
+    }
+
+    #[Test]
+    public function the_book_of_another_reader_cannot_be_removed(): void
+    {
+        $repository = $this->bookRepository();
+        $book = Books::aBook(reader: Readers::someoneElse());
+        $repository->save($book);
+
+        $repository->remove(Readers::me(), $book->id());
+
+        $this->assertEquals($book, $repository->get(Readers::someoneElse(), $book->id()));
+    }
+
+    #[Test]
+    public function two_readers_may_own_the_same_isbn(): void
+    {
+        $repository = $this->bookRepository();
+        $mine = Books::aBook(isbn: '9780441172719');
+        $theirs = Books::aBook(isbn: '0-441-17271-7', reader: Readers::someoneElse());
+
+        $repository->save($mine);
+        $repository->save($theirs);
+
+        $this->assertEquals($theirs, $repository->get(Readers::someoneElse(), $theirs->id()));
+    }
+
+    #[Test]
+    public function two_books_of_one_reader_cannot_share_an_isbn(): void
     {
         $repository = $this->bookRepository();
         $repository->save(Books::aBook(isbn: '9780441172719'));
@@ -102,7 +140,7 @@ trait BookRepositoryContract
         $repository->save($first);
         $repository->save($second);
 
-        $this->assertEquals($second, $repository->get($second->id()));
+        $this->assertEquals($second, $repository->get($second->reader(), $second->id()));
     }
 
     #[Test]
@@ -114,6 +152,6 @@ trait BookRepositoryContract
         $repository->save($book);
         $repository->save($book);
 
-        $this->assertEquals($book, $repository->get($book->id()));
+        $this->assertEquals($book, $repository->get($book->reader(), $book->id()));
     }
 }

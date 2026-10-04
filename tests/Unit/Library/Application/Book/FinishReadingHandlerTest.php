@@ -9,9 +9,11 @@ use App\Library\Application\Book\FinishReading\FinishReadingHandler;
 use App\Library\Domain\Book\FinishedBeforeStarted;
 use App\Library\Domain\Book\ReadingStatus;
 use App\Library\Domain\Book\ReadingTransitionNotAllowed;
+use App\Library\Domain\Book\UnknownBook;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
+use Tests\Support\Library\Readers;
 use Tests\Unit\Library\Application\UseCaseTestCase;
 
 final class FinishReadingHandlerTest extends UseCaseTestCase
@@ -82,8 +84,18 @@ final class FinishReadingHandlerTest extends UseCaseTestCase
         $this->finish($id, self::day('2025-12-31'));
     }
 
+    #[Test]
+    public function the_book_of_another_reader_cannot_be_finished(): void
+    {
+        $id = $this->given($this->bookIn(ReadingStatus::Reading, Readers::someoneElse()));
+
+        $this->expectException(UnknownBook::class);
+
+        $this->finish($id);
+    }
+
     private function finish(string $id, ?DateTimeImmutable $on = null): void
     {
-        (new FinishReadingHandler($this->books, $this->clock))->handle(new FinishReading($id, $on));
+        (new FinishReadingHandler($this->books, $this->clock))->handle(new FinishReading(Readers::ME, $id, $on));
     }
 }

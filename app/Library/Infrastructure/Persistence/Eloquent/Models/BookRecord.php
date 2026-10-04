@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property CarbonImmutable|null $lent_on
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string $reader_id
  * @mixin \Eloquent
  */
 final class BookRecord extends Model

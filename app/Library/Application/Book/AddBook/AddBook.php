@@ -7,6 +7,7 @@ namespace App\Library\Application\Book\AddBook;
 final readonly class AddBook
 {
     public function __construct(
+        public string $readerId,
         public string $title,
         public string $author,
         public ?string $isbn = null,

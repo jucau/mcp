@@ -9,6 +9,7 @@ use App\Library\Domain\Book\BookId;
 use App\Library\Domain\Book\BookRepository;
 use App\Library\Domain\Book\DuplicateIsbn;
 use App\Library\Domain\Book\Isbn;
+use App\Library\Domain\Book\ReaderId;
 use App\Library\Domain\Book\UnknownBook;
 use Webmozart\Assert\Assert;
 
@@ -19,11 +20,14 @@ final class InMemoryBookRepository implements BookRepository
 
     public function save(Book $book): void
     {
-        // Mirrors the unique index on books.isbn (BOOK-UNIQ): the aggregate alone cannot see the other books.
+        // Mirrors the unique index on (reader_id, isbn) (BOOK-UNIQ): the aggregate alone cannot see the other books.
         $isbn = $book->isbn();
 
         foreach ($this->books as $existing) {
-            if ($isbn instanceof Isbn && ! $existing->id()->equals($book->id()) && $existing->isbn()?->value === $isbn->value) {
+            if ($isbn instanceof Isbn
+                && $existing->reader()->equals($book->reader())
+                && ! $existing->id()->equals($book->id())
+                && $existing->isbn()?->value === $isbn->value) {
                 throw DuplicateIsbn::isbn($isbn);
             }
         }
@@ -31,16 +35,22 @@ final class InMemoryBookRepository implements BookRepository
         $this->books[$book->id()->value] = $this->snapshot($book);
     }
 
-    public function get(BookId $id): Book
+    public function get(ReaderId $reader, BookId $id): Book
     {
-        $book = $this->books[$id->value] ?? throw UnknownBook::withId($id);
+        $book = $this->books[$id->value] ?? null;
+
+        if (! $book instanceof Book || ! $book->reader()->equals($reader)) {
+            throw UnknownBook::withId($id);
+        }
 
         return $this->snapshot($book);
     }
 
-    public function remove(BookId $id): void
+    public function remove(ReaderId $reader, BookId $id): void
     {
-        unset($this->books[$id->value]);
+        if (($this->books[$id->value] ?? null)?->reader()->equals($reader) === true) {
+            unset($this->books[$id->value]);
+        }
     }
 
     private function snapshot(Book $book): Book

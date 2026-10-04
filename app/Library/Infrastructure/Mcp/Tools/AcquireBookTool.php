@@ -9,6 +9,7 @@ use App\Library\Application\Book\AcquireBook\AcquireBookHandler;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
 use App\Library\Infrastructure\Mcp\BookPresenter;
+use App\Library\Infrastructure\Mcp\CurrentReader;
 use App\Library\Infrastructure\Mcp\ToolArguments;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
@@ -40,6 +41,7 @@ final class AcquireBookTool extends LibraryTool
         private readonly AcquireBookHandler $acquireBook,
         private readonly BookQueries $books,
         private readonly BookPresenter $presenter,
+        private readonly CurrentReader $reader,
     ) {
     }
 
@@ -63,9 +65,9 @@ final class AcquireBookTool extends LibraryTool
 
         $bookId = $arguments->string('book_id');
 
-        $this->acquireBook->handle(new AcquireBook($bookId));
+        $this->acquireBook->handle(new AcquireBook($this->reader->id()->value, $bookId));
 
-        $book = $this->books->find($bookId);
+        $book = $this->books->find($this->reader->id(), $bookId);
         Assert::isInstanceOf($book, BookView::class);
 
         return Response::structured($this->presenter->present($book));

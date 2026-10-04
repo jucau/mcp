@@ -6,6 +6,7 @@ namespace App\Library\Application\Book\ReturnBook;
 
 use App\Library\Domain\Book\BookId;
 use App\Library\Domain\Book\BookRepository;
+use App\Library\Domain\Book\ReaderId;
 
 final readonly class ReturnBookHandler
 {
@@ -15,7 +16,7 @@ final readonly class ReturnBookHandler
 
     public function handle(ReturnBook $command): void
     {
-        $book = $this->books->get(BookId::fromString($command->bookId));
+        $book = $this->books->get(ReaderId::fromString($command->readerId), BookId::fromString($command->bookId));
 
         $book->markAsReturned();
 

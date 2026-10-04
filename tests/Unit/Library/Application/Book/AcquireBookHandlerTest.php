@@ -10,6 +10,7 @@ use App\Library\Domain\Book\BookId;
 use App\Library\Domain\Book\UnknownBook;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\Readers;
 use Tests\Unit\Library\Application\UseCaseTestCase;
 
 final class AcquireBookHandlerTest extends UseCaseTestCase
@@ -42,8 +43,18 @@ final class AcquireBookHandlerTest extends UseCaseTestCase
         $this->acquire(BookId::generate()->value);
     }
 
+    #[Test]
+    public function the_book_of_another_reader_cannot_be_acquired(): void
+    {
+        $id = $this->given(Books::aBook(owned: false, reader: Readers::someoneElse()));
+
+        $this->expectException(UnknownBook::class);
+
+        $this->acquire($id);
+    }
+
     private function acquire(string $id): void
     {
-        (new AcquireBookHandler($this->books))->handle(new AcquireBook($id));
+        (new AcquireBookHandler($this->books))->handle(new AcquireBook(Readers::ME, $id));
     }
 }

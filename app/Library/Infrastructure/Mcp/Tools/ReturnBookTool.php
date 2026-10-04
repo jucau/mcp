@@ -9,6 +9,7 @@ use App\Library\Application\Book\Query\BookView;
 use App\Library\Application\Book\ReturnBook\ReturnBook;
 use App\Library\Application\Book\ReturnBook\ReturnBookHandler;
 use App\Library\Infrastructure\Mcp\BookPresenter;
+use App\Library\Infrastructure\Mcp\CurrentReader;
 use App\Library\Infrastructure\Mcp\ToolArguments;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
@@ -39,6 +40,7 @@ final class ReturnBookTool extends LibraryTool
         private readonly ReturnBookHandler $returnBook,
         private readonly BookQueries $books,
         private readonly BookPresenter $presenter,
+        private readonly CurrentReader $reader,
     ) {
     }
 
@@ -62,9 +64,9 @@ final class ReturnBookTool extends LibraryTool
 
         $bookId = $arguments->string('book_id');
 
-        $this->returnBook->handle(new ReturnBook($bookId));
+        $this->returnBook->handle(new ReturnBook($this->reader->id()->value, $bookId));
 
-        $book = $this->books->find($bookId);
+        $book = $this->books->find($this->reader->id(), $bookId);
         Assert::isInstanceOf($book, BookView::class);
 
         return Response::structured($this->presenter->present($book));

@@ -8,6 +8,7 @@ use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Domain\Book\BookId;
 use App\Library\Domain\Book\UnknownBook;
 use App\Library\Infrastructure\Mcp\BookPresenter;
+use App\Library\Infrastructure\Mcp\CurrentReader;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -24,6 +25,7 @@ final class BookResource extends LibraryResource implements HasUriTemplate
     public function __construct(
         private readonly BookQueries $books,
         private readonly BookPresenter $presenter,
+        private readonly CurrentReader $reader,
     ) {
     }
 
@@ -37,7 +39,7 @@ final class BookResource extends LibraryResource implements HasUriTemplate
         $id = $request->get('id');
         Assert::string($id);
 
-        $book = $this->books->find($id) ?? throw UnknownBook::withId(BookId::fromString($id));
+        $book = $this->books->find($this->reader->id(), $id) ?? throw UnknownBook::withId(BookId::fromString($id));
 
         return $this->presenter->present($book);
     }

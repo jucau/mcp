@@ -6,13 +6,16 @@ namespace Tests\Unit\Library\Application\Book;
 
 use App\Library\Application\Book\AddBook\AddBook;
 use App\Library\Application\Book\AddBook\AddBookHandler;
+use App\Library\Domain\Book\BookId;
 use App\Library\Domain\Book\DuplicateIsbn;
 use App\Library\Domain\Book\InvalidIsbn;
 use App\Library\Domain\Book\InvalidText;
 use App\Library\Domain\Book\ReadingStatus;
+use App\Library\Domain\Book\UnknownBook;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\Readers;
 use Tests\Unit\Library\Application\UseCaseTestCase;
 
 final class AddBookHandlerTest extends UseCaseTestCase
@@ -20,7 +23,7 @@ final class AddBookHandlerTest extends UseCaseTestCase
     #[Test]
     public function an_owned_book_joins_the_library_to_be_read(): void
     {
-        $id = $this->addBook(new AddBook(" Dune \n", ' Frank Herbert ', '0-441-17271-7'));
+        $id = $this->addBook(new AddBook(Readers::ME, " Dune \n", ' Frank Herbert ', '0-441-17271-7'));
 
         $book = $this->book($id);
         $this->assertSame('Dune', $book->title()->value);
@@ -35,7 +38,7 @@ final class AddBookHandlerTest extends UseCaseTestCase
     #[Test]
     public function a_book_joins_the_wishlist(): void
     {
-        $id = $this->addBook(new AddBook('Hypérion', 'Dan Simmons', owned: false));
+        $id = $this->addBook(new AddBook(Readers::ME, 'Hypérion', 'Dan Simmons', owned: false));
 
         $this->assertFalse($this->book($id)->isOwned());
     }
@@ -60,7 +63,7 @@ final class AddBookHandlerTest extends UseCaseTestCase
     #[DataProvider('validIsbns')]
     public function the_isbn_is_kept_as_isbn_13(string $typed, string $kept): void
     {
-        $id = $this->addBook(new AddBook('Dune', 'Frank Herbert', $typed));
+        $id = $this->addBook(new AddBook(Readers::ME, 'Dune', 'Frank Herbert', $typed));
 
         $this->assertSame($kept, $this->book($id)->isbn()?->value);
     }
@@ -88,7 +91,7 @@ final class AddBookHandlerTest extends UseCaseTestCase
     {
         $this->expectException(InvalidIsbn::class);
 
-        $this->addBook(new AddBook('Dune', 'Frank Herbert', $typed));
+        $this->addBook(new AddBook(Readers::ME, 'Dune', 'Frank Herbert', $typed));
     }
 
     /**
@@ -108,13 +111,13 @@ final class AddBookHandlerTest extends UseCaseTestCase
     {
         $this->expectException(InvalidText::class);
 
-        $this->addBook(new AddBook($title, $author));
+        $this->addBook(new AddBook(Readers::ME, $title, $author));
     }
 
     #[Test]
     public function a_title_of_255_multibyte_characters_is_accepted(): void
     {
-        $id = $this->addBook(new AddBook(str_repeat('é', 255), 'Frank Herbert'));
+        $id = $this->addBook(new AddBook(Readers::ME, str_repeat('é', 255), 'Frank Herbert'));
 
         $this->assertSame(255, mb_strlen($this->book($id)->title()->value));
     }
@@ -126,7 +129,28 @@ final class AddBookHandlerTest extends UseCaseTestCase
 
         $this->expectException(DuplicateIsbn::class);
 
-        $this->addBook(new AddBook('Dune', 'Frank Herbert', '0441172717'));
+        $this->addBook(new AddBook(Readers::ME, 'Dune', 'Frank Herbert', '0441172717'));
+    }
+
+    #[Test]
+    public function the_book_joins_the_library_of_its_reader_only(): void
+    {
+        $id = $this->addBook(new AddBook(Readers::ME, 'Dune', 'Frank Herbert'));
+
+        $this->assertTrue($this->book($id)->reader()->equals(Readers::me()));
+        $this->expectException(UnknownBook::class);
+
+        $this->books->get(Readers::someoneElse(), BookId::fromString($id));
+    }
+
+    #[Test]
+    public function another_reader_may_add_a_book_with_the_same_isbn(): void
+    {
+        $this->given(Books::aBook(isbn: '9780441172719', reader: Readers::someoneElse()));
+
+        $id = $this->addBook(new AddBook(Readers::ME, 'Dune', 'Frank Herbert', '0-441-17271-7'));
+
+        $this->assertSame('9780441172719', $this->book($id)->isbn()?->value);
     }
 
     private function addBook(AddBook $command): string

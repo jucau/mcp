@@ -9,6 +9,7 @@ use App\Library\Application\Book\Query\BookView;
 use App\Library\Application\Book\RemoveBook\RemoveBook;
 use App\Library\Application\Book\RemoveBook\RemoveBookHandler;
 use App\Library\Infrastructure\Mcp\BookPresenter;
+use App\Library\Infrastructure\Mcp\CurrentReader;
 use App\Library\Infrastructure\Mcp\ToolArguments;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
@@ -40,6 +41,7 @@ final class RemoveBookTool extends LibraryTool
         private readonly RemoveBookHandler $removeBook,
         private readonly BookQueries $books,
         private readonly BookPresenter $presenter,
+        private readonly CurrentReader $reader,
     ) {
     }
 
@@ -62,9 +64,9 @@ final class RemoveBookTool extends LibraryTool
         ]));
 
         $bookId = $arguments->string('book_id');
-        $book = $this->books->find($bookId);
+        $book = $this->books->find($this->reader->id(), $bookId);
 
-        $this->removeBook->handle(new RemoveBook($bookId));
+        $this->removeBook->handle(new RemoveBook($this->reader->id()->value, $bookId));
 
         Assert::isInstanceOf($book, BookView::class);
 

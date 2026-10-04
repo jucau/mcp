@@ -9,6 +9,7 @@ use App\Library\Application\Book\AddBook\AddBookHandler;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
 use App\Library\Infrastructure\Mcp\BookPresenter;
+use App\Library\Infrastructure\Mcp\CurrentReader;
 use App\Library\Infrastructure\Mcp\ToolArguments;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
@@ -40,6 +41,7 @@ final class AddBookTool extends LibraryTool
         private readonly AddBookHandler $addBook,
         private readonly BookQueries $books,
         private readonly BookPresenter $presenter,
+        private readonly CurrentReader $reader,
     ) {
     }
 
@@ -71,13 +73,14 @@ final class AddBookTool extends LibraryTool
         ]));
 
         $id = $this->addBook->handle(new AddBook(
+            $this->reader->id()->value,
             $arguments->string('title'),
             $arguments->string('author'),
             $arguments->stringOrNull('isbn'),
             $arguments->boolOrNull('owned') ?? true,
         ));
 
-        $book = $this->books->find($id->value);
+        $book = $this->books->find($this->reader->id(), $id->value);
         Assert::isInstanceOf($book, BookView::class);
 
         return Response::structured($this->presenter->present($book));

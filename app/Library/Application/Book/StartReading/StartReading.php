@@ -9,6 +9,7 @@ use DateTimeImmutable;
 final readonly class StartReading
 {
     public function __construct(
+        public string $readerId,
         public string $bookId,
         public ?DateTimeImmutable $on = null,
     ) {

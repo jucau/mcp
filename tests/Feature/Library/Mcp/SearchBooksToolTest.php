@@ -18,6 +18,7 @@ use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
 use Tests\Support\Library\BookSchema;
 use Tests\Support\Library\OutputSchema;
+use Tests\Support\Library\Readers;
 use Tests\TestCase;
 
 final class SearchBooksToolTest extends TestCase
@@ -148,6 +149,21 @@ final class SearchBooksToolTest extends TestCase
             ->assertStructuredContent(fn (AssertableJson $result): AssertableJson => $result
                 ->where('total', 1)
                 ->has('books.0', fn (AssertableJson $book): AssertableJson => $book->where('title', 'Dune')->etc())
+                ->etc());
+    }
+
+    #[Test]
+    public function it_only_searches_the_library_of_the_reader_it_serves(): void
+    {
+        $this->given(Books::aBook(isbn: '9780441172719'));
+        $this->given(Books::aBook('Dune', 'Frank Herbert', '9780441172719', reader: Readers::someoneElse()));
+        $this->given(Books::aBook('Fondation', 'Isaac Asimov', reader: Readers::someoneElse()));
+
+        LibraryServer::tool(SearchBooksTool::class, [])
+            ->assertOk()
+            ->assertStructuredContent(fn (AssertableJson $result): AssertableJson => $result
+                ->where('total', 1)
+                ->where('books.0.title', 'Dune')
                 ->etc());
     }
 

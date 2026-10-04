@@ -9,6 +9,7 @@ use App\Library\Application\Book\Query\BookSearch;
 use App\Library\Domain\Book\Isbn;
 use App\Library\Domain\Book\ReadingStatus;
 use App\Library\Infrastructure\Mcp\BookPresenter;
+use App\Library\Infrastructure\Mcp\CurrentReader;
 use App\Library\Infrastructure\Mcp\ToolArguments;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Validation\Rule;
@@ -39,6 +40,7 @@ final class SearchBooksTool extends LibraryTool
     public function __construct(
         private readonly BookQueries $books,
         private readonly BookPresenter $presenter,
+        private readonly CurrentReader $reader,
     ) {
     }
 
@@ -86,7 +88,7 @@ final class SearchBooksTool extends LibraryTool
         $isbn = $arguments->stringOrNull('isbn');
         $readingStatus = $arguments->stringOrNull('reading_status');
 
-        $page = $this->books->search(new BookSearch(
+        $page = $this->books->search($this->reader->id(), new BookSearch(
             text: $arguments->stringOrNull('query'),
             isbn: $isbn === null ? null : Isbn::fromString($isbn),
             readingStatus: $readingStatus === null ? null : ReadingStatus::from($readingStatus),

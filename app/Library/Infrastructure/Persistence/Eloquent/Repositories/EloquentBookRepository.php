@@ -13,6 +13,7 @@ use App\Library\Domain\Book\DuplicateIsbn;
 use App\Library\Domain\Book\Isbn;
 use App\Library\Domain\Book\Loan;
 use App\Library\Domain\Book\Rating;
+use App\Library\Domain\Book\ReaderId;
 use App\Library\Domain\Book\ReadingStatus;
 use App\Library\Domain\Book\Title;
 use App\Library\Domain\Book\UnknownBook;
@@ -28,6 +29,7 @@ final class EloquentBookRepository implements BookRepository
     {
         $record = BookRecord::query()->where('uuid', $book->id()->value)->first() ?? new BookRecord();
         $record->uuid = $book->id()->value;
+        $record->reader_id = $book->reader()->value;
         $record->title = $book->title()->value;
         $record->author = $book->author()->value;
         $record->isbn = $book->isbn()?->value;
@@ -48,12 +50,16 @@ final class EloquentBookRepository implements BookRepository
         }
     }
 
-    public function get(BookId $id): Book
+    public function get(ReaderId $reader, BookId $id): Book
     {
-        $record = BookRecord::query()->where('uuid', $id->value)->first() ?? throw UnknownBook::withId($id);
+        $record = BookRecord::query()
+            ->where('reader_id', $reader->value)
+            ->where('uuid', $id->value)
+            ->first() ?? throw UnknownBook::withId($id);
 
         return Book::reconstitute(
             BookId::fromString($record->uuid),
+            ReaderId::fromString($record->reader_id),
             Title::fromString($record->title),
             Author::fromString($record->author),
             $record->isbn === null ? null : Isbn::fromString($record->isbn),
@@ -68,9 +74,9 @@ final class EloquentBookRepository implements BookRepository
         );
     }
 
-    public function remove(BookId $id): void
+    public function remove(ReaderId $reader, BookId $id): void
     {
-        BookRecord::query()->where('uuid', $id->value)->delete();
+        BookRecord::query()->where('reader_id', $reader->value)->where('uuid', $id->value)->delete();
     }
 
     private function toCarbon(?DateTimeImmutable $day): ?CarbonImmutable

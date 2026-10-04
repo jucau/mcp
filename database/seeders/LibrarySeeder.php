@@ -21,6 +21,10 @@ use Illuminate\Database\Seeder;
 
 final class LibrarySeeder extends Seeder
 {
+    public const string JULIEN = '6698aec1-1185-4a24-bcff-f5d935324b3a';
+
+    public const string CAMILLE = '1f310160-f25a-46bf-b5fd-02f333a645c4';
+
     public function __construct(
         private readonly AddBookHandler $addBook,
         private readonly StartReadingHandler $startReading,
@@ -33,29 +37,37 @@ final class LibrarySeeder extends Seeder
 
     public function run(): void
     {
-        $this->read('Dune', 'Frank Herbert', '9780441172719', '2025-01-04', '2025-02-10', 5);
-        $this->read("L'Étranger", 'Albert Camus', '9782070360024', '2025-03-01', '2025-03-06', 4);
-        $this->read('Fondation', 'Isaac Asimov', null, '2025-04-12', '2025-05-02', 4);
-        $this->read('Le Seigneur des anneaux', 'J. R. R. Tolkien', null, '2025-06-01', '2025-08-15', 5, lentTo: 'Paul', lentOn: '2026-07-03');
-        $this->read('1984', 'George Orwell', null, '2025-09-03', '2025-09-20', 5, lentTo: 'Marie', lentOn: '2026-08-20');
-        $this->read('La Horde du Contrevent', 'Alain Damasio', null, '2025-10-01', '2025-11-18', 5);
-        $this->read('Le Nom de la rose', 'Umberto Eco', null, '2025-12-02', '2026-01-20', 4);
-        $this->read('Sapiens', 'Yuval Noah Harari', null, '2026-02-01', '2026-03-10', 3);
-        $this->read('Les Misérables', 'Victor Hugo', null, null, '2012-07-14', 4);
+        $this->julien();
+        $this->camille();
+    }
 
-        $this->reading('Hypérion', 'Dan Simmons', '2026-09-02');
-        $this->reading('Le Problème à trois corps', 'Liu Cixin', '2026-09-15');
+    private function julien(): void
+    {
+        $reader = self::JULIEN;
 
-        $this->abandoned('Ulysse', 'James Joyce', '2026-04-01', '2026-04-19', 2);
-        $this->abandoned('Le Capital au XXIe siècle', 'Thomas Piketty', '2026-05-05', '2026-06-01', null);
+        $this->read($reader, 'Dune', 'Frank Herbert', '9780441172719', '2025-01-04', '2025-02-10', 5);
+        $this->read($reader, "L'Étranger", 'Albert Camus', '9782070360024', '2025-03-01', '2025-03-06', 4);
+        $this->read($reader, 'Fondation', 'Isaac Asimov', null, '2025-04-12', '2025-05-02', 4);
+        $this->read($reader, 'Le Seigneur des anneaux', 'J. R. R. Tolkien', null, '2025-06-01', '2025-08-15', 5, lentTo: 'Paul', lentOn: '2026-07-03');
+        $this->read($reader, '1984', 'George Orwell', null, '2025-09-03', '2025-09-20', 5, lentTo: 'Marie', lentOn: '2026-08-20');
+        $this->read($reader, 'La Horde du Contrevent', 'Alain Damasio', null, '2025-10-01', '2025-11-18', 5);
+        $this->read($reader, 'Le Nom de la rose', 'Umberto Eco', null, '2025-12-02', '2026-01-20', 4);
+        $this->read($reader, 'Sapiens', 'Yuval Noah Harari', null, '2026-02-01', '2026-03-10', 3);
+        $this->read($reader, 'Les Misérables', 'Victor Hugo', null, null, '2012-07-14', 4);
 
-        $this->toRead('La Main gauche de la nuit', 'Ursula K. Le Guin');
-        $this->toRead('Chroniques martiennes', 'Ray Bradbury');
-        $this->toRead("L'Anomalie", 'Hervé Le Tellier');
-        $this->toRead('Cent ans de solitude', 'Gabriel García Márquez');
-        $this->toRead('Les Furtifs', 'Alain Damasio');
-        $neuromancer = $this->toRead('Neuromancien', 'William Gibson');
-        $this->lendBook->handle(new LendBook($neuromancer, 'Léa', new DateTimeImmutable('2026-09-01')));
+        $this->reading($reader, 'Hypérion', 'Dan Simmons', '2026-09-02');
+        $this->reading($reader, 'Le Problème à trois corps', 'Liu Cixin', '2026-09-15');
+
+        $this->abandoned($reader, 'Ulysse', 'James Joyce', '2026-04-01', '2026-04-19', 2);
+        $this->abandoned($reader, 'Le Capital au XXIe siècle', 'Thomas Piketty', '2026-05-05', '2026-06-01', null);
+
+        $this->toRead($reader, 'La Main gauche de la nuit', 'Ursula K. Le Guin');
+        $this->toRead($reader, 'Chroniques martiennes', 'Ray Bradbury');
+        $this->toRead($reader, "L'Anomalie", 'Hervé Le Tellier');
+        $this->toRead($reader, 'Cent ans de solitude', 'Gabriel García Márquez');
+        $this->toRead($reader, 'Les Furtifs', 'Alain Damasio');
+        $neuromancer = $this->toRead($reader, 'Neuromancien', 'William Gibson');
+        $this->lendBook->handle(new LendBook($reader, $neuromancer, 'Léa', new DateTimeImmutable('2026-09-01')));
 
         foreach ([
             ['Le Sorceleur', 'Andrzej Sapkowski'],
@@ -63,24 +75,36 @@ final class LibrarySeeder extends Seeder
             ['Projet Dernière Chance', 'Andy Weir'],
             ["La Vérité sur l'affaire Harry Quebert", 'Joël Dicker'],
         ] as [$title, $author]) {
-            $this->addBook->handle(new AddBook($title, $author, owned: false));
+            $this->addBook->handle(new AddBook($reader, $title, $author, owned: false));
         }
     }
 
-    private function toRead(string $title, string $author, ?string $isbn = null): string
+    private function camille(): void
     {
-        return $this->addBook->handle(new AddBook($title, $author, $isbn))->value;
+        $reader = self::CAMILLE;
+
+        $this->read($reader, 'Dune', 'Frank Herbert', '9780441172719', '2024-06-01', '2024-07-02', 3);
+        $this->read($reader, 'Le Seigneur des anneaux', 'J. R. R. Tolkien', null, '2025-01-10', '2025-04-30', 5, lentTo: 'Julien', lentOn: '2026-09-10');
+        $this->reading($reader, 'Fondation', 'Isaac Asimov', '2026-09-20');
+        $this->toRead($reader, 'Hypérion', 'Dan Simmons');
+        $this->addBook->handle(new AddBook($reader, 'La Horde du Contrevent', 'Alain Damasio', owned: false));
     }
 
-    private function reading(string $title, string $author, string $startedOn): string
+    private function toRead(string $reader, string $title, string $author, ?string $isbn = null): string
     {
-        $id = $this->toRead($title, $author);
-        $this->startReading->handle(new StartReading($id, new DateTimeImmutable($startedOn)));
+        return $this->addBook->handle(new AddBook($reader, $title, $author, $isbn))->value;
+    }
+
+    private function reading(string $reader, string $title, string $author, string $startedOn): string
+    {
+        $id = $this->toRead($reader, $title, $author);
+        $this->startReading->handle(new StartReading($reader, $id, new DateTimeImmutable($startedOn)));
 
         return $id;
     }
 
     private function read(
+        string $reader,
         string $title,
         string $author,
         ?string $isbn,
@@ -90,27 +114,27 @@ final class LibrarySeeder extends Seeder
         ?string $lentTo = null,
         ?string $lentOn = null,
     ): void {
-        $id = $this->toRead($title, $author, $isbn);
+        $id = $this->toRead($reader, $title, $author, $isbn);
 
         if ($startedOn !== null) {
-            $this->startReading->handle(new StartReading($id, new DateTimeImmutable($startedOn)));
+            $this->startReading->handle(new StartReading($reader, $id, new DateTimeImmutable($startedOn)));
         }
 
-        $this->finishReading->handle(new FinishReading($id, new DateTimeImmutable($finishedOn)));
-        $this->rateBook->handle(new RateBook($id, $rating));
+        $this->finishReading->handle(new FinishReading($reader, $id, new DateTimeImmutable($finishedOn)));
+        $this->rateBook->handle(new RateBook($reader, $id, $rating));
 
         if ($lentTo !== null && $lentOn !== null) {
-            $this->lendBook->handle(new LendBook($id, $lentTo, new DateTimeImmutable($lentOn)));
+            $this->lendBook->handle(new LendBook($reader, $id, $lentTo, new DateTimeImmutable($lentOn)));
         }
     }
 
-    private function abandoned(string $title, string $author, string $startedOn, string $abandonedOn, ?int $rating): void
+    private function abandoned(string $reader, string $title, string $author, string $startedOn, string $abandonedOn, ?int $rating): void
     {
-        $id = $this->reading($title, $author, $startedOn);
-        $this->abandonReading->handle(new AbandonReading($id, new DateTimeImmutable($abandonedOn)));
+        $id = $this->reading($reader, $title, $author, $startedOn);
+        $this->abandonReading->handle(new AbandonReading($reader, $id, new DateTimeImmutable($abandonedOn)));
 
         if ($rating !== null) {
-            $this->rateBook->handle(new RateBook($id, $rating));
+            $this->rateBook->handle(new RateBook($reader, $id, $rating));
         }
     }
 }

@@ -7,12 +7,14 @@ namespace Tests\Unit\Library\Application;
 use App\Library\Domain\Book\Book;
 use App\Library\Domain\Book\BookId;
 use App\Library\Domain\Book\Borrower;
+use App\Library\Domain\Book\ReaderId;
 use App\Library\Domain\Book\ReadingStatus;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Tests\Support\Library\Books;
 use Tests\Support\Library\FrozenClock;
 use Tests\Support\Library\InMemoryBookRepository;
+use Tests\Support\Library\Readers;
 
 abstract class UseCaseTestCase extends TestCase
 {
@@ -41,12 +43,12 @@ abstract class UseCaseTestCase extends TestCase
 
     protected function book(string $id): Book
     {
-        return $this->books->get(BookId::fromString($id));
+        return $this->books->get(Readers::me(), BookId::fromString($id));
     }
 
-    protected function bookIn(ReadingStatus $status): Book
+    protected function bookIn(ReadingStatus $status, ?ReaderId $reader = null): Book
     {
-        $book = Books::aBook();
+        $book = Books::aBook(reader: $reader);
 
         if ($status === ReadingStatus::ToRead) {
             return $book;
@@ -65,9 +67,9 @@ abstract class UseCaseTestCase extends TestCase
         return $book;
     }
 
-    protected function lentTo(string $borrower): Book
+    protected function lentTo(string $borrower, ?ReaderId $reader = null): Book
     {
-        $book = Books::aBook();
+        $book = Books::aBook(reader: $reader);
         $book->lendTo(Borrower::fromString($borrower), self::day('2026-05-02'));
 
         return $book;

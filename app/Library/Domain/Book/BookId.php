@@ -6,27 +6,15 @@ namespace App\Library\Domain\Book;
 
 use Ramsey\Uuid\Uuid;
 
-final readonly class BookId
+final readonly class BookId extends Identifier
 {
-    private function __construct(public string $value)
-    {
-        if (! Uuid::isValid($value)) {
-            throw InvalidBookId::value($value);
-        }
-    }
-
     public static function generate(): self
     {
         return new self(Uuid::uuid4()->toString());
     }
 
-    public static function fromString(string $value): self
+    protected static function invalid(string $value): InvalidBookId
     {
-        return new self(strtolower($value));
-    }
-
-    public function equals(self $other): bool
-    {
-        return $this->value === $other->value;
+        return InvalidBookId::value($value);
     }
 }

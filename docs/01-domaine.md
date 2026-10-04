@@ -112,8 +112,8 @@ que `ddd/` (ADR-0007 de Comptoir).
 
 | VO | Règle |
 |---|---|
-| `BookId` | UUID valide |
-| `ReaderId` | UUID valide ; **reçu** de l'extérieur, jamais généré par le domaine |
+| `BookId` | un `Identifier` : UUID valide, en minuscules ; seul à savoir se **générer** |
+| `ReaderId` | un `Identifier` ; **reçu** de l'extérieur, jamais généré par le domaine |
 | `Title`, `Author`, `Borrower` | un `Text` : chaîne *trimée* non vide, 255 caractères max |
 | `Isbn` | accepte ISBN-10 ou ISBN-13, avec ou sans tirets ; vérifie la clé ; **normalise en ISBN-13** |
 | `Rating` | entier de 1 à 5 |

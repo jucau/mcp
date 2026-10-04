@@ -8,6 +8,7 @@ use App\Library\Application\Book\StartReading\StartReading;
 use App\Library\Application\Book\StartReading\StartReadingHandler;
 use App\Library\Domain\Book\BookId;
 use App\Library\Domain\Book\InvalidBookId;
+use App\Library\Domain\Book\InvalidReaderId;
 use App\Library\Domain\Book\Rating;
 use App\Library\Domain\Book\ReadingStatus;
 use App\Library\Domain\Book\ReadingTransitionNotAllowed;
@@ -16,6 +17,7 @@ use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\Readers;
 use Tests\Unit\Library\Application\UseCaseTestCase;
 
 final class StartReadingHandlerTest extends UseCaseTestCase
@@ -80,6 +82,26 @@ final class StartReadingHandlerTest extends UseCaseTestCase
     }
 
     #[Test]
+    public function the_reader_id_is_read_whatever_its_case(): void
+    {
+        $id = $this->given(Books::aBook());
+
+        $this->start($id, reader: strtoupper(Readers::ME));
+
+        $this->assertSame(ReadingStatus::Reading, $this->book($id)->readingStatus());
+    }
+
+    #[Test]
+    public function a_malformed_reader_id_is_refused(): void
+    {
+        $id = $this->given(Books::aBook());
+
+        $this->expectException(InvalidReaderId::class);
+
+        $this->start($id, reader: 'julien');
+    }
+
+    #[Test]
     public function an_unknown_book_cannot_be_started(): void
     {
         $this->expectException(UnknownBook::class);
@@ -95,8 +117,18 @@ final class StartReadingHandlerTest extends UseCaseTestCase
         $this->start('dune');
     }
 
-    private function start(string $id, ?DateTimeImmutable $on = null): void
+    #[Test]
+    public function the_book_of_another_reader_cannot_be_started(): void
     {
-        (new StartReadingHandler($this->books, $this->clock))->handle(new StartReading($id, $on));
+        $id = $this->given(Books::aBook(reader: Readers::someoneElse()));
+
+        $this->expectException(UnknownBook::class);
+
+        $this->start($id);
+    }
+
+    private function start(string $id, ?DateTimeImmutable $on = null, string $reader = Readers::ME): void
+    {
+        (new StartReadingHandler($this->books, $this->clock))->handle(new StartReading($reader, $id, $on));
     }
 }

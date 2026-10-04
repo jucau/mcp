@@ -9,9 +9,11 @@ use App\Library\Application\Book\AbandonReading\AbandonReadingHandler;
 use App\Library\Domain\Book\FinishedBeforeStarted;
 use App\Library\Domain\Book\ReadingStatus;
 use App\Library\Domain\Book\ReadingTransitionNotAllowed;
+use App\Library\Domain\Book\UnknownBook;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
+use Tests\Support\Library\Readers;
 use Tests\Unit\Library\Application\UseCaseTestCase;
 
 final class AbandonReadingHandlerTest extends UseCaseTestCase
@@ -60,8 +62,18 @@ final class AbandonReadingHandlerTest extends UseCaseTestCase
         $this->abandon($id, self::day('2025-12-31'));
     }
 
+    #[Test]
+    public function the_book_of_another_reader_cannot_be_abandoned(): void
+    {
+        $id = $this->given($this->bookIn(ReadingStatus::Reading, Readers::someoneElse()));
+
+        $this->expectException(UnknownBook::class);
+
+        $this->abandon($id);
+    }
+
     private function abandon(string $id, ?DateTimeImmutable $on = null): void
     {
-        (new AbandonReadingHandler($this->books, $this->clock))->handle(new AbandonReading($id, $on));
+        (new AbandonReadingHandler($this->books, $this->clock))->handle(new AbandonReading(Readers::ME, $id, $on));
     }
 }

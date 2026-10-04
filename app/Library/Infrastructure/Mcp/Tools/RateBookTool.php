@@ -10,6 +10,7 @@ use App\Library\Application\Book\RateBook\RateBook;
 use App\Library\Application\Book\RateBook\RateBookHandler;
 use App\Library\Domain\Book\Rating;
 use App\Library\Infrastructure\Mcp\BookPresenter;
+use App\Library\Infrastructure\Mcp\CurrentReader;
 use App\Library\Infrastructure\Mcp\ToolArguments;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
@@ -41,6 +42,7 @@ final class RateBookTool extends LibraryTool
         private readonly RateBookHandler $rateBook,
         private readonly BookQueries $books,
         private readonly BookPresenter $presenter,
+        private readonly CurrentReader $reader,
     ) {
     }
 
@@ -67,9 +69,9 @@ final class RateBookTool extends LibraryTool
 
         $bookId = $arguments->string('book_id');
 
-        $this->rateBook->handle(new RateBook($bookId, $arguments->int('rating')));
+        $this->rateBook->handle(new RateBook($this->reader->id()->value, $bookId, $arguments->int('rating')));
 
-        $book = $this->books->find($bookId);
+        $book = $this->books->find($this->reader->id(), $bookId);
         Assert::isInstanceOf($book, BookView::class);
 
         return Response::structured($this->presenter->present($book));

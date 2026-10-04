@@ -8,7 +8,10 @@ interface BookRepository
 {
     public function save(Book $book): void;
 
-    public function get(BookId $id): Book;
+    /**
+     * @throws UnknownBook when the book does not exist, or belongs to another reader
+     */
+    public function get(ReaderId $reader, BookId $id): Book;
 
-    public function remove(BookId $id): void;
+    public function remove(ReaderId $reader, BookId $id): void;
 }

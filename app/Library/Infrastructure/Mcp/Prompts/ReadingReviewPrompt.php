@@ -7,6 +7,7 @@ namespace App\Library\Infrastructure\Mcp\Prompts;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookSearch;
 use App\Library\Application\Clock;
+use App\Library\Infrastructure\Mcp\CurrentReader;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
@@ -25,6 +26,7 @@ final class ReadingReviewPrompt extends Prompt
         private readonly BookQueries $books,
         private readonly Clock $clock,
         private readonly EmbeddedBooks $embedded,
+        private readonly CurrentReader $reader,
     ) {
     }
 
@@ -42,7 +44,7 @@ final class ReadingReviewPrompt extends Prompt
 
         return Response::text(implode("\n\n", [
             sprintf('Review my reading year %s: how many books I finished and how many I abandoned, the ones I loved most, and what stands out (authors, themes, the time each book took me). Keep it warm and short. Answer in the language of our conversation.', $year),
-            sprintf("The books I finished or abandoned in %s:\n", $year) . $this->embedded->json($this->books->all(new BookSearch(finishedIn: (int) $year))),
+            sprintf("The books I finished or abandoned in %s:\n", $year) . $this->embedded->json($this->books->all($this->reader->id(), new BookSearch(finishedIn: (int) $year))),
         ]));
     }
 }

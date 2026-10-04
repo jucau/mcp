@@ -10,15 +10,19 @@ use App\Library\Application\Book\Query\BookView;
 use App\Library\Application\Page;
 use App\Library\Domain\Book\BookId;
 use App\Library\Domain\Book\Isbn;
+use App\Library\Domain\Book\ReaderId;
 use App\Library\Domain\Book\ReadingStatus;
 use App\Library\Infrastructure\Persistence\Eloquent\Models\BookRecord;
 use Illuminate\Database\Eloquent\Builder;
 
 final class EloquentBookQueries implements BookQueries
 {
-    public function find(string $bookId): ?BookView
+    public function find(ReaderId $reader, string $bookId): ?BookView
     {
-        $record = BookRecord::query()->where('uuid', BookId::fromString($bookId)->value)->first();
+        $record = BookRecord::query()
+            ->where('reader_id', $reader->value)
+            ->where('uuid', BookId::fromString($bookId)->value)
+            ->first();
 
         return $record instanceof BookRecord ? $this->view($record) : null;
     }
@@ -26,9 +30,9 @@ final class EloquentBookQueries implements BookQueries
     /**
      * @return Page<BookView>
      */
-    public function search(BookSearch $criteria): Page
+    public function search(ReaderId $reader, BookSearch $criteria): Page
     {
-        $paginator = $this->matching($criteria)->paginate(perPage: $criteria->perPage, page: $criteria->page);
+        $paginator = $this->matching($reader, $criteria)->paginate(perPage: $criteria->perPage, page: $criteria->page);
 
         $items = [];
 
@@ -39,17 +43,17 @@ final class EloquentBookQueries implements BookQueries
         return new Page($items, $paginator->currentPage(), $paginator->perPage(), $paginator->total());
     }
 
-    public function all(BookSearch $criteria): array
+    public function all(ReaderId $reader, BookSearch $criteria): array
     {
-        return array_values(array_map($this->view(...), $this->matching($criteria)->get()->all()));
+        return array_values(array_map($this->view(...), $this->matching($reader, $criteria)->get()->all()));
     }
 
     /**
      * @return Builder<BookRecord>
      */
-    private function matching(BookSearch $criteria): Builder
+    private function matching(ReaderId $reader, BookSearch $criteria): Builder
     {
-        $query = BookRecord::query();
+        $query = BookRecord::query()->where('reader_id', $reader->value);
 
         foreach ($this->words($criteria->text ?? '') as $word) {
             $pattern = $this->containing($word);

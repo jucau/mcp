@@ -19,6 +19,7 @@ use DateTimeImmutable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\Library\Books;
+use Tests\Support\Library\Readers;
 use Tests\TestCase;
 
 final class EloquentBookQueriesTest extends TestCase
@@ -50,14 +51,36 @@ final class EloquentBookQueriesTest extends TestCase
 
         $this->assertEquals(
             new BookView($book->id()->value, 'Dune', 'Frank Herbert', '9780441172719', true, 'read', '2026-01-10', '2026-02-01', 5, 'Marie', '2026-03-15'),
-            $this->queries->find($book->id()->value),
+            $this->queries->find(Readers::me(), $book->id()->value),
         );
     }
 
     #[Test]
     public function an_unknown_id_finds_nothing(): void
     {
-        $this->assertNull($this->queries->find(BookId::generate()->value));
+        $this->assertNull($this->queries->find(Readers::me(), BookId::generate()->value));
+    }
+
+    #[Test]
+    public function the_book_of_another_reader_is_not_found(): void
+    {
+        $theirs = Books::aBook(reader: Readers::someoneElse());
+        $this->books->save($theirs);
+
+        $this->assertNull($this->queries->find(Readers::me(), $theirs->id()->value));
+    }
+
+    #[Test]
+    public function a_search_only_looks_into_the_library_of_its_reader(): void
+    {
+        $this->add('Dune', 'Frank Herbert', '9780441172719');
+        $this->books->save(Books::aBook('Dune', 'Frank Herbert', '9780441172719', reader: Readers::someoneElse()));
+        $this->books->save(Books::aBook('Fondation', 'Isaac Asimov', reader: Readers::someoneElse()));
+
+        $this->assertSame(['Dune'], $this->titles(new BookSearch()));
+        $this->assertSame(1, $this->queries->search(Readers::me(), new BookSearch())->total);
+        $this->assertCount(1, $this->queries->all(Readers::me(), new BookSearch()));
+        $this->assertCount(2, $this->queries->all(Readers::someoneElse(), new BookSearch()));
     }
 
     #[Test]
@@ -65,7 +88,7 @@ final class EloquentBookQueriesTest extends TestCase
     {
         $this->expectException(InvalidBookId::class);
 
-        $this->queries->find('dune');
+        $this->queries->find(Readers::me(), 'dune');
     }
 
     #[Test]
@@ -174,7 +197,7 @@ final class EloquentBookQueriesTest extends TestCase
             $this->add($title, 'Divers');
         }
 
-        $page = $this->queries->search(new BookSearch(page: 2, perPage: 2));
+        $page = $this->queries->search(Readers::me(), new BookSearch(page: 2, perPage: 2));
 
         $this->assertSame(['Neuromancien', 'Solaris'], array_map(static fn (BookView $book): string => $book->title, $page->items));
         $this->assertSame(2, $page->page);
@@ -210,7 +233,7 @@ final class EloquentBookQueriesTest extends TestCase
 
         $this->add('Hypérion', 'Dan Simmons', owned: false);
 
-        $titles = array_map(static fn (BookView $book): string => $book->title, $this->queries->all(new BookSearch(owned: true, page: 3, perPage: 1)));
+        $titles = array_map(static fn (BookView $book): string => $book->title, $this->queries->all(Readers::me(), new BookSearch(owned: true, page: 3, perPage: 1)));
 
         $this->assertCount(105, $titles);
         $this->assertSame(['Tome 001', 'Tome 002'], array_slice($titles, 0, 2));
@@ -239,6 +262,6 @@ final class EloquentBookQueriesTest extends TestCase
      */
     private function titles(BookSearch $search): array
     {
-        return array_map(static fn (BookView $book): string => $book->title, $this->queries->search($search)->items);
+        return array_map(static fn (BookView $book): string => $book->title, $this->queries->search(Readers::me(), $search)->items);
     }
 }

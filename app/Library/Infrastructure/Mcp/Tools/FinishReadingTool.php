@@ -9,6 +9,7 @@ use App\Library\Application\Book\FinishReading\FinishReadingHandler;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
 use App\Library\Infrastructure\Mcp\BookPresenter;
+use App\Library\Infrastructure\Mcp\CurrentReader;
 use App\Library\Infrastructure\Mcp\ToolArguments;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
@@ -39,6 +40,7 @@ final class FinishReadingTool extends LibraryTool
         private readonly FinishReadingHandler $finishReading,
         private readonly BookQueries $books,
         private readonly BookPresenter $presenter,
+        private readonly CurrentReader $reader,
     ) {
     }
 
@@ -64,9 +66,9 @@ final class FinishReadingTool extends LibraryTool
 
         $bookId = $arguments->string('book_id');
 
-        $this->finishReading->handle(new FinishReading($bookId, $arguments->dayOrNull('on')));
+        $this->finishReading->handle(new FinishReading($this->reader->id()->value, $bookId, $arguments->dayOrNull('on')));
 
-        $book = $this->books->find($bookId);
+        $book = $this->books->find($this->reader->id(), $bookId);
         Assert::isInstanceOf($book, BookView::class);
 
         return Response::structured($this->presenter->present($book));
