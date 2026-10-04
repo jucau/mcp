@@ -5,7 +5,7 @@ AGENT_ENV = $(if $(AI_AGENT),-e AI_AGENT='$(AI_AGENT)')
 EXEC = $(DC) exec -T $(AGENT_ENV) php
 ARTISAN = $(EXEC) php artisan
 
-.PHONY: quality ide-helper rector pint stan ark test coverage infection inspector raw-session test-db start stop restart build rebuild destroy ps logs shell \
+.PHONY: quality ide-helper rector pint stan ark test coverage infection inspector raw-session mcp-log test-db start stop restart build rebuild destroy ps logs shell \
         migrate fresh seed composer artisan tinker
 
 # The one gate, run before every commit. The order is load-bearing: the writing tools come first, Pint
@@ -55,6 +55,10 @@ inspector:
 # A hand-written MCP client (client/) plays a read-only session against the server and prints every JSON-RPC line.
 raw-session:
 	$(DC) exec -T php php client/session.php
+
+# What a proxy sees of the HTTP traffic, read from the MCP headers alone, never from the body.
+mcp-log:
+	$(DC) exec nginx tail -n 50 -f /var/log/nginx/mcp.log
 
 test-db:
 	$(DC) exec -T postgres psql -U marquepage -d marquepage -tc "SELECT 1 FROM pg_database WHERE datname = 'marquepage_testing'" | grep -q 1 || $(DC) exec -T postgres createdb -U marquepage marquepage_testing

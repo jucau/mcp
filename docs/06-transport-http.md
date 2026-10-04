@@ -121,6 +121,40 @@ toujours et que le script ne peut pas falsifier. D'où les trois règles de la s
    `docker-compose.yml` publiait le port `8090` sur `0.0.0.0`, donc sur tout le réseau local.
 3. Le serveur **devrait** authentifier ses clients : c'est l'[étape 5](./roadmap.md).
 
+## Claude Code, branché en HTTP
+
+`.mcp.json` déclare un second serveur, à côté de `library` (stdio) :
+
+```json
+"library-http": { "type": "http", "url": "http://127.0.0.1:8090/mcp" }
+```
+
+`127.0.0.1` et non `localhost` : nginx n'est publié que sur l'IPv4 locale, et `localhost` peut se résoudre en
+`::1`. Un serveur ajouté à `.mcp.json` n'est chargé qu'au **démarrage** d'une session Claude Code : `/mcp` reconnecte
+les serveurs connus, mais n'en découvre pas de nouveaux.
+
+**Ce que voit le proxy.** nginx journalise chaque requête vers `/mcp` à partir des **seuls en-têtes MCP**, sans lire
+le corps (`make mcp-log`). C'est l'usage même pour lequel la spec recopie le corps dans les en-têtes. Au démarrage de
+Claude Code, puis à une question sur la bibliothèque :
+
+```
+06:58:32 200 POST version=2026-07-28 method=server/discover name=-
+06:58:32 200 POST version=2026-07-28 method=prompts/list name=-
+06:58:32 200 POST version=2026-07-28 method=tools/list name=-
+06:58:32 200 POST version=2026-07-28 method=resources/list name=-
+07:00:44 200 POST version=2026-07-28 method=tools/call name=search_books
+```
+
+- **Claude Code parle le mode moderne** : aucun `initialize`. Il commence par `server/discover`, facultatif pour le
+  client, pour connaître le serveur avant de lui parler.
+- **Ses en-têtes correspondent au corps** : tout passe en `200`, aucun `-32020`.
+- **Il n'envoie pas d'`Origin`** : c'est pourquoi le middleware doit accepter son absence.
+- **Les trois listes partent dans la même seconde** : sans session, rien n'oblige à attendre une réponse avant
+  d'envoyer la requête suivante.
+
+Le mode legacy reste servi, pour le MCP Inspector et notre client écrit à la main, mais notre client principal ne
+l'utilise pas.
+
 ## Stdio et HTTP, côte à côte
 
 | | stdio | Streamable HTTP |
