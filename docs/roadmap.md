@@ -67,11 +67,15 @@ Un commit par brique, `make quality` vert à chacun.
 
 ## Étape 4 — Transport Streamable HTTP
 
-*Apprendre : stdio vs HTTP, sessions, ce qui change quand le serveur est partagé.*
+*Apprendre : stdio vs HTTP, un protocole devenu sans état (`2026-07-28`), ce qui change quand le serveur est
+exposé.*
 
-- [ ] Enregistrer le même serveur en `Mcp::web` derrière nginx
-- [ ] Le brancher sur Claude Code en HTTP
-- [ ] Comparer les deux transports (latence, cycle de vie, déploiement)
+- [x] Lire la spec `2026-07-28` et documenter le transport ([06](./06-transport-http.md),
+  [ADR-0016](./decisions/0016-http-sans-etat-deux-eres-origin-valide.md))
+- [ ] Enregistrer le même serveur en `Mcp::web` derrière nginx, publié sur `127.0.0.1` seulement
+- [ ] Valider l'en-tête `Origin` (middleware à nous) ; épingler `202`, `405`, `-32020`, `-32022`, `403` par des tests
+- [ ] Le brancher sur Claude Code en HTTP, et observer quelle époque il parle
+- [ ] Comparer stdio, HTTP legacy et HTTP moderne
 
 ## Étape 5 — Authentification
 
@@ -90,7 +94,7 @@ Un commit par brique, `make quality` vert à chacun.
 
 - [x] Un mini-client MCP écrit à la main, sur stdio (`client/`, `make raw-session`) ([05](./05-le-protocole-a-nu.md))
 - [x] Journaliser et commenter une session complète (`initialize` → `tools/call` → resources → prompts → fin)
-- [ ] Le même client sur HTTP, après l'étape 4
+- [ ] Le même client sur HTTP, après l'étape 4, en session **moderne** : `server/discover`, en-têtes, `-32020`, `-32022`
 
 ## Plus tard (idées, sans engagement)
 

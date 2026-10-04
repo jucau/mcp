@@ -36,7 +36,8 @@ intérieures).
 ## Une session, en vrai
 
 Voici ce qui circule réellement sur stdio (capturé en envoyant du JSON-RPC brut au serveur, puis raccourci).
-C'est exactement ce que fait Claude Code, et ce que montre le MCP Inspector.
+C'est une session **legacy** (`2025-11-25`), ouverte par `initialize`. Depuis `2026-07-28`, un client peut aussi
+appeler directement, sans handshake ([06](./06-transport-http.md)).
 
 **1. Poignée de main.** Le client annonce sa version du protocole ; le serveur répond avec la sienne, ses
 *capabilities* et ses **instructions**, un texte que le host peut donner au modèle.

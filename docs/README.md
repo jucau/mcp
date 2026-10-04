@@ -26,6 +26,7 @@ Il est juste assez riche pour faire vivre les trois primitives MCP :
 | 03 | [Premier serveur MCP](./03-premier-serveur-mcp.md) | Comment un tool est-il exposé, appelé, testé ? Que circule-t-il vraiment ? |
 | 04 | [Les trois primitives](./04-les-trois-primitives.md) | Qui contrôle quoi ? Que disent les annotations d'un tool ? |
 | 05 | [Le protocole à nu](./05-le-protocole-a-nu.md) | Que circule-t-il vraiment entre un client et le serveur, sans SDK ? |
+| 06 | [Le transport Streamable HTTP](./06-transport-http.md) | Que change HTTP, et que change un protocole sans état ? |
 | — | [Roadmap](./roadmap.md) | Dans quel ordre construit-on, et qu'apprend-on à chaque étape ? |
 | — | [Décisions (ADR)](./decisions/README.md) | Pourquoi c'est fait comme ça ? |
 

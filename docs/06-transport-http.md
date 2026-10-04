@@ -1,0 +1,135 @@
+# 06 — Le transport Streamable HTTP
+
+> Étape 4 de la [roadmap](./roadmap.md). Le même `LibraryServer` est servi une seconde fois, cette fois comme
+> endpoint HTTP derrière nginx. Les tools, les resources et les prompts ne changent pas : seul l'enregistrement
+> change ([ADR-0004](./decisions/0004-stdio-avant-http.md)). Les choix de cette étape sont actés dans
+> [ADR-0016](./decisions/0016-http-sans-etat-deux-eres-origin-valide.md).
+
+## Deux époques du protocole
+
+On ne peut pas parler du transport HTTP sans voir d'abord ce que la version **`2026-07-28`** de la spec a changé.
+**MCP est devenu sans état, sur tous les transports.** La spec distingue maintenant deux époques :
+
+| | **Legacy** (jusqu'à `2025-11-25`) | **Moderne** (`2026-07-28` et après) |
+|---|---|---|
+| Ouverture | handshake `initialize` → `notifications/initialized` | aucune : chaque requête se suffit à elle-même |
+| Version du protocole | négociée **une fois**, pour la session | portée par **chaque requête**, dans `_meta` |
+| Capacités du client | annoncées une fois à l'`initialize` | portées par chaque requête, dans `_meta` |
+| Connaître le serveur à l'avance | la réponse à `initialize` | `server/discover`, que le serveur **doit** implémenter, que le client **peut** appeler |
+| Version refusée | le serveur propose la sienne, le client décide | erreur `-32022` qui liste les versions supportées, le client réessaie |
+| Session HTTP | `Mcp-Session-Id`, que le serveur **peut** attribuer, fermée par `DELETE` | **supprimée** |
+| Le serveur interroge le client (sampling, elicitation…) | il lui envoie ses propres requêtes | il répond `input_required`, le client **rejoue** sa requête avec les réponses (pattern MRTR) |
+| `ping`, `logging/setLevel` | présents | supprimés |
+
+Une requête moderne porte donc ses métadonnées dans `params._meta` :
+
+```json
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"search_books","arguments":{"query":"dune"},
+ "_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}}}}
+```
+
+**Pourquoi ce changement.** Avec une session, un serveur HTTP doit garder un état par client. Il faut alors que
+toutes les requêtes d'un client arrivent sur la même instance, ou que l'état soit partagé entre instances. Sans
+session, n'importe quelle instance peut répondre à n'importe quelle requête, comme une API HTTP classique : on
+peut mettre plusieurs instances derrière un load balancer sans rien de plus. Un serveur qui a vraiment besoin
+d'un état d'un appel à l'autre le gère lui-même, avec des identifiants qu'il émet et que le client repasse comme
+arguments ordinaires.
+
+**Notre serveur parle les deux époques.** `laravel/mcp` répond à `initialize` en `2025-11-25` (c'est la session
+de [05](./05-le-protocole-a-nu.md)) et sert sans état toute requête qui porte le `_meta` moderne. La spec appelle
+ça un serveur *dual-era*, et l'autorise. Vérifié sur stdio :
+
+```
+→ {"jsonrpc":"2.0","id":1,"method":"server/discover","params":{"_meta":{"…/protocolVersion":"2026-07-28",…}}}
+← {"jsonrpc":"2.0","id":1,"result":{"resultType":"complete","supportedVersions":["2026-07-28"],"capabilities":{…},"instructions":"…",…}}
+→ {"jsonrpc":"2.0","id":3,"method":"tools/list","params":{"_meta":{"…/protocolVersion":"1900-01-01",…}}}
+← {"jsonrpc":"2.0","id":3,"error":{"code":-32022,"message":"Unsupported protocol version","data":{"supported":["2026-07-28"],"requested":"1900-01-01"}}}
+```
+
+`supportedVersions` ne liste que la version moderne : les versions legacy ne s'atteignent que par `initialize`.
+
+## Streamable HTTP, version moderne
+
+```
+Claude Code ──POST /mcp──► nginx (127.0.0.1:8090) ──► php-fpm ──► routes/ai.php : Mcp::web('/mcp', LibraryServer::class)
+                                                                          │
+                                                       middlewares : Origin, en-têtes MCP
+                                                                          ▼
+                                                     LibraryServer ──► tools / resources / prompts (inchangés)
+```
+
+**Un seul endpoint, `POST` uniquement.** Chaque message du client est **sa propre requête HTTP**. Il n'y a pas de
+connexion qui dure, et rien ne relie deux requêtes entre elles.
+
+| Le client envoie | Le serveur répond |
+|---|---|
+| une **requête** JSON-RPC | `200`, avec soit `application/json` (un objet), soit `text/event-stream` (un flux SSE propre à cette requête, qui peut porter des notifications de progression avant la réponse finale) |
+| une **notification** acceptée | `202 Accepted`, **sans corps** |
+| un `GET` ou un `DELETE` | `405 Method Not Allowed` : le flux `GET` et la fermeture de session n'existent plus |
+| une méthode inconnue | `404`, avec l'erreur JSON-RPC `-32601` |
+| une version non supportée | `400`, avec l'erreur `-32022` |
+
+**Le client annule en fermant le flux.** Comme chaque requête a son propre flux de réponse, fermer la connexion
+annule la requête sans ambiguïté. En stdio, où tout passe par un seul tube, il faut une notification
+`notifications/cancelled`.
+
+**Les changements de liste** (un tool ajouté, une resource modifiée) arrivent sur un flux SSE ouvert par la requête
+`subscriptions/listen`. Notre serveur annonce `listChanged: false` : nous ne nous en servons pas.
+
+### Les en-têtes recopient le corps
+
+Chaque `POST` porte des en-têtes qui **répètent** des champs du corps JSON :
+
+| En-tête | Recopie | Exigé pour |
+|---|---|---|
+| `MCP-Protocol-Version` | `_meta` `io.modelcontextprotocol/protocolVersion` | toutes les requêtes |
+| `Mcp-Method` | `method` | toutes les requêtes |
+| `Mcp-Name` | `params.name` ou `params.uri` | `tools/call`, `resources/read`, `prompts/get` |
+
+**Pourquoi répéter.** Un load balancer, une passerelle ou un outil d'observabilité peut aiguiller, limiter ou
+journaliser une requête **sans parser le JSON** : par exemple, bloquer `tools/call` de `remove_book` au niveau du
+proxy. Mais si le proxy décide sur l'en-tête et que le serveur exécute selon le corps, un attaquant peut envoyer
+un en-tête anodin et un corps dangereux. D'où la règle : le serveur **doit** rejeter toute requête dont les
+en-têtes manquent ou ne correspondent pas au corps, avec un `400` et l'erreur `-32020` (`HeaderMismatch`).
+
+Le corps reste la source de vérité. Une valeur qui n'est pas de l'ASCII sûr (un nom accentué, par exemple) est
+encodée en `=?base64?…?=`.
+
+### Un client legacy sur HTTP
+
+Un client `2025-11-25` envoie `initialize` sans `_meta` moderne. Notre serveur le sert en legacy, mais **sans
+jamais attribuer de `Mcp-Session-Id`**. En `2025-11-25`, cette session était facultative pour le serveur : ce
+choix reste donc conforme. Le serveur ne vérifie pas les en-têtes MCP d'une requête legacy, puisque cette version
+ne les définissait pas.
+
+## La sécurité, même en local
+
+Un serveur HTTP sur `localhost` paraît à l'abri. Il ne l'est pas, à cause du **DNS rebinding** :
+
+1. Tu visites `evil.example`. Son DNS répond d'abord avec la vraie IP du site, avec une durée de cache très courte.
+2. La page charge un script, puis le DNS de `evil.example` répond désormais `127.0.0.1`.
+3. Le script envoie `POST http://evil.example:8090/mcp`. Pour ton navigateur, c'est la même origine, donc il
+   autorise la requête. Pour ton système, c'est ton serveur local. Le script peut appeler `remove_book`.
+
+La seule trace de l'attaque est l'en-tête **`Origin: http://evil.example:8090`**, que le navigateur ajoute
+toujours et que le script ne peut pas falsifier. D'où les trois règles de la spec :
+
+1. Le serveur **doit** valider l'en-tête `Origin` et répondre **`403`** s'il est présent et non autorisé.
+   **`laravel/mcp` ne le fait pas** : c'est un middleware à nous. Un client hors navigateur, comme Claude Code, n'envoie
+   pas d'`Origin` : son absence est donc acceptée.
+2. En local, le serveur **devrait** n'écouter que sur `127.0.0.1`, pas sur toutes les interfaces. Notre
+   `docker-compose.yml` publiait le port `8090` sur `0.0.0.0`, donc sur tout le réseau local.
+3. Le serveur **devrait** authentifier ses clients : c'est l'[étape 5](./roadmap.md).
+
+## Stdio et HTTP, côte à côte
+
+| | stdio | Streamable HTTP |
+|---|---|---|
+| Qui lance le serveur | le host, comme sous-processus | personne : le serveur tourne déjà, derrière nginx |
+| Un serveur sert | un seul client | autant de clients que de requêtes |
+| Un message | une ligne sur stdin ou stdout | un `POST`, avec sa réponse |
+| Annuler | notification `notifications/cancelled` | fermer le flux de réponse |
+| Les logs | stderr, qui ne doit rien polluer | les logs Laravel |
+| Ce qui casse une session | un `echo` sur stdout | rien de semblable : la réponse HTTP est construite par le framework |
+| Exposition | aucune : pas de réseau | un port : `Origin`, interface d'écoute, puis authentification |
+| Le coût d'un appel | le processus est déjà démarré | une requête PHP-FPM complète, qui démarre Laravel à chaque fois |

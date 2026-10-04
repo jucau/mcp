@@ -20,7 +20,7 @@ s'y brancher. On passe à **N + M**. D'où l'analogie courante : *« l'USB-C des
 ```
 
 - **Host** : l'application IA avec laquelle l'utilisateur parle. Elle décide quoi montrer au modèle.
-- **Client** : le connecteur, *dans* le host. **Un client par serveur**, connexion 1-1 et à état.
+- **Client** : le connecteur, *dans* le host. **Un client par serveur**.
 - **Server** : un programme qui **expose des capacités**. **C'est ce qu'on construit ici.**
 
 Le serveur ne parle **jamais** au LLM directement : il répond au client, et le host décide ce qu'il en fait.
@@ -44,10 +44,13 @@ Les tools portent aussi des **annotations** (*hints*) : `readOnlyHint`, `destruc
 ## Le protocole
 
 - **JSON-RPC 2.0** : requêtes (`id` + `method` + `params`), réponses, notifications (sans `id`).
-- **Cycle de vie** : `initialize` (négociation de la **version du protocole** et des **capabilities**) →
-  `notifications/initialized` → échanges (`tools/list`, `tools/call`, `resources/read`, `prompts/get`…).
-- **Versions datées** : `2024-11-05`, `2025-03-26`, `2025-06-18`, `2025-11-25`. Client et serveur s'accordent
-  sur une version à l'`initialize`.
+- **Versions datées** : `2024-11-05`, `2025-03-26`, `2025-06-18`, `2025-11-25`, `2026-07-28`.
+- **Sans état depuis `2026-07-28`** : chaque requête porte sa version du protocole et les capacités du client dans
+  son `_meta`, et le serveur l'accepte ou la refuse seule. `server/discover` permet de connaître le serveur à
+  l'avance.
+- **Avant (*legacy*, jusqu'à `2025-11-25`)** : une session s'ouvrait par `initialize` (négociation de la version et
+  des capabilities), puis `notifications/initialized`, avant les échanges. Un serveur peut encore servir les deux
+  époques ([06](./06-transport-http.md)).
 
 ## Les deux transports
 

@@ -34,6 +34,10 @@ standards de JSON-RPC : `-32700` (JSON illisible), `-32600` (requête invalide),
 
 ## Le cycle de vie
 
+> **Une session legacy.** Ce qui suit est le cycle de vie des versions jusqu'à `2025-11-25`, celui que joue notre
+> client. Depuis `2026-07-28`, il n'y a plus de handshake : chaque requête porte sa version dans `_meta`, et notre
+> serveur sert aussi ce mode-là ([06](./06-transport-http.md)).
+
 1. **`initialize`** (requête) : le client annonce la version du protocole qu'il parle, ses capacités et son nom. Le
    serveur répond avec **sa** version, ses capacités (`tools`, `resources`, `prompts`…), son nom et ses
    `instructions`.
@@ -135,8 +139,10 @@ est un **résultat** (`result`, `isError: true`), pas une erreur JSON-RPC : le m
 
 **Ce que la transcription montre en plus**, sans que nous l'ayons demandé : chaque résultat porte un
 `"resultType":"complete"` et un `_meta` `io.modelcontextprotocol/serverInfo`, et les listes portent `ttlMs` et
-`cacheScope`. Ils viennent du SDK et de la version `2025-11-25`. Nous ne nous en servons pas, et je n'ai pas vérifié
-leur rôle exact dans la spec : ils sont signalés ici comme observés, pas expliqués.
+`cacheScope`. Ils viennent de la version `2026-07-28`, que le SDK applique même dans une session legacy : `resultType` vaut
+`"input_required"` quand le serveur a besoin d'une information du client avant de répondre (pattern MRTR), et
+`ttlMs` et `cacheScope` disent combien de temps un client ou un proxy peut garder une liste en cache
+([06](./06-transport-http.md)).
 
 ## Ce que le SDK faisait pour nous
 
