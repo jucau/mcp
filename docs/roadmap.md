@@ -94,7 +94,8 @@ exposé.*
 
 - [x] Un mini-client MCP écrit à la main, sur stdio (`client/`, `make raw-session`) ([05](./05-le-protocole-a-nu.md))
 - [x] Journaliser et commenter une session complète (`initialize` → `tools/call` → resources → prompts → fin)
-- [ ] Le même client sur HTTP, après l'étape 4, en session **moderne** : `server/discover`, en-têtes, `-32020`, `-32022`
+- [x] Le même client sur HTTP, après l'étape 4, en session **moderne** : `server/discover`, en-têtes, `-32022`
+  (`client/HttpMcpClient.php`, `make raw-http-session`)
 
 ## Plus tard (idées, sans engagement)
 

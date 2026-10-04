@@ -3,6 +3,8 @@
 > Étape 6 de la [roadmap](./roadmap.md), faite avant l'étape 4 : voir d'abord ce qui circule sur stdio, sans SDK,
 > pour mieux voir ensuite ce que HTTP y change. Un client MCP écrit à la main (`client/`) lance notre serveur, lui
 > parle en JSON-RPC brut et affiche tout ce qui passe : `make raw-session`.
+> Sa seconde moitié, [sur HTTP en mode moderne](#sur-http-en-mode-moderne), a suivi l'étape 4 :
+> `make raw-http-session`.
 
 ## Ce qu'est MCP, vu du fil
 
@@ -143,6 +145,99 @@ est un **résultat** (`result`, `isError: true`), pas une erreur JSON-RPC : le m
 `"input_required"` quand le serveur a besoin d'une information du client avant de répondre (pattern MRTR), et
 `ttlMs` et `cacheScope` disent combien de temps un client ou un proxy peut garder une liste en cache
 ([06](./06-transport-http.md)).
+
+## Sur HTTP, en mode moderne
+
+`client/HttpMcpClient.php` parle le protocole **moderne** (`2026-07-28`, voir [06](./06-transport-http.md)), sans
+SDK. Il sépare deux choses :
+
+- **le protocole**, qu'il porte lui-même : le corps JSON-RPC et son `_meta`, les en-têtes MCP recopiés du corps, la
+  lecture d'une réponse JSON ou d'un flux SSE ;
+- **le transport**, qu'on lui passe : une fonction qui reçoit des en-têtes et un corps, et rend un `HttpReply`
+  (statut, type de contenu, corps). `HttpMcpClient::over()` la construit avec `curl` pour `make raw-http-session`.
+  Les tests passent le **noyau Laravel** : le vrai serveur, sans le réseau, sur la base de test
+  (`tests/Feature/RawClient/HttpMcpClientTest.php`).
+
+Ce que le client fait à chaque requête :
+
+- il ajoute à `params._meta` sa version, ses capacités et son identité (`clientInfo`), puisqu'il n'y a plus
+  d'`initialize` pour les annoncer une fois pour toutes ;
+- il recopie `method` dans `Mcp-Method`, et le nom du tool ou du prompt, ou l'URI de la resource, dans `Mcp-Name` ;
+- il encode `Mcp-Name` en `=?base64?…?=` si la valeur n'est pas de l'ASCII sûr (un accent, un espace en bord) ;
+- dans un flux SSE, il ignore les notifications (sans `id`) et rend le message qui porte **son** `id`.
+
+Il n'a ni `notify()` ni `close()` : le mode moderne ne définit aucune notification du client sur HTTP, et il n'y a
+pas de session à fermer.
+
+### La session, commentée
+
+`make raw-http-session` joue une session en lecture seule, l'équivalent de celle de stdio. Les lignes sont
+raccourcies : `→` est la requête (ses en-têtes MCP, puis son corps), `←` la réponse (statut et type, puis corps).
+
+**1. Pas de handshake.** La première requête est déjà une vraie question. `server/discover` est facultatif : le
+client l'envoie ici pour connaître le serveur, mais il aurait pu commencer directement par `tools/call`.
+
+```
+→ POST MCP-Protocol-Version: 2026-07-28 Mcp-Method: server/discover
+  {"jsonrpc":"2.0","id":1,"method":"server/discover","params":{"_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{},"io.modelcontextprotocol/clientInfo":{"name":"raw-client","version":"0.1.0"}}}}
+← 200 application/json
+  {"jsonrpc":"2.0","id":1,"result":{"resultType":"complete",…,"supportedVersions":["2026-07-28"],"capabilities":{"tools":{…},"resources":{…},"prompts":{…}},"instructions":"…"}}
+```
+
+**2. Un tool.** `Mcp-Name` répète le nom du tool. Le serveur vérifie qu'il correspond au corps : un `200` prouve que
+le client a construit ses en-têtes correctement.
+
+```
+→ POST MCP-Protocol-Version: 2026-07-28 Mcp-Method: tools/call Mcp-Name: search_books
+  {"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"search_books","arguments":{"query":"dune"},"_meta":{…}}}
+← 200 application/json
+  {"jsonrpc":"2.0","id":3,"result":{"resultType":"complete","content":[…],"structuredContent":{"total":1,…}}}
+```
+
+**3. Un refus métier** reste un **résultat** (`isError: true`), donc un `200` : HTTP ne change rien à la distinction
+entre erreur de tool et erreur de protocole.
+
+```
+→ POST MCP-Protocol-Version: 2026-07-28 Mcp-Method: tools/call Mcp-Name: rate_book
+← 200 application/json
+  {"jsonrpc":"2.0","id":4,"result":{"resultType":"complete","content":[{"type":"text","text":"A rating goes from 1 to 5, 6 given."}],"isError":true,…}}
+```
+
+**4. Resources et prompts.** `Mcp-Name` porte l'URI de la resource, ou le nom du prompt.
+
+```
+→ POST MCP-Protocol-Version: 2026-07-28 Mcp-Method: resources/read Mcp-Name: library://shelves/reading
+→ POST MCP-Protocol-Version: 2026-07-28 Mcp-Method: prompts/get Mcp-Name: reading_review
+```
+
+**5. Les erreurs de protocole prennent un statut HTTP.** Une méthode inconnue : `404`. Une version que le serveur ne
+parle pas : `400`, avec la liste de celles qu'il parle. Le client peut alors réessayer avec l'une d'elles.
+
+```
+→ POST MCP-Protocol-Version: 2026-07-28 Mcp-Method: books/burn
+← 404 application/json
+  {"jsonrpc":"2.0","id":7,"error":{"code":-32601,"message":"The method [books\/burn] was not found."}}
+→ POST MCP-Protocol-Version: 1900-01-01 Mcp-Method: tools/list
+← 400 application/json
+  {"jsonrpc":"2.0","id":1,"error":{"code":-32022,"message":"Unsupported protocol version","data":{"supported":["2026-07-28"],"requested":"1900-01-01"}}}
+```
+
+**6. Rien à fermer.** Le stdio se termine en fermant l'entrée standard. Ici, il n'y a ni processus ni session : le
+client s'arrête, voilà tout.
+
+### Ce que la version à la main a révélé
+
+- **Le base64 de `Mcp-Name` est bien décodé** par le serveur : une URI accentuée, encodée, passe sans `-32020`.
+  Mais **`laravel/mcp` accepte aussi l'UTF-8 brut** dans l'en-tête, alors que la spec classe « une valeur d'en-tête
+  aux caractères invalides » parmi les échecs de validation. C'est une tolérance du SDK : un client ne doit pas
+  compter dessus.
+- **Un refus de resource devient un `500`.** Un id de livre invalide sur `library://books/{id}` donne `-32603`
+  (erreur interne), comme le notait déjà l'[ADR-0011](./decisions/0011-resources-etageres-et-livre.md). En stdio,
+  c'était un simple code mal choisi. En HTTP, le SDK le traduit en `500`, qui dit à tout proxy et à tout client
+  « le serveur a planté », alors que c'est la requête qui est fausse. La spec `2026-07-28` donne maintenant
+  `-32602` (paramètres invalides) à une resource introuvable, et le SDK produit ce code pour une
+  `ValidationException`. Corriger ce point reviendrait à remplacer une conséquence de l'ADR-0011 : c'est une
+  décision à part.
 
 ## Ce que le SDK faisait pour nous
 

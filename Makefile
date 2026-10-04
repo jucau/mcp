@@ -5,7 +5,7 @@ AGENT_ENV = $(if $(AI_AGENT),-e AI_AGENT='$(AI_AGENT)')
 EXEC = $(DC) exec -T $(AGENT_ENV) php
 ARTISAN = $(EXEC) php artisan
 
-.PHONY: quality ide-helper rector pint stan ark test coverage infection inspector raw-session benchmark mcp-log test-db start stop restart build rebuild destroy ps logs shell \
+.PHONY: quality ide-helper rector pint stan ark test coverage infection inspector raw-session raw-http-session benchmark mcp-log test-db start stop restart build rebuild destroy ps logs shell \
         migrate fresh seed composer artisan tinker
 
 # The one gate, run before every commit. The order is load-bearing: the writing tools come first, Pint
@@ -55,6 +55,10 @@ inspector:
 # A hand-written MCP client (client/) plays a read-only session against the server and prints every JSON-RPC line.
 raw-session:
 	$(DC) exec -T php php client/session.php
+
+# The same hand-written client, over HTTP, in a modern stateless session: no initialize, every request its own POST.
+raw-http-session:
+	$(DC) exec -T php php client/http-session.php
 
 # Times the same tools/call over stdio and HTTP, from inside the container: the transports, not Docker's port forwarding.
 benchmark:
