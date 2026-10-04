@@ -166,4 +166,56 @@ l'utilise pas.
 | Les logs | stderr, qui ne doit rien polluer | les logs Laravel |
 | Ce qui casse une session | un `echo` sur stdout | rien de semblable : la réponse HTTP est construite par le framework |
 | Exposition | aucune : pas de réseau | un port : `Origin`, interface d'écoute, puis authentification |
-| Le coût d'un appel | le processus est déjà démarré | une requête PHP-FPM complète, qui démarre Laravel à chaque fois |
+| Le coût d'un appel | le processus est déjà démarré, mais il **interroge** stdin (voir les mesures) | une requête PHP-FPM complète, qui démarre Laravel à chaque fois |
+
+## Mesurer plutôt que deviner
+
+`make benchmark` (`client/benchmark.php`) chronomètre le même `tools/call` (`search_books`, « dune ») sur les deux
+transports, **depuis l'intérieur du conteneur** : on mesure les transports, pas la redirection de port de Docker.
+Une exécution type :
+
+```
+First result, from nothing (one run):
+  stdio, legacy     155.9 ms
+  stdio, modern     131.1 ms
+  HTTP, legacy       18.9 ms
+  HTTP, modern        9.7 ms
+One more tools/call, once warm, back to back (100 calls each):
+  stdio          median   15.4 ms   p95   17.4 ms
+  HTTP           median   10.3 ms   p95   11.5 ms
+One more tools/call, once warm, spaced at random, 0 to 20 ms apart (100 calls each):
+  stdio          median   10.6 ms   p95   16.4 ms
+  HTTP           median   10.7 ms   p95   12.3 ms
+```
+
+**Le premier résultat.** stdio paie le lancement d'un processus PHP et le démarrage de Laravel, sans OPcache (il
+est désactivé en CLI) : environ 130 ms. HTTP n'a rien à lancer, PHP-FPM tourne déjà, avec OPcache : environ 10 ms.
+Le handshake legacy coûte deux allers-retours de plus : environ 25 ms en stdio, 10 ms en HTTP. C'est le gain
+concret de la suppression d'`initialize`.
+
+**À chaud, on attendait stdio largement devant : il ne l'est pas.** Le processus est démarré, la connexion à
+Postgres est ouverte, et le traitement d'un `tools/call`, mesuré dans le processus, prend **0,9 ms**. Pourtant, une
+requête met 10 à 15 ms. La cause est dans le transport stdio de `laravel/mcp` : il passe stdin en **non bloquant**
+et, chaque fois qu'il n'y a rien à lire, **dort 10 ms** (`usleep(10000)`) avant de regarder à nouveau. Une requête
+qui arrive pendant ce sommeil attend qu'il finisse. Deux constats l'établissent :
+
+- ramené à `usleep(1000)` le temps d'une expérience, le même `tools/call` passe de 15 ms à 3 ms ;
+- dans le conteneur, un `usleep(10000)` dure en réalité **12 ms** (la VM de Docker Desktop arrondit les timers).
+
+D'où les deux scénarios à chaud. **Enchaînées**, les requêtes tombent toujours au début d'un sommeil : environ 12 ms
+d'attente, plus le traitement. **Espacées au hasard**, comme celles d'un modèle qui réfléchit entre deux appels,
+elles tombent n'importe où dans le cycle : l'attente baisse, mais varie beaucoup, d'une requête à l'autre (le p95)
+comme d'une exécution à l'autre (une médiane entre 7 et 12 ms).
+
+Un écart reste **inexpliqué** : `ping`, `server/discover` et `prompts/list` répondent en moins de 0,1 ms sur stdio,
+comme s'ils échappaient au sommeil. Les tools et les resources, eux, le subissent toujours. Constaté, pas compris.
+
+**HTTP, de son côté**, paie à chaque requête le démarrage de Laravel (environ 4 ms, mesuré sur `server/discover`, qui
+ne touche pas la base). Un `tools/call` en coûte 10 : la différence vient **probablement** de la connexion à Postgres,
+ouverte à chaque requête par PHP-FPM, alors que le processus stdio garde la sienne. C'est une hypothèse, pas une
+mesure.
+
+**Ce qu'on en retient.** Le transport ne se choisit pas sur la latence : à l'échelle d'un appel de modèle, qui se
+compte en secondes, 10 ms ne se voient pas. Mais la mesure a montré deux choses qu'aucune intuition ne donnait :
+un transport « sans réseau » peut être plus lent qu'un transport HTTP, et le détail d'implémentation d'un SDK (une
+boucle qui interroge au lieu d'attendre) pèse plus que le choix du transport.

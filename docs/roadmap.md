@@ -75,7 +75,7 @@ exposé.*
 - [x] Enregistrer le même serveur en `Mcp::web` derrière nginx, publié sur `127.0.0.1` seulement
 - [x] Valider l'en-tête `Origin` (middleware à nous) ; épingler `202`, `405`, `-32020`, `-32022`, `403` par des tests
 - [x] Le brancher sur Claude Code en HTTP, et observer quelle époque il parle (moderne : `server/discover`, aucun `initialize`)
-- [ ] Comparer stdio, HTTP legacy et HTTP moderne
+- [x] Comparer stdio, HTTP legacy et HTTP moderne, mesures à l'appui (`make benchmark`)
 
 ## Étape 5 — Authentification
 
