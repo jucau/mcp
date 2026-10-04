@@ -35,3 +35,4 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0012](./0012-prompts-donnees-embarquees.md) | Les prompts embarquent les données de la bibliothèque | Accepté |
 | [0013](./0013-output-schema-verifie-par-les-tests.md) | Chaque tool annonce son `outputSchema`, et les tests vérifient qu'il le respecte | Accepté |
 | [0014](./0014-presenters-services-injectes.md) | Les presenters sont des services injectés | Accepté |
+| [0015](./0015-webmozart-assert-jamais-assert-natif.md) | `Webmozart\Assert`, jamais `assert()` natif, et c'est PHPStan qui l'impose | Accepté |

@@ -1,6 +1,7 @@
 includes:
     - vendor/larastan/larastan/extension.neon
     - vendor/phpstan/phpstan-webmozart-assert/extension.neon
+    - vendor/spaze/phpstan-disallowed-calls/extension.neon
 
 parameters:
     level: max
@@ -11,3 +12,8 @@ parameters:
         - tests
     tmpDir: storage/phpstan
     treatPhpDocTypesAsCertain: false
+    disallowedFunctionCalls:
+        -
+            function: 'assert()'
+            message: 'is compiled out when zend.assertions = -1, the production default'
+            errorTip: 'Use Webmozart\Assert\Assert, which PHPStan narrows just as well (ADR-0015)'
