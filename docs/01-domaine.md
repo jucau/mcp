@@ -6,8 +6,9 @@
 
 ## Mission
 
-Tenir la **bibliothèque personnelle** d'une personne : les livres qu'elle possède ou qu'elle voudrait lire,
-où elle en est de chacun, ce qu'elle en a pensé, et à qui elle les a prêtés.
+Tenir la **bibliothèque personnelle** de chaque **lecteur** : les livres qu'il possède ou qu'il voudrait lire,
+où il en est de chacun, ce qu'il en a pensé, et à qui il les a prêtés. Plusieurs lecteurs se partagent
+l'application, mais **aucune bibliothèque n'est partagée** : chacun ne voit et ne touche que ses livres.
 
 ## Décisions actées
 
@@ -18,12 +19,16 @@ où elle en est de chacun, ce qu'elle en a pensé, et à qui elle les a prêtés
 | 3 | L'emprunteur : texte libre ou entité ? | **Texte libre** (`Borrower`). |
 | 4 | Le prêt : agrégat séparé ou dans `Book` ? | **Dans `Book`**, en value object ([ADR-0007](./decisions/0007-un-agregat-book-pret-en-value-object.md)). |
 | 5 | L'architecture ? | **Hexagonale ciblée** ([ADR-0006](./decisions/0006-architecture-hexagonale-ciblee.md)). |
+| 6 | Plusieurs personnes ? | **Oui** : chaque livre appartient à un **lecteur** (`ReaderId`). Le compte, la connexion et les tokens sont de l'infrastructure, pas du domaine ([ADR-0018](./decisions/0018-un-lecteur-par-livre-sans-compte-dans-le-domaine.md)). |
 
 ---
 
 ## Agrégat `Book` — un livre
 
 **Identité** : `BookId` (UUID généré par le domaine).
+
+**Appartenance** : `reader`, le `ReaderId` du lecteur dont c'est la bibliothèque. Fixé à l'ajout, il ne change
+jamais.
 
 **État**
 
@@ -51,6 +56,8 @@ où elle en est de chacun, ce qu'elle en a pensé, et à qui elle les a prêtés
 - `B-6` — on ne prête qu'un livre **possédé** (`loan` ⇒ `owned`).
 - `B-7` — **un seul prêt en cours** : tenu par la structure (`?Loan`), pas par une garde.
 - `B-8` — un livre **prêté** ne peut pas être **retiré** de la bibliothèque.
+- `B-9` — un livre **ne change jamais de lecteur** : aucun comportement ne modifie `reader`. Pas de don, pas de
+  transfert ; un lecteur qui donne un livre le retire, l'autre l'ajoute.
 
 **Cycle de vie de la lecture** (`B-3`)
 
@@ -73,7 +80,7 @@ où elle en est de chacun, ce qu'elle en a pensé, et à qui elle les a prêtés
 
 | Méthode | Protège |
 |---|---|
-| `Book::add(id, title, author, isbn, owned)` | B-1, B-2 — commence en `ToRead`, sans prêt |
+| `Book::add(id, reader, title, author, isbn, owned)` | B-1, B-2, B-9 — commence en `ToRead`, sans prêt |
 | `acquire()` | — un livre de la liste d'envies devient possédé (idempotent) |
 | `startReading(on)` | B-3 |
 | `finishReading(on)` | B-3, B-4 |
@@ -94,9 +101,10 @@ LLM dans une erreur de tool.
 
 ## Invariant ensembliste : l'ISBN unique
 
-`BOOK-UNIQ` — deux livres de la bibliothèque n'ont **jamais le même ISBN**. Un agrégat ne voit que
+`BOOK-UNIQ` — deux livres **d'un même lecteur** n'ont **jamais le même ISBN**. Deux lecteurs peuvent posséder
+le même livre : l'unicité porte sur le couple (lecteur, ISBN). Un agrégat ne voit que
 lui-même : il ne peut pas garantir une règle qui porte sur **l'ensemble** des livres. Elle est donc tenue
-**au bord** : contrainte d'unicité en base, traduite par le repository en exception de domaine
+**au bord** : contrainte d'unicité en base sur (lecteur, ISBN), traduite par le repository en exception de domaine
 `DuplicateIsbn`. Pas de pré-vérification applicative (elle serait sujette à une course), même pattern
 que `ddd/` (ADR-0007 de Comptoir).
 
@@ -105,6 +113,7 @@ que `ddd/` (ADR-0007 de Comptoir).
 | VO | Règle |
 |---|---|
 | `BookId` | UUID valide |
+| `ReaderId` | UUID valide ; **reçu** de l'extérieur, jamais généré par le domaine |
 | `Title`, `Author`, `Borrower` | un `Text` : chaîne *trimée* non vide, 255 caractères max |
 | `Isbn` | accepte ISBN-10 ou ISBN-13, avec ou sans tirets ; vérifie la clé ; **normalise en ISBN-13** |
 | `Rating` | entier de 1 à 5 |
@@ -119,6 +128,14 @@ garantit déjà : un contrôle qu'aucun chemin ne peut faire échouer est du cod
 comme un mutant qui survit.
 
 ## Cas d'usage
+
+**Chaque use case agit pour un lecteur.** Toute commande et toute requête porte le `ReaderId` de celui qui
+demande. Le port `BookRepository` et `BookQueries` ne lisent **que** les livres de ce lecteur : un livre qui
+appartient à un autre est **inconnu** (`UnknownBook`), exactement comme un id qui n'existe pas. Jamais
+« interdit » : ce serait révéler qu'il existe chez quelqu'un d'autre.
+
+**Qui est le lecteur** n'est pas une question du domaine ni de l'application : c'est l'adaptateur qui le
+détermine (le token en HTTP, l'environnement en stdio) et le passe au use case.
 
 **Écriture** (un dossier par use case, command + handler) :
 

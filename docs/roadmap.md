@@ -81,9 +81,14 @@ exposé.*
 
 *Apprendre : un serveur MCP distant est une API exposée ; OAuth 2.1 et découverte des métadonnées.*
 
-- [ ] Plusieurs utilisateurs : chacun sa bibliothèque
-- [ ] OAuth (Passport) côté serveur, découverte par le client
-- [ ] Autorisation par tool
+- [ ] **Le domaine multi-lecteurs**, sans aucun protocole : chaque livre appartient à un lecteur (`ReaderId`),
+  les ports ne voient que les livres du lecteur qui demande, l'ISBN est unique par lecteur ; seeder à plusieurs
+  lecteurs ([01](./01-domaine.md), [ADR-0018](./decisions/0018-un-lecteur-par-livre-sans-compte-dans-le-domaine.md))
+- [ ] **OAuth 2.1 sur HTTP** (Passport) : métadonnées de la ressource et du serveur d'autorisation, `401` et
+  découverte, le compte traduit en lecteur ; en stdio, le lecteur vient de l'environnement ; le fuseau devient une
+  donnée du compte
+- [ ] **Scopes par tool** et *step-up* (`403 insufficient_scope`)
+- [ ] Plus tard : les *Client ID Metadata Documents* côté serveur d'autorisation
 
 ## Étape 6 — Voir le protocole à nu
 

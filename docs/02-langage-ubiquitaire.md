@@ -5,7 +5,8 @@
 
 | Français | Code | Nature | Remarque |
 |---|---|---|---|
-| bibliothèque | `Library` | bounded context | l'ensemble des livres d'une personne |
+| bibliothèque | `Library` | bounded context | l'ensemble des livres d'un lecteur |
+| lecteur | `ReaderId` | VO | celui dont c'est la bibliothèque ; **pas** un compte (voir les pièges) |
 | livre | `Book` | agrégat | un titre qu'on possède **ou** qu'on voudrait lire |
 | titre | `Title` | VO | |
 | auteur | `Author` | VO | un libellé, pas une entité |
@@ -26,13 +27,17 @@
 | prêt | `Loan` | VO | le prêt **en cours** ; pas d'historique |
 | emprunteur | `Borrower` | VO | texte libre |
 | prêter | `lendTo` | comportement | |
-| rendre (un prêt) | `markAsReturned` | comportement | côté propriétaire : « on me l'a rendu » |
+| rendre (un prêt) | `markAsReturned` | comportement | côté lecteur qui a prêté : « on me l'a rendu » |
 | retirer (de la bibliothèque) | `RemoveBook` | use case | suppression définitive |
 | étagère | *shelf* | lecture | une recherche pré-filtrée, pas un objet du domaine |
 
 **Pièges évités**
 
 - « Rendre » est ambigu (rendre à qui ?) : dans le code, c'est **toujours** le retour d'un prêt au
-  propriétaire, `markAsReturned`.
+  lecteur qui l'a prêté, `markAsReturned`.
+- « Utilisateur » (*user*) n'est **pas** un mot du domaine : c'est celui de l'authentification (un compte, un mot
+  de passe, des tokens), qui vit en infrastructure. Le domaine ne connaît que le **lecteur**.
+- « Propriétaire » (*owner*) est écarté : il se confondrait avec **possédé** (`owned`). Un livre de la liste
+  d'envies appartient à un lecteur sans être possédé.
 - « Étagère » n'est **pas** un concept stocké : aucun livre n'est « rangé » quelque part, l'étagère se
   calcule. Si un jour on veut des étagères personnalisées, ce sera un nouveau concept, avec son nom.
