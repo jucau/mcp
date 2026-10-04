@@ -231,13 +231,12 @@ client s'arrête, voilà tout.
   Mais **`laravel/mcp` accepte aussi l'UTF-8 brut** dans l'en-tête, alors que la spec classe « une valeur d'en-tête
   aux caractères invalides » parmi les échecs de validation. C'est une tolérance du SDK : un client ne doit pas
   compter dessus.
-- **Un refus de resource devient un `500`.** Un id de livre invalide sur `library://books/{id}` donne `-32603`
-  (erreur interne), comme le notait déjà l'[ADR-0011](./decisions/0011-resources-etageres-et-livre.md). En stdio,
-  c'était un simple code mal choisi. En HTTP, le SDK le traduit en `500`, qui dit à tout proxy et à tout client
-  « le serveur a planté », alors que c'est la requête qui est fausse. La spec `2026-07-28` donne maintenant
-  `-32602` (paramètres invalides) à une resource introuvable, et le SDK produit ce code pour une
-  `ValidationException`. Corriger ce point reviendrait à remplacer une conséquence de l'ADR-0011 : c'est une
-  décision à part.
+- **Un refus de resource devenait un `500`.** Un id de livre invalide sur `library://books/{id}` donnait `-32603`
+  (erreur interne), comme le notait l'[ADR-0011](./decisions/0011-resources-etageres-et-livre.md). En stdio,
+  c'était un simple code mal choisi. En HTTP, le SDK le traduisait en `500`, qui dit à tout proxy et à tout client
+  « le serveur a planté », alors que c'est la requête qui est fausse. Corrigé : un refus de resource est maintenant
+  un `-32602`, donc un `400`, comme le veut la spec `2026-07-28`
+  ([ADR-0017](./decisions/0017-refus-de-resource-en-parametres-invalides.md)).
 
 ## Ce que le SDK faisait pour nous
 

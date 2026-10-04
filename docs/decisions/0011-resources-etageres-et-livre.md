@@ -1,6 +1,7 @@
 # ADR-0011 — Les resources : quatre étagères fixes, un livre par template, les refus transmis
 
-- **Statut** : Accepté (2026-09-27)
+- **Statut** : Accepté (2026-09-27). Son traitement des erreurs est remplacé par
+  [ADR-0017](./0017-refus-de-resource-en-parametres-invalides.md).
 
 ## Contexte
 

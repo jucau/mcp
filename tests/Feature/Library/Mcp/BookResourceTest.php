@@ -11,6 +11,8 @@ use App\Library\Infrastructure\Mcp\LibraryServer;
 use App\Library\Infrastructure\Mcp\Resources\BookResource;
 use DateTimeImmutable;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
@@ -78,5 +80,29 @@ final class BookResourceTest extends TestCase
 
         LibraryServer::resource(BookResource::class, ['id' => 'dune'])
             ->assertHasErrors(['"dune" is not a valid book id: expected a UUID.']);
+    }
+
+    #[Test]
+    public function a_book_it_cannot_read_is_the_client_s_mistake_not_a_server_failure(): void
+    {
+        config(['app.debug' => false]);
+        $id = BookId::generate()->value;
+
+        $this->readOverHttp("library://books/{$id}")
+            ->assertBadRequest()
+            ->assertJsonPath('error.code', -32602)
+            ->assertJsonPath('error.message', sprintf('No book with id "%s" in the library.', $id));
+        $this->readOverHttp('library://books/dune')
+            ->assertBadRequest()
+            ->assertJsonPath('error.code', -32602)
+            ->assertJsonPath('error.message', '"dune" is not a valid book id: expected a UUID.');
+    }
+
+    /**
+     * @return TestResponse<JsonResponse>
+     */
+    private function readOverHttp(string $uri): TestResponse
+    {
+        return $this->postJson('/mcp', ['jsonrpc' => '2.0', 'id' => 1, 'method' => 'resources/read', 'params' => ['uri' => $uri]]);
     }
 }

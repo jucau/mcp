@@ -235,17 +235,19 @@ résultat du tout.
 
 | Cas | Tool (`tools/call`) | Resource (`resources/read`) |
 |---|---|---|
-| refus métier (id inconnu) | `result` + `isError: true` | `error`, code `-32603`, avec le message |
+| refus métier (id inconnu) | `result` + `isError: true` | `error`, code `-32602`, avec le message |
 | URI qu'aucune resource ne reconnaît | — | `error`, code `-32602` (paramètre invalide) |
 
-La spec recommande le code `-32002` (*resource not found*) pour une URI inconnue. `laravel/mcp` ne permet pas de
-le choisir : il renvoie `-32603` pour toute erreur levée par une resource. On l'accepte, le message dit
-l'essentiel.
+La spec `2026-07-28` donne le code `-32602` (paramètres invalides) à une resource introuvable. `laravel/mcp`
+renvoie `-32603` (erreur interne) pour toute erreur levée par une resource, **sauf** une `ValidationException`,
+qu'il traduit en `-32602` ([ADR-0017](./decisions/0017-refus-de-resource-en-parametres-invalides.md)). La
+différence se voit en HTTP : `-32603` y devient un `500`, `-32602` un `400`.
 
 **Le même piège que pour les tools** : une exception levée dans une resource n'est transmise qu'avec
 `APP_DEBUG`, et remplacée en production par « An internal server error occurred. ». Les resources étendent donc
-`LibraryResource`, qui traduit toute `DomainException` en `Response::error($message)`, comme `LibraryTool`
-([ADR-0011](./decisions/0011-resources-etageres-et-livre.md)).
+`LibraryResource`, qui traduit toute `DomainException` en `ValidationException` : son message survit en
+production, et son code est le bon ([ADR-0011](./decisions/0011-resources-etageres-et-livre.md),
+[ADR-0017](./decisions/0017-refus-de-resource-en-parametres-invalides.md)).
 
 ### Pas d'annotations, pas d'abonnement
 
@@ -317,7 +319,7 @@ chaque tool valide sa réponse réelle** contre le schéma qu'il annonce
 |---|---|---|---|
 | refus métier (« "Dune" is lent to Marie… ») | tool | `result` avec `isError: true` et le message | le **modèle**, qui peut corriger et réessayer |
 | argument mal formé (`"per_page": "20"`) | tool | `result` avec `isError: true` et le message de validation | le **modèle** |
-| refus métier (id inconnu) | resource | `error` JSON-RPC `-32603`, avec le message | le **host** |
+| refus métier (id inconnu) | resource | `error` JSON-RPC `-32602`, avec le message (un `400` en HTTP) | le **host** |
 | argument mal formé (`year: "25"`) | prompt | `error` JSON-RPC `-32602`, avec le message | le **host**, donc l'utilisateur |
 | URI ou nom inconnu | resource, prompt, tool | `error` JSON-RPC `-32602` | le **host** |
 | panne technique (base indisponible) | toutes | `-32603` « An internal server error occurred. » en production | personne : c'est journalisé |

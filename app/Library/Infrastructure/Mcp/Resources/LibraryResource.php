@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Library\Infrastructure\Mcp\Resources;
 
 use DomainException;
+use Illuminate\Validation\ValidationException;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\MimeType;
@@ -18,9 +19,9 @@ abstract class LibraryResource extends Resource
         try {
             return Response::text(json_encode($this->read($request), JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         } catch (DomainException $domainException) {
-            // The SDK turns this into a JSON-RPC error that keeps its message; a thrown exception would only keep
-            // it with APP_DEBUG on.
-            return Response::error($domainException->getMessage());
+            // A ValidationException is the only exception the SDK turns into -32602 (invalid params, a 400 over
+            // HTTP) instead of -32603 (internal error, a 500), and it keeps its message even with APP_DEBUG off.
+            throw ValidationException::withMessages(['uri' => $domainException->getMessage()]);
         }
     }
 
