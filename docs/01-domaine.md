@@ -120,12 +120,13 @@ que `ddd/` (ADR-0007 de Comptoir).
 | `Loan` | `Borrower` + `lentOn` |
 | `ReadingStatus` | enum `to_read`, `reading`, `read`, `abandoned` |
 
-**C'est le constructeur qui garde l'invariant**, pas le constructeur nommé. Le constructeur est le seul
-passage obligé : un constructeur nommé ajouté demain ne pourra pas l'éviter, alors qu'il pourrait oublier une
+**C'est le constructeur qui garde l'invariant**, pas le constructeur nommé
+([ADR-0022](./decisions/0022-invariants-gardes-par-le-constructeur.md)). Le constructeur est le seul passage
+obligé : un constructeur nommé ajouté demain ne pourra pas l'éviter, alors qu'il pourrait oublier une
 validation qu'on lui aurait confiée. Le constructeur nommé se contente de **normaliser** l'entrée (*trim*,
-minuscules, tirets retirés), puis il délègue. Il ne refait pas les vérifications que sa normalisation
-garantit déjà : un contrôle qu'aucun chemin ne peut faire échouer est du code mort, et Infection le signale
-comme un mutant qui survit.
+minuscules, tirets retirés), puis il délègue. Il ne refait pas les vérifications que sa normalisation garantit
+déjà : un contrôle qu'aucun chemin ne peut faire échouer est du code mort, et Infection le signale comme un
+mutant qui survit.
 
 ## Cas d'usage
 

@@ -42,3 +42,4 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0019](./0019-comptes-en-infrastructure-lecteur-ferme-par-defaut.md) | Des comptes en infrastructure, et un lecteur courant fermé par défaut | Accepté, lecteur par défaut remplacé par 0021 |
 | [0020](./0020-passport-serveur-d-autorisation-destinataire-implicite.md) | Passport comme serveur d'autorisation, et un destinataire de token implicite | Accepté |
 | [0021](./0021-chaque-transport-choisit-son-lecteur.md) | Chaque transport choisit son lecteur, et aucun lecteur n'est servi par défaut | Accepté |
+| [0022](./0022-invariants-gardes-par-le-constructeur.md) | Le constructeur d'un value object garde ses invariants, le constructeur nommé normalise | Accepté |
