@@ -126,7 +126,7 @@ toujours et que le script ne peut pas falsifier. D'où les trois règles de la s
 `.mcp.json` déclare un second serveur, à côté de `library` (stdio) :
 
 ```json
-"library-http": { "type": "http", "url": "http://127.0.0.1:8090/mcp" }
+"library-http": { "type": "http", "url": "http://localhost:8090/mcp" }
 ```
 
 `127.0.0.1` et non `localhost` : nginx n'est publié que sur l'IPv4 locale, et `localhost` peut se résoudre en

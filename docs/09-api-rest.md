@@ -208,6 +208,38 @@ et la relit à chaque requête pour savoir s'il est révoqué. Le destinataire y
 4. **Fermé par défaut** : un token sans destinataire n'ouvre **rien**. Le `library:token` des outils de dev prend
    la ressource visée en option.
 
+### Ce qu'envoie vraiment Claude Code
+
+Avant de coder quoi que ce soit, on a regardé un vrai client. Le « fermé par défaut » suppose que le client envoie
+`resource` : s'il ne l'envoyait pas, la décision lui fermerait la porte. Un journal nginx temporaire, qui lisait la
+query string et le corps des requêtes `/oauth/*`, a capturé le parcours OAuth complet de Claude Code (codes et
+`code_verifier` coupés) :
+
+```
+POST /oauth/register   {"client_name":"Claude Code (library-http)","redirect_uris":["http://localhost:62343/callback"],
+                        "token_endpoint_auth_method":"none","application_type":"native","scope":"mcp:use", …}
+GET  /oauth/authorize  response_type=code&client_id=01a12749-…&code_challenge=…&code_challenge_method=S256
+                       &redirect_uri=http://localhost:62343/callback&state=…&scope=mcp:use
+                       &resource=http://localhost:8090/mcp
+POST /oauth/token      grant_type=authorization_code&code=…&code_verifier=…&redirect_uri=…&client_id=01a12749-…
+                       &resource=http://localhost:8090/mcp
+```
+
+- **Claude Code envoie `resource` aux deux étapes**, à l'autorisation et à l'échange du code, comme le demande la
+  RFC 8707. Le « fermé par défaut » ne le bloquera pas.
+- **La valeur est l'URL configurée chez le client.** Un premier essai, avec `http://127.0.0.1:8090/mcp` configuré,
+  a envoyé `resource=http://127.0.0.1:8090/mcp`. Les métadonnées, lues à la même adresse, annonçaient elles aussi
+  `127.0.0.1` : on ne peut rien en conclure sur la vérification que fait Claude Code.
+- **Les métadonnées se fient à l'en-tête `Host`.** `laravel/mcp` construit le `resource` et l'adresse du serveur
+  d'autorisation avec `url()`, qui suit le `Host` de la requête, pas `APP_URL`. Une requête avec
+  `Host: evil.example` reçoit des métadonnées qui désignent `http://evil.example` comme serveur d'autorisation.
+  Le client ne choisit pas le `Host` qu'il envoie, mais un cache placé devant le serveur pourrait garder et
+  resservir une telle réponse.
+- **Conséquence pour la validation** : `localhost` et `127.0.0.1` désignent la même machine, mais ce sont deux
+  chaînes différentes. Le serveur compare le `resource` reçu, **exactement**, à l'URI canonique de chacune de ses
+  ressources, dérivée d'`APP_URL` et jamais de la requête. Ce n'est pas au serveur d'interpréter les adresses. Le
+  `.mcp.json` du projet configure donc `localhost`, comme `APP_URL`.
+
 L'API publie ses propres métadonnées de ressource (`/.well-known/oauth-protected-resource/api`) et répond `401` avec
 `WWW-Authenticate`, comme `/mcp`. Rien de cela n'est propre à MCP : c'est **OAuth standard** (RFC 9728), que MCP a
 choisi de rendre obligatoire. Un client OAuth générique saura découvrir l'API comme Claude Code découvre `/mcp`.

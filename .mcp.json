@@ -27,7 +27,7 @@
         },
         "library-http": {
             "type": "http",
-            "url": "http://127.0.0.1:8090/mcp"
+            "url": "http://localhost:8090/mcp"
         }
     }
 }
