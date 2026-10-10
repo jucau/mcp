@@ -78,7 +78,8 @@ soit. L'adaptateur doit donc classer chaque refus du domaine.
 | `UnknownBook`, `InvalidBookId` (dans l'URL) | `404` | l'URL ne désigne aucun livre du lecteur |
 | `ReadingTransitionNotAllowed`, `BookAlreadyLent`, `BookNotLent`, `BookLent`, `BookNotOwned`, `BookNotFinished`, `DuplicateIsbn` | `409` | la demande est bien formée, mais l'état du livre l'interdit |
 | `InvalidIsbn`, `InvalidRating`, `InvalidText`, `FinishedBeforeStarted` | `422` | une valeur fournie ne respecte pas une règle du domaine |
-| forme invalide (champ manquant, mauvais type, champ inconnu) | `422` | refusée avant le use case, comme dans les tools |
+| `InvalidReaderId` | `500` | le lecteur vient du compte, pas de la requête : un lecteur invalide est une panne du serveur, et son message ne sort pas |
+| forme invalide (champ manquant, mauvais type) | `422` | refusée avant le use case, comme dans les tools ; un champ inconnu est ignoré, comme dans les tools |
 | aucun token, token invalide ou destiné à un autre serveur | `401` | voir plus bas |
 
 Le corps suit le format standard des erreurs HTTP, les *Problem Details* (RFC 9457, `application/problem+json`) :
@@ -95,9 +96,14 @@ Le corps suit le format standard des erreurs HTTP, les *Problem Details* (RFC 94
 Le `detail` est **le message du domaine**, le même que lit le modèle en MCP : le métier n'écrit son refus qu'une
 fois. Seuls le `type` et le statut sont propres à HTTP.
 
+Un refus de **forme** (la validation de Laravel) prend le même format, avec le détail par champ dans un membre
+`errors`, une extension que la RFC 9457 permet. Le `401`, lui, garde la réponse de Laravel : il dit seulement qu'il
+faut un token, et c'est l'en-tête `WWW-Authenticate` qui dit où l'obtenir.
+
 Un piège : le jour où le domaine ajoute un refus, l'adaptateur ne le saura pas. Un test parcourt donc **toutes** les
 `DomainException` du domaine et vérifie qu'elles ont un statut : un oubli fait échouer la porte, au lieu de finir en
-`500`.
+`500`. Et seules les exceptions **du domaine** deviennent des *Problem Details* : `DomainException` est une classe de
+PHP, qu'une bibliothèque peut lever aussi, et son message n'est pas fait pour sortir.
 
 ## La forme des entrées : HTTP n'a pas de types
 
@@ -150,8 +156,17 @@ respecte : c'est l'équivalent de l'`outputSchema` vérifié par les tests
 
 L'API sert le lecteur **du compte authentifié**, comme `/mcp` en HTTP. Mais rien ne lui est servi d'office
 ([ADR-0021](./decisions/0021-chaque-transport-choisit-son-lecteur.md)) : c'est un nouveau point d'entrée, il doit
-**choisir** son lecteur. Le groupe de routes `/api` branche `AuthenticatedReader`. Sans ce choix, la résolution de
-`CurrentReader` échoue : la règle a été écrite pour ce cas.
+**choisir** son lecteur. Le groupe de routes `/api` branche `AuthenticatedReader` par un middleware. Sans ce choix,
+la résolution de `CurrentReader` échoue : la règle a été écrite pour ce cas.
+
+Deux pièges de Laravel, rencontrés en chemin :
+
+- **Un contrôleur est instancié avant ses middlewares** : Laravel le construit pour lire les middlewares qu'il
+  déclare. Un `CurrentReader` injecté dans le constructeur serait donc résolu avant que le groupe ait choisi le
+  lecteur. Les contrôleurs le reçoivent dans leur méthode.
+- **Les tests partageaient le lecteur choisi.** `TestCase` lie `ConfiguredReader` sur un lecteur de test, et les
+  tests de l'API s'authentifiaient avec ce même lecteur : un groupe `/api` qui aurait oublié de choisir son lecteur
+  serait passé inaperçu. Un test s'authentifie donc avec le compte d'un **autre** lecteur, comme pour `/mcp`.
 
 L'`Origin` n'est pas vérifié sur l'API : cette protection de `/mcp` vise le *DNS rebinding* contre un serveur local
 qu'un navigateur atteindrait avec les droits de l'utilisateur
@@ -282,13 +297,23 @@ Trois choix plus fins :
   restreindre un token à un sous-ensemble, et avec une seule ressource par token, il n'y a rien à restreindre.
 - **Une erreur `invalid_target` n'est pas renvoyée au client par redirection** : on la lève avant que Passport n'ait
   validé le client et sa `redirect_uri`, et rediriger vers une adresse non validée serait une redirection ouverte.
-- **L'accord déjà donné ne regarde que les scopes** (`hasGrantedScopes`) : tant qu'il n'y a qu'une ressource, un
-  accord vaut pour elle. Il faudra y ajouter le `resource` avec l'API, sinon un accord donné pour `/mcp` ouvrirait
-  `/api` sans rien demander.
+- **Un accord vaut pour un serveur.** Passport saute l'écran d'accord quand le client a déjà un token actif avec les
+  mêmes scopes (`hasGrantedScopes`), sans regarder pour quel serveur. Notre contrôleur y ajoute le `resource` : un
+  accord donné pour `/mcp` ne dispense pas de celui pour `/api`.
 
 L'API publie ses propres métadonnées de ressource (`/.well-known/oauth-protected-resource/api`) et répond `401` avec
 `WWW-Authenticate`, comme `/mcp`. Rien de cela n'est propre à MCP : c'est **OAuth standard** (RFC 9728), que MCP a
 choisi de rendre obligatoire. Un client OAuth générique saura découvrir l'API comme Claude Code découvre `/mcp`.
+
+Le middleware qui ajoute cet en-tête est déclaré **dans la liste de priorité** de Laravel, juste avant
+l'authentification. Sinon, Laravel trie `auth:api` devant lui (le groupe `api` contient un middleware prioritaire), et
+le `401` partirait sans dire où obtenir un token. Le test sans token l'a montré, alors qu'un token mal destiné, refusé
+plus loin, recevait bien l'en-tête.
+
+**Un écart connu, laissé de côté.** Ces métadonnées sont celles de `laravel/mcp`, qui les sert pour **n'importe quel**
+chemin (`/.well-known/oauth-protected-resource/n-importe-quoi` annonce une ressource qui n'existe pas) et y annonce le
+scope `mcp:use`, qui ne veut rien dire pour l'API. Sans conséquence aujourd'hui : aucun token ne vaut pour un chemin
+inconnu, et l'API ne vérifie pas de scope.
 
 ## Ce qu'on vérifiera
 

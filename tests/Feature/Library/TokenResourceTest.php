@@ -84,6 +84,26 @@ final class TokenResourceTest extends TestCase
     }
 
     #[Test]
+    public function a_consent_given_for_the_mcp_server_is_asked_again_for_the_api(): void
+    {
+        $this->exchange($this->approve())->assertOk();
+
+        $this->authorize(ProtectedResource::Api->uri())
+            ->assertOk()
+            ->assertSee(ProtectedResource::Api->uri());
+    }
+
+    #[Test]
+    public function the_token_of_an_authorization_for_the_api_opens_the_api_only(): void
+    {
+        $token = $this->exchange($this->approve(ProtectedResource::Api), resource: ProtectedResource::Api->uri())->json('access_token');
+        Assert::string($token);
+
+        $this->getJson('/api/books', ['Authorization' => 'Bearer ' . $token])->assertOk();
+        $this->mcpWith($token)->assertUnauthorized();
+    }
+
+    #[Test]
     public function a_refreshed_token_keeps_the_server_of_the_one_it_replaces(): void
     {
         $refreshToken = $this->exchange($this->approve())->json('refresh_token');
@@ -136,9 +156,9 @@ final class TokenResourceTest extends TestCase
         ])));
     }
 
-    private function approve(): string
+    private function approve(ProtectedResource $resource = ProtectedResource::Mcp): string
     {
-        $this->authorize(ProtectedResource::Mcp->uri())->assertOk();
+        $this->authorize($resource->uri())->assertOk();
 
         return $this->codeFrom($this->post('/oauth/authorize', [
             'client_id' => $this->client->getKey(),

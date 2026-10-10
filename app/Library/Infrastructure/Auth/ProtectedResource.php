@@ -7,6 +7,7 @@ namespace App\Library\Infrastructure\Auth;
 enum ProtectedResource: string
 {
     case Mcp = 'mcp';
+    case Api = 'api';
 
     public static function fromUri(mixed $uri): ?self
     {

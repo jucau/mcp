@@ -128,17 +128,17 @@ appel.*
 *Apprendre : ce que l'hexagone promet face à un second adaptateur primaire, ce que MCP emprunte à HTTP et à OAuth, et
 à qui est destiné un token quand deux serveurs partagent un serveur d'autorisation.*
 
-- [ ] Documenter l'API et le destinataire des tokens ([09](./09-api-rest.md),
+- [x] Documenter l'API et le destinataire des tokens ([09](./09-api-rest.md),
   [ADR-0024](./decisions/0024-api-rest-une-url-par-use-case.md), [ADR-0025](./decisions/0025-chaque-adaptateur-possede-son-contrat.md),
   [ADR-0026](./decisions/0026-un-destinataire-explicite-par-token.md))
 - [x] **Le destinataire des tokens**, avant toute route : `resource` validé à l'autorisation et affiché sur l'écran
   d'accord, enregistré avec le token, vérifié par `/mcp` ; un token sans destinataire n'ouvre rien ; les URL
   annoncées viennent d'`APP_URL` ([ADR-0027](./decisions/0027-urls-annoncees-depuis-app-url.md))
 - [x] Les adaptateurs s'ignorent (PHPArkitect), et `Shelf` descend en `Application`
-- [ ] Les lectures : `GET /api/books`, `GET /api/books/{id}`, `GET /api/shelves/{shelf}`, le lecteur authentifié
+- [x] Les lectures : `GET /api/books`, `GET /api/books/{id}`, `GET /api/shelves/{shelf}`, le lecteur authentifié
   choisi par le groupe `/api`, les métadonnées de la ressource et le `401`
 - [ ] Les écritures : `POST /api/books`, `DELETE /api/books/{id}` et les sept actions
-- [ ] Les refus en *Problem Details*, et le test qui garantit un statut à chaque refus du domaine
+- [x] Les refus en *Problem Details*, et le test qui garantit un statut à chaque refus du domaine
 - [ ] Le contrat OpenAPI, vérifié par les tests
 - [ ] Pour de vrai : Claude Code refait son parcours OAuth, l'API répond à un token émis pour elle
 

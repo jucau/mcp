@@ -12,7 +12,7 @@ final class IssueToken extends Command
 {
     protected $signature = 'library:token
         {email : The account the token acts for}
-        {--resource= : The server the token is for (mcp); without it, the token opens nothing}';
+        {--resource= : The server the token is for (mcp or api); without it, the token opens nothing}';
 
     protected $description = 'Issue an access token for an account, for the hand-written client and the benchmark (never for Claude Code: it runs the OAuth flow)';
 
