@@ -134,7 +134,7 @@ appel.*
 - [x] **Le destinataire des tokens**, avant toute route : `resource` validé à l'autorisation et affiché sur l'écran
   d'accord, enregistré avec le token, vérifié par `/mcp` ; un token sans destinataire n'ouvre rien ; les URL
   annoncées viennent d'`APP_URL` ([ADR-0027](./decisions/0027-urls-annoncees-depuis-app-url.md))
-- [ ] Les adaptateurs s'ignorent (PHPArkitect), et `Shelf` descend en `Application`
+- [x] Les adaptateurs s'ignorent (PHPArkitect), et `Shelf` descend en `Application`
 - [ ] Les lectures : `GET /api/books`, `GET /api/books/{id}`, `GET /api/shelves/{shelf}`, le lecteur authentifié
   choisi par le groupe `/api`, les métadonnées de la ressource et le `401`
 - [ ] Les écritures : `POST /api/books`, `DELETE /api/books/{id}` et les sept actions

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Library\Infrastructure\Mcp\Resources;
 
 use App\Library\Application\Book\Query\BookQueries;
+use App\Library\Application\Book\Query\Shelf;
 use App\Library\Infrastructure\Mcp\BookPresenter;
-use App\Library\Infrastructure\Mcp\Shelf;
 use App\Library\Infrastructure\Reader\CurrentReader;
 use Laravel\Mcp\Request;
 

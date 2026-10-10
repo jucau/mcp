@@ -6,8 +6,8 @@ namespace App\Library\Infrastructure\Mcp\Prompts;
 
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookSearch;
+use App\Library\Application\Book\Query\Shelf;
 use App\Library\Domain\Book\ReadingStatus;
-use App\Library\Infrastructure\Mcp\Shelf;
 use App\Library\Infrastructure\Reader\CurrentReader;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;

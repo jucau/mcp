@@ -36,5 +36,12 @@ return static function (Config $config): void {
         ]))
         ->because('the application orchestrates the domain through ports, without infrastructure, direct persistence, facades or protocol');
 
+    foreach ([['Mcp', 'Api'], ['Api', 'Mcp']] as [$adapter, $other]) {
+        $rules[] = Rule::allClasses()
+            ->that(new ResideInOneOfTheseNamespaces("App\\*\\Infrastructure\\{$adapter}"))
+            ->should(new NotDependsOnTheseNamespaces(["App\\*\\Infrastructure\\{$other}"]))
+            ->because('each driving adapter owns its contract (ADR-0025): what both need belongs to the core');
+    }
+
     $config->add($classSet, ...$rules);
 };

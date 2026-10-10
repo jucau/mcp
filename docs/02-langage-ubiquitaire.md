@@ -29,7 +29,7 @@
 | prêter | `lendTo` | comportement | |
 | rendre (un prêt) | `markAsReturned` | comportement | côté lecteur qui a prêté : « on me l'a rendu » |
 | retirer (de la bibliothèque) | `RemoveBook` | use case | suppression définitive |
-| étagère | *shelf* | lecture | une recherche pré-filtrée, pas un objet du domaine |
+| étagère | `Shelf` | lecture | une recherche pré-filtrée, pas un objet du domaine |
 
 **Pièges évités**
 

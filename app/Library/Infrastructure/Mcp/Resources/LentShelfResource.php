@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Library\Infrastructure\Mcp\Resources;
 
-use App\Library\Infrastructure\Mcp\Shelf;
+use App\Library\Application\Book\Query\Shelf;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;

@@ -135,6 +135,13 @@ ubiquitaire (« une recherche pré-filtrée ») : elle n'appartient à aucun pro
 `Application\Book\Query`. C'est la seule modification attendue du cœur, et elle **corrige** un défaut du premier
 adaptateur.
 
+Le déplacement a une conséquence qu'on n'avait pas vue : dans `Application`, `Shelf` passe sous le regard
+d'**Infection**, qui ne joue que la suite Unit. Les étagères n'étaient testées qu'en Feature, à travers Eloquent :
+chaque mutant de leur définition (`owned: true` changé en `false`, par exemple) aurait survécu. Un test Unit fixe donc la
+définition de chaque étagère, comme `BookSearchTest` fixe celle d'une recherche. Il répète le code, et c'est voulu :
+le code **est** ici une définition du glossaire. Un double in-memory de `BookQueries` aurait permis de tester les
+étagères par leur effet, mais au prix d'une recherche insensible aux accents réécrite en mémoire, pour quatre lignes.
+
 Le contrat de l'API s'écrit dans un document **OpenAPI** versionné, et les tests vérifient que chaque réponse le
 respecte : c'est l'équivalent de l'`outputSchema` vérifié par les tests
 ([ADR-0013](./decisions/0013-output-schema-verifie-par-les-tests.md)).
