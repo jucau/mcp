@@ -109,7 +109,10 @@ appel.*
 - [x] Mettre à jour les dépendances (Laravel, Boost, Infection, `json-schema` ; PHPUnit 13 à part, majeure), et
   faire échouer la suite sur le moindre warning, notice ou dépréciation (`failOnAllIssues`)
 - [ ] **Les requêtes en plusieurs allers-retours (MRTR)** : `remove_book` demande confirmation avant de supprimer
-  (*elicitation*). Le serveur répond `input_required`, le client rejoue la requête avec la réponse
+  (*elicitation*). Le serveur répond `input_required`, le client rejoue la requête avec la réponse.
+  **En attente** : `laravel/mcp` v1.0.1 ne gère ni `input_required` ni `inputResponses` ; le support
+  (`$request->ask()`, [laravel/mcp#363](https://github.com/laravel/mcp/pull/363)) a été mergé puis reverté, et
+  n'est pas publié. On reprend à sa release plutôt que de remplacer `tools/call` dans le SDK
 
 ## Plus tard (idées, sans engagement)
 
