@@ -16,6 +16,8 @@
     "minMsi": 100,
     "minCoveredMsi": 100,
     "timeout": 10,
+    // A timeout counts as killed by default: a saturated run would then hide an escaped mutant.
+    "timeoutsAsEscaped": true,
     "testFramework": "phpunit",
     "testFrameworkOptions": "--testsuite=Unit",
     "logs": {

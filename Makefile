@@ -44,9 +44,12 @@ coverage:
 
 # Not --threads=max: a saturated container kills runs, which Infection counts as detected, silently
 # inflating the MSI (measured on ddd/). PAO_DISABLE: Infection judges a mutant by regexing PHPUnit's human
-# output, and Pao's JSON would make every mutant read as killed.
+# output, and Pao's JSON would make every mutant read as killed. Errored and syntax-error mutants count as
+# killed in the MSI, and Infection has no setting to refuse them.
 infection:
-	$(EXEC) env PAO_DISABLE=true php vendor/bin/infection --threads=4
+	$(EXEC) env PAO_DISABLE=true php vendor/bin/infection --threads=4 --log-verbosity=all
+	@grep -qx 'Errored: 0' storage/logs/infection-summary.log && grep -qx 'Syntax Errors: 0' storage/logs/infection-summary.log \
+		|| { echo 'Errored mutants count as killed: see storage/logs/infection.log'; exit 1; }
 
 # Runs on the host (needs Node): the Inspector launches the server exactly as Claude Code does, from .mcp.json.
 inspector:
