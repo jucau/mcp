@@ -8,11 +8,11 @@ use App\Library\Domain\Book\BookRepository;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Testing\TestResponse;
-use Laravel\Passport\Passport;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\Library\Accounts;
 use Tests\Support\Library\Books;
 use Tests\Support\Library\Readers;
+use Tests\Support\Library\Tokens;
 use Tests\TestCase;
 
 final class HttpTransportTest extends TestCase
@@ -26,7 +26,7 @@ final class HttpTransportTest extends TestCase
         parent::setUp();
 
         config(['library.mcp_allowed_origins' => ['http://localhost:8090']]);
-        Passport::actingAs(Accounts::of(Readers::ME));
+        Tokens::actingAs(Accounts::of(Readers::ME));
     }
 
     #[Test]

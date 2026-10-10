@@ -69,11 +69,11 @@ raw-session:
 
 # The same hand-written client, over HTTP, in a modern stateless session: no initialize, every request its own POST.
 raw-http-session:
-	$(DC) exec -T php sh -c 'MCP_TOKEN=$$(php artisan library:token julien@marque-page.test) php client/http-session.php'
+	$(DC) exec -T php sh -c 'MCP_TOKEN=$$(php artisan library:token julien@marque-page.test --resource=mcp) php client/http-session.php'
 
 # Times the same tools/call over stdio and HTTP, from inside the container: the transports, not Docker's port forwarding.
 benchmark:
-	$(DC) exec -T php sh -c 'MCP_TOKEN=$$(php artisan library:token julien@marque-page.test) php client/benchmark.php'
+	$(DC) exec -T php sh -c 'MCP_TOKEN=$$(php artisan library:token julien@marque-page.test --resource=mcp) php client/benchmark.php'
 
 # What a proxy sees of the HTTP traffic, read from the MCP headers alone, never from the body.
 mcp-log:

@@ -12,11 +12,11 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Testing\TestResponse;
-use Laravel\Passport\Passport;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\Library\Accounts;
 use Tests\Support\Library\Books;
 use Tests\Support\Library\Readers;
+use Tests\Support\Library\Tokens;
 use Tests\TestCase;
 
 final class HttpAuthenticationTest extends TestCase
@@ -72,7 +72,7 @@ final class HttpAuthenticationTest extends TestCase
         $repository = $this->app->make(BookRepository::class);
         $repository->save(Books::aBook('Dune', 'Frank Herbert'));
         $repository->save(Books::aBook('Fondation', 'Isaac Asimov', reader: Readers::someoneElse()));
-        Passport::actingAs(Accounts::of(Readers::SOMEONE_ELSE));
+        Tokens::actingAs(Accounts::of(Readers::SOMEONE_ELSE));
 
         $this->mcp('tools/call', ['name' => 'search_books', 'arguments' => []], name: 'search_books')
             ->assertOk()
@@ -85,7 +85,7 @@ final class HttpAuthenticationTest extends TestCase
     {
         $book = Books::aBook(reader: Readers::someoneElse());
         $this->app->make(BookRepository::class)->save($book);
-        Passport::actingAs(Accounts::of(Readers::SOMEONE_ELSE, 'Pacific/Kiritimati'));
+        Tokens::actingAs(Accounts::of(Readers::SOMEONE_ELSE, 'Pacific/Kiritimati'));
         $this->travelTo(new DateTimeImmutable('2026-10-04 12:00', new DateTimeZone('UTC')));
 
         $this->mcp('tools/call', ['name' => 'start_reading', 'arguments' => ['book_id' => $book->id()->value]], name: 'start_reading')

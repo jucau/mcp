@@ -47,3 +47,4 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0024](./0024-api-rest-une-url-par-use-case.md) | L'API REST parle métier : une URL par use case, et les refus en *Problem Details* | Accepté |
 | [0025](./0025-chaque-adaptateur-possede-son-contrat.md) | Chaque adaptateur possède son contrat : des `JsonResource` pour l'API, et des adaptateurs qui s'ignorent | Accepté |
 | [0026](./0026-un-destinataire-explicite-par-token.md) | Un destinataire explicite par token, enregistré avec lui | Accepté |
+| [0027](./0027-urls-annoncees-depuis-app-url.md) | Les URL que l'application annonce viennent d'`APP_URL`, jamais de la requête | Accepté |

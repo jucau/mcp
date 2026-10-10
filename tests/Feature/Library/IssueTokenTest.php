@@ -23,7 +23,7 @@ final class IssueTokenTest extends TestCase
         $account = Accounts::of(Readers::SOMEONE_ELSE);
         $this->app->make(BookRepository::class)->save(Books::aBook('Fondation', 'Isaac Asimov', reader: Readers::someoneElse()));
 
-        $this->assertSame(0, Artisan::call('library:token', ['email' => $account->email]));
+        $this->assertSame(0, Artisan::call('library:token', ['email' => $account->email, '--resource' => 'mcp']));
         $token = trim(Artisan::output());
 
         $this->postJson('/mcp', [
@@ -42,6 +42,12 @@ final class IssueTokenTest extends TestCase
         ])
             ->assertOk()
             ->assertJsonPath('result.structuredContent.books.0.title', 'Fondation');
+    }
+
+    #[Test]
+    public function it_refuses_a_resource_it_does_not_know(): void
+    {
+        $this->assertSame(1, Artisan::call('library:token', ['email' => Accounts::of(Readers::ME)->email, '--resource' => 'elsewhere']));
     }
 
     #[Test]

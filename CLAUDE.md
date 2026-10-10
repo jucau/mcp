@@ -54,6 +54,10 @@ intérieure ne connaît `Laravel\Mcp`**) sont vérifiées par PHPArkitect. **Un 
 - **Les adaptateurs** (Eloquent) ont leurs tests Feature ; un même **trait de contrat** est joué par le double
   in-memory (Unit) **et** l'adaptateur réel (Feature).
 
+## Migrations
+
+**Une migration ne touche qu'une table** : chacune s'applique, échoue et se rejoue seule.
+
 ## Données de démo
 
 **Chaque feature livre ses données de démo** dans `LibrarySeeder`, avec des cas variés. L'agrégat se seede

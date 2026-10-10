@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Library;
 
+use App\Library\Infrastructure\Auth\ProtectedResource;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Testing\TestResponse;
 use Laravel\Passport\Client;
@@ -31,7 +32,7 @@ final class AuthorizationScreenTest extends TestCase
 
         $this->authorize($this->client())
             ->assertOk()
-            ->assertSeeInOrder(['Claude Code', 'demande l\'accès à votre bibliothèque', Readers::ME . '@marque-page.test'])
+            ->assertSeeInOrder(['Claude Code', 'demande l\'accès à votre bibliothèque', Readers::ME . '@marque-page.test', 'Pour le serveur', ProtectedResource::Mcp->uri()])
             ->assertSee(route('passport.authorizations.approve'))
             ->assertSee(route('passport.authorizations.deny'))
             ->assertSee('Autoriser')
@@ -65,6 +66,7 @@ final class AuthorizationScreenTest extends TestCase
             'state' => 'state',
             'code_challenge' => rtrim(strtr(base64_encode(hash('sha256', $verifier, true)), '+/', '-_'), '='),
             'code_challenge_method' => 'S256',
+            'resource' => ProtectedResource::Mcp->uri(),
         ]));
     }
 }

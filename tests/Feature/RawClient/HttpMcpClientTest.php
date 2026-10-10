@@ -6,13 +6,13 @@ namespace Tests\Feature\RawClient;
 
 use App\Library\Domain\Book\BookRepository;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Laravel\Passport\Passport;
 use PHPUnit\Framework\Attributes\Test;
 use RawClient\HttpMcpClient;
 use RawClient\HttpReply;
 use Tests\Support\Library\Accounts;
 use Tests\Support\Library\Books;
 use Tests\Support\Library\Readers;
+use Tests\Support\Library\Tokens;
 use Tests\TestCase;
 
 final class HttpMcpClientTest extends TestCase
@@ -133,7 +133,7 @@ final class HttpMcpClientTest extends TestCase
 
     private function client(string $version = HttpMcpClient::VERSION): HttpMcpClient
     {
-        Passport::actingAs(Accounts::of(Readers::ME));
+        Tokens::actingAs(Accounts::of(Readers::ME));
 
         return new HttpMcpClient(
             fn (array $headers, string $body): HttpReply => $this->viaTheKernel($headers, $body),

@@ -10,6 +10,11 @@
         <p>{{ $user->email }}</p>
     </div>
 
+    <div class="box">
+        <p class="muted">Pour le serveur</p>
+        <p>{{ $request->query('resource') }}</p>
+    </div>
+
     @if (count($scopes) > 0)
         <div class="box">
             <p class="muted">Il pourra</p>

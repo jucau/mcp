@@ -240,6 +240,45 @@ POST /oauth/token      grant_type=authorization_code&code=…&code_verifier=…&
   ressources, dérivée d'`APP_URL` et jamais de la requête. Ce n'est pas au serveur d'interpréter les adresses. Le
   `.mcp.json` du projet configure donc `localhost`, comme `APP_URL`.
 
+L'application force donc la racine de toutes ses URL sur `APP_URL`
+([ADR-0027](./decisions/0027-urls-annoncees-depuis-app-url.md)) : les métadonnées ne se laissent plus dicter par
+la requête, et chaque ressource a **une** URI canonique.
+
+### Comment, chez Passport : suivre le `resource` de bout en bout
+
+Passport ignore `resource`, mais il résout ses repositories et ses contrôleurs par le container, et aucune de ces
+classes n'est `final`. On les **étend et on les rebinde**, sans toucher à `vendor`. Le `resource` traverse le
+parcours ainsi :
+
+| Moment | Où l'on s'accroche | Ce qui s'y passe |
+|---|---|---|
+| `GET /oauth/authorize` | `AuthorizationController::authorize` | le `resource` est validé (absent ou inconnu : `400 invalid_target`), gardé en session et montré sur l'écran d'accord |
+| « Autoriser », ou un accord déjà donné | `AuthCodeRepository::persistNewAuthCode` | le `resource` est enregistré sur le **code** (`oauth_auth_codes.resource`) |
+| `POST /oauth/token`, avec le code | `ScopeRepository::finalizeScopes` | le seul point qui reçoit l'id du code **avant** l'émission : le `resource` du code est repris, et un `resource` différent dans la requête est refusé (`invalid_target`) |
+| `POST /oauth/token`, en rafraîchissement | `AccessTokenRepository::revokeAccessToken` | l'ancien token est révoqué juste avant l'émission du nouveau : son `resource` est repris |
+| émission du token | `AccessTokenRepository::persistNewAccessToken` | le `resource` est enregistré sur le **token** (`oauth_access_tokens.resource`) |
+| chaque requête sur `/mcp` | un middleware après `auth:api` | le `resource` du token doit être l'URI canonique de `/mcp`, sinon `401` |
+
+Entre ces points, le `resource` voyage dans un **`ResourceIndicator`** (du nom de la RFC 8707, *Resource
+Indicators*), à **usage unique** : celui qui le lit le vide. Une valeur oubliée ne peut pas se retrouver sur le
+token suivant, même quand plusieurs requêtes passent par le même processus (les tests, ou Octane).
+
+**La fragilité, assumée et surveillée.** Ce montage s'appuie sur l'**ordre des appels** de
+`league/oauth2-server` : `finalizeScopes` avant l'émission dans l'échange du code, `revokeAccessToken` avant
+l'émission dans le rafraîchissement. Rien dans leur contrat ne le garantit. Les tests jouent donc le **vrai parcours
+OAuth**, de l'autorisation au rafraîchissement : une montée de version qui changerait cet ordre fait échouer la porte,
+au lieu de produire des tokens sans destinataire.
+
+Trois choix plus fins :
+
+- **Le rafraîchissement garde le `resource` d'origine** et ignore celui de la requête : la RFC 8707 permet de
+  restreindre un token à un sous-ensemble, et avec une seule ressource par token, il n'y a rien à restreindre.
+- **Une erreur `invalid_target` n'est pas renvoyée au client par redirection** : on la lève avant que Passport n'ait
+  validé le client et sa `redirect_uri`, et rediriger vers une adresse non validée serait une redirection ouverte.
+- **L'accord déjà donné ne regarde que les scopes** (`hasGrantedScopes`) : tant qu'il n'y a qu'une ressource, un
+  accord vaut pour elle. Il faudra y ajouter le `resource` avec l'API, sinon un accord donné pour `/mcp` ouvrirait
+  `/api` sans rien demander.
+
 L'API publie ses propres métadonnées de ressource (`/.well-known/oauth-protected-resource/api`) et répond `401` avec
 `WWW-Authenticate`, comme `/mcp`. Rien de cela n'est propre à MCP : c'est **OAuth standard** (RFC 9728), que MCP a
 choisi de rendre obligatoire. Un client OAuth générique saura découvrir l'API comme Claude Code découvre `/mcp`.

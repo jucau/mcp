@@ -73,7 +73,7 @@ Les pièces, une par une :
 | Écran d'accord | ⚠️ vue `mcp.authorize` du SDK | remplacée par la nôtre : elle exige un build Vite et un thème Tailwind que nous n'avons pas |
 | DCR (déprécié) | ✅ `POST /oauth/register` | |
 | CIMD côté serveur | ❌ | plus tard (roadmap) |
-| Vérifier que le token vise ce serveur (RFC 8707) | ❌ | écart assumé tant qu'il n'y avait qu'un serveur ([ADR-0020](./decisions/0020-passport-serveur-d-autorisation-destinataire-implicite.md)), refermé à l'arrivée de l'API ([ADR-0026](./decisions/0026-un-destinataire-explicite-par-token.md)) |
+| Vérifier que le token vise ce serveur (RFC 8707) | ❌ → ✅ à nous | écart assumé tant qu'il n'y avait qu'un serveur ([ADR-0020](./decisions/0020-passport-serveur-d-autorisation-destinataire-implicite.md)), refermé à l'arrivée de l'API ([ADR-0026](./decisions/0026-un-destinataire-explicite-par-token.md)) |
 | Scopes personnalisés | ❌ un seul, `mcp:use` | la troisième partie devra les ajouter |
 | Un écran de connexion | ❌ | à nous : Passport exige un utilisateur connecté pour `/oauth/authorize` |
 
@@ -111,7 +111,7 @@ garde-fou contre une demande qu'il n'a pas faite.
 Pas d'inscription : les comptes de démo sont créés par le seeder, un par lecteur
 (`julien@marque-page.test`, `camille@marque-page.test`, mot de passe `marque-page`).
 
-**Les outils de dev ont besoin d'un token**, eux aussi. `php artisan library:token <e-mail>` émet un *personal access
+**Les outils de dev ont besoin d'un token**, eux aussi. `php artisan library:token <e-mail> --resource=mcp` émet un *personal access
 token* Passport pour un compte ; `make raw-http-session` et `make benchmark` s'en servent pour un compte de démo. Claude Code,
 lui, ne s'en sert jamais : il suit le parcours OAuth complet.
 
