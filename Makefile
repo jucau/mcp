@@ -5,13 +5,21 @@ AGENT_ENV = $(if $(AI_AGENT),-e AI_AGENT='$(AI_AGENT)')
 EXEC = $(DC) exec -T $(AGENT_ENV) php
 ARTISAN = $(EXEC) php artisan
 
-.PHONY: quality ide-helper rector pint stan ark test coverage infection inspector raw-session raw-http-session benchmark mcp-log test-db start stop restart build rebuild destroy ps logs shell \
+.PHONY: ci seed-check quality ide-helper rector pint stan ark test coverage infection inspector raw-session raw-http-session benchmark mcp-log test-db start stop restart build rebuild destroy ps logs shell \
         migrate fresh seed composer artisan tinker
 
 # The one gate, run before every commit. The order is load-bearing: the writing tools come first, Pint
 # last among them (it imports and shortens the fully-qualified names ide-helper writes), then the
 # read-only checks judge the settled tree.
 quality: ide-helper rector pint stan ark test infection
+
+# What a CI would run, from a fresh test database. The demo seeds the test database, never the dev one, and
+# leaves it empty again: the suite runs in transactions over an empty database.
+ci: test-db quality seed-check
+
+seed-check:
+	$(ARTISAN) migrate:fresh --seed --env=testing --force
+	$(ARTISAN) migrate:fresh --env=testing --force
 
 # --reset keeps annotations honest with the schema.
 ide-helper:

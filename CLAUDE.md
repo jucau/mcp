@@ -98,6 +98,9 @@ Stack : **nginx (8090) → php-fpm 8.5 → postgres 18** ([ADR-0005](docs/decisi
 sous-ensemble. Les outils qui écrivent corrigent au passage : la porte passe **avant** le commit, sinon la
 correction arrive dans un commit de rattrapage.
 
+**`make ci`** simule une CI : base de test neuve, la porte entière, puis les données de démo seedées sur la base
+de test (jamais celle de dev) avant de la revider.
+
 Ordre : **ide-helper** → **rector** → **pint** (écrivent ; pint en dernier, il importe et raccourcit les
 noms qualifiés qu'ide-helper et rector écrivent) → **stan** → **ark** → **test** → **infection**.
 Configs : `config/ide-helper.php`, `rector.php`, `pint.json`, `phpstan.neon` (Larastan, niveau **max**),
