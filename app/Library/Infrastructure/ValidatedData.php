@@ -2,18 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Library\Infrastructure\Mcp;
+namespace App\Library\Infrastructure;
 
 use DateTimeImmutable;
 use Webmozart\Assert\Assert;
 
-final readonly class ToolArguments
+final readonly class ValidatedData
 {
     /**
      * @param array<array-key, mixed> $validated
      */
-    public function __construct(private array $validated)
+    private function __construct(private array $validated)
     {
+    }
+
+    public static function of(mixed $validated): self
+    {
+        Assert::isArray($validated);
+
+        return new self($validated);
     }
 
     public function string(string $name): string

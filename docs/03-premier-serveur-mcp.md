@@ -26,7 +26,7 @@ Claude Code ──(lance)──► docker compose exec -T php php artisan mcp:st
 | `LibraryServer` | `app/Library/Infrastructure/Mcp/` | se présente au client (`serverInfo`, `instructions`) et déclare ses tools |
 | `LibraryTool` | `…/Mcp/Tools/` | base des tools : traduit un refus métier en erreur de tool |
 | `SearchBooksTool`, `AddBookTool` | `…/Mcp/Tools/` | **adaptateurs primaires** : un tool = un use case |
-| `ToolArguments` | `…/Mcp/` | lit les arguments **déjà validés**, typés |
+| `ValidatedData` | `…/Infrastructure/` | lit les arguments **déjà validés**, typés ; partagé avec l'API ([09](./09-api-rest.md)) |
 | `BookPresenter` | `…/Mcp/` | la représentation d'un livre, la même pour tous les tools |
 | `routes/ai.php` | | enregistre le serveur sous le *handle* `library` pour `mcp:start` |
 

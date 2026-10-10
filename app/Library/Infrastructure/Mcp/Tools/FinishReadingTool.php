@@ -9,8 +9,8 @@ use App\Library\Application\Book\FinishReading\FinishReadingHandler;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
 use App\Library\Infrastructure\Mcp\BookPresenter;
-use App\Library\Infrastructure\Mcp\ToolArguments;
 use App\Library\Infrastructure\Reader\CurrentReader;
+use App\Library\Infrastructure\ValidatedData;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
@@ -59,7 +59,7 @@ final class FinishReadingTool extends LibraryTool
 
     protected function respond(Request $request): ResponseFactory
     {
-        $arguments = new ToolArguments($request->validate([
+        $arguments = ValidatedData::of($request->validate([
             'book_id' => ['required', 'string'],
             'on' => ['nullable', 'date_format:Y-m-d'],
         ]));

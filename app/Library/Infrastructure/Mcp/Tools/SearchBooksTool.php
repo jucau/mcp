@@ -9,8 +9,8 @@ use App\Library\Application\Book\Query\BookSearch;
 use App\Library\Domain\Book\Isbn;
 use App\Library\Domain\Book\ReadingStatus;
 use App\Library\Infrastructure\Mcp\BookPresenter;
-use App\Library\Infrastructure\Mcp\ToolArguments;
 use App\Library\Infrastructure\Reader\CurrentReader;
+use App\Library\Infrastructure\ValidatedData;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Validation\Rule;
 use Laravel\Mcp\Request;
@@ -75,7 +75,7 @@ final class SearchBooksTool extends LibraryTool
 
     protected function respond(Request $request): ResponseFactory
     {
-        $arguments = new ToolArguments($request->validate([
+        $arguments = ValidatedData::of($request->validate([
             'query' => ['nullable', 'string'],
             'isbn' => ['nullable', 'string'],
             'reading_status' => ['nullable', Rule::enum(ReadingStatus::class)],

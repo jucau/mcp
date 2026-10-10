@@ -137,7 +137,7 @@ appel.*
 - [x] Les adaptateurs s'ignorent (PHPArkitect), et `Shelf` descend en `Application`
 - [x] Les lectures : `GET /api/books`, `GET /api/books/{id}`, `GET /api/shelves/{shelf}`, le lecteur authentifié
   choisi par le groupe `/api`, les métadonnées de la ressource et le `401`
-- [ ] Les écritures : `POST /api/books`, `DELETE /api/books/{id}` et les sept actions
+- [x] Les écritures : `POST /api/books`, `DELETE /api/books/{id}` et les sept actions
 - [x] Les refus en *Problem Details*, et le test qui garantit un statut à chaque refus du domaine
 - [ ] Le contrat OpenAPI, vérifié par les tests
 - [ ] Pour de vrai : Claude Code refait son parcours OAuth, l'API répond à un token émis pour elle

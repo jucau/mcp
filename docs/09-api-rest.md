@@ -62,6 +62,11 @@ dit plus**. C'est le coût assumé du style RPC ; un en-tête `Idempotency-Key` 
 | détruit de l'information | `destructiveHint` | rien : `DELETE` ne dit pas qu'on perd quelque chose, `POST /rate` non plus |
 | touche le monde extérieur | `openWorldHint` | rien |
 
+**Idempotent ne veut pas dire « même réponse ».** Un second `DELETE /api/books/{id}` répond `404`, plus `204` : le
+livre n'est plus là. La RFC 9110 parle de l'**effet sur le serveur**, pas de la réponse : après un ou deux `DELETE`,
+l'état est le même, le livre n'existe plus. Le tool `remove_book` est annoté `idempotentHint` pour la même raison, et
+son second appel est lui aussi un refus.
+
 Les annotations MCP sont des **indices** pour un modèle et son client, qui s'en servent pour demander une
 confirmation : la spec interdit d'en faire une décision de sécurité. Les verbes HTTP sont des **garanties** sur
 lesquelles s'appuient des machines (caches, proxies, navigateurs). Et MCP en dit plus que HTTP sur ce qui compte pour
@@ -134,6 +139,13 @@ L'API a des **`JsonResource`** Laravel : un livre est emballé dans `data`, et u
 
 Les adaptateurs **s'ignorent** : rien dans `Infrastructure\Api` ne dépend d'`Infrastructure\Mcp`, et
 réciproquement. PHPArkitect le vérifie, comme il vérifie déjà que le cœur ne connaît aucun des deux.
+
+Ce qui se partage, c'est ce qui **n'est pas un contrat**. Lire un tableau déjà validé en vérifiant le type de chaque
+valeur (`ValidatedData`) ne regarde aucun client : tools et contrôleurs s'en servent tous les deux, depuis
+`Infrastructure`. Le `ValidatedInput` de Laravel (`$request->safe()`) ne convenait pas : il **convertit** au lieu de
+vérifier, et rend `''` pour une valeur absente, là où un ISBN inconnu doit rester `null`. La règle tient en une
+question : si l'un des deux adaptateurs voulait changer cette brique, l'autre devrait-il suivre ? Pour un presenter,
+non ; pour la lecture typée, oui.
 
 C'est là que l'API fait sa première découverte : **l'étagère vit dans le mauvais dossier**. `Shelf` est en
 `Infrastructure\Mcp`, parce que seules les resources MCP s'en servaient. Or l'étagère est un mot du langage
