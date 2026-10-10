@@ -18,6 +18,7 @@ use Tests\Support\Library\Announced;
 use Tests\Support\Library\Books;
 use Tests\Support\Library\FrozenClock;
 use Tests\Support\Library\PromptMessages;
+use Tests\Support\Library\Readers;
 use Tests\TestCase;
 
 final class ReadingReviewPromptTest extends TestCase
@@ -88,6 +89,52 @@ final class ReadingReviewPromptTest extends TestCase
     {
         LibraryServer::prompt(ReadingReviewPrompt::class, ['year' => $year])
             ->assertHasErrors(['The year field must be 4 digits.']);
+    }
+
+    #[Test]
+    public function the_year_completes_with_the_years_the_reader_finished_or_abandoned_a_book_most_recent_first(): void
+    {
+        $this->finished('Dune', '2024-01-15');
+        $this->finished('Fondation', '2026-01-20');
+        $abandoned = Books::aBook('Ulysse', 'James Joyce');
+        $abandoned->startReading(new DateTimeImmutable('2019-04-01'));
+        $abandoned->abandon(new DateTimeImmutable('2019-04-19'));
+        $this->given($abandoned);
+        $theirs = Books::aBook(reader: Readers::someoneElse());
+        $theirs->startReading(new DateTimeImmutable('2025-01-01'));
+        $theirs->finishReading(new DateTimeImmutable('2025-02-01'));
+        $this->given($theirs);
+
+        LibraryServer::completion(ReadingReviewPrompt::class, 'year')
+            ->assertCompletionValues(['2026', '2024', '2019']);
+    }
+
+    #[Test]
+    public function the_year_completes_with_what_the_user_started_typing(): void
+    {
+        $this->finished('Dune', '2019-01-15');
+        $this->finished('Fondation', '2024-01-20');
+        $this->finished('Hypérion', '2026-01-20');
+
+        LibraryServer::completion(ReadingReviewPrompt::class, 'year', '202')
+            ->assertCompletionValues(['2026', '2024']);
+    }
+
+    #[Test]
+    public function an_argument_the_prompt_does_not_have_completes_with_nothing(): void
+    {
+        $this->finished('Dune', '2024-01-15');
+
+        LibraryServer::completion(ReadingReviewPrompt::class, 'mood')
+            ->assertCompletionValues([]);
+    }
+
+    private function finished(string $title, string $finishedOn): void
+    {
+        $book = Books::aBook($title);
+        $book->startReading(new DateTimeImmutable($finishedOn)->modify('-10 days'));
+        $book->finishReading(new DateTimeImmutable($finishedOn));
+        $this->given($book);
     }
 
     private function given(Book $book): void

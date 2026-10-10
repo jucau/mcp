@@ -84,7 +84,7 @@ capacités et donne ses `instructions`, que le host transmet au modèle.
 
 ```
 → {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"raw-client","version":"0.1.0"}}}
-← {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-11-25","capabilities":{"tools":{"listChanged":false},"resources":{"listChanged":false},"prompts":{"listChanged":false}},"serverInfo":{"name":"Marque-page","version":"0.1.0"},"instructions":"Marque-page is the user's personal library: …"}}
+← {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-11-25","capabilities":{"tools":{"listChanged":false},"resources":{"listChanged":false},"prompts":{"listChanged":false},"completions":{}},"serverInfo":{"name":"Marque-page","version":"0.1.0"},"instructions":"Marque-page is the user's personal library: …"}}
 → {"jsonrpc":"2.0","method":"notifications/initialized"}
 ```
 

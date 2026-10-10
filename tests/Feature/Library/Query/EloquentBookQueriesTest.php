@@ -225,6 +225,30 @@ final class EloquentBookQueriesTest extends TestCase
     }
 
     #[Test]
+    public function the_years_with_finished_books_are_those_of_the_reader_read_or_abandoned_most_recent_first(): void
+    {
+        $this->finished('Dune', '2023-12-01', '2024-01-15');
+        $this->finished('Fondation', '2025-06-01', '2026-01-01');
+        $this->finished('Hypérion', '2024-03-01', '2024-04-01');
+        $abandoned = $this->add('Ulysse', 'James Joyce');
+        $abandoned->startReading(new DateTimeImmutable('2022-11-01'));
+        $abandoned->abandon(new DateTimeImmutable('2022-12-01'));
+
+        $this->books->save($abandoned);
+        $reading = $this->add('Le Nom de la rose', 'Umberto Eco');
+        $reading->startReading(new DateTimeImmutable('2021-03-01'));
+
+        $this->books->save($reading);
+        $theirs = Books::aBook(reader: Readers::someoneElse());
+        $theirs->startReading(new DateTimeImmutable('2019-01-01'));
+        $theirs->finishReading(new DateTimeImmutable('2019-02-01'));
+
+        $this->books->save($theirs);
+
+        $this->assertSame([2026, 2024, 2022], $this->queries->yearsWithFinishedBooks(Readers::me()));
+    }
+
+    #[Test]
     public function all_returns_every_matching_book_by_title_whatever_the_page(): void
     {
         for ($i = 105; $i >= 1; --$i) {

@@ -14,6 +14,7 @@ use App\Library\Domain\Book\ReaderId;
 use App\Library\Domain\Book\ReadingStatus;
 use App\Library\Infrastructure\Persistence\Eloquent\Models\BookRecord;
 use Illuminate\Database\Eloquent\Builder;
+use Webmozart\Assert\Assert;
 
 final class EloquentBookQueries implements BookQueries
 {
@@ -46,6 +47,21 @@ final class EloquentBookQueries implements BookQueries
     public function all(ReaderId $reader, BookSearch $criteria): array
     {
         return array_values(array_map($this->view(...), $this->matching($reader, $criteria)->get()->all()));
+    }
+
+    public function yearsWithFinishedBooks(ReaderId $reader): array
+    {
+        $years = BookRecord::query()
+            ->where('reader_id', $reader->value)
+            ->whereNotNull('finished_on')
+            ->selectRaw('distinct extract(year from finished_on)::int as year')
+            ->orderByDesc('year')
+            ->pluck('year')
+            ->all();
+
+        Assert::allInteger($years);
+
+        return array_values($years);
     }
 
     /**

@@ -72,6 +72,8 @@ final class LibraryServer extends Server
     #[\Override]
     protected function boot(): void
     {
+        $this->addCapability(self::CAPABILITY_COMPLETIONS);
+
         $reader = match (true) {
             $this->transport instanceof StdioTransport => ConfiguredReader::class,
             $this->transport instanceof HttpTransport => AuthenticatedReader::class,

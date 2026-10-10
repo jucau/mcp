@@ -45,7 +45,7 @@ appeler directement, sans handshake ([06](./06-transport-http.md)).
 ```json
 → {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"probe","version":"0"}}}
 ← {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-11-25",
-     "capabilities":{"tools":{"listChanged":false},"resources":{…},"prompts":{…}},
+     "capabilities":{"tools":{"listChanged":false},"resources":{…},"prompts":{…},"completions":{}},
      "serverInfo":{"name":"Marque-page","version":"0.1.0"},
      "instructions":"Marque-page is the user's personal library: … first find its id with `search_books`…"}}
 → {"jsonrpc":"2.0","method":"notifications/initialized"}

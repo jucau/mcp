@@ -22,4 +22,11 @@ interface BookQueries
      * @return list<BookView>
      */
     public function all(ReaderId $reader, BookSearch $criteria): array;
+
+    /**
+     * The years in which the reader finished or abandoned at least one book, most recent first.
+     *
+     * @return list<int>
+     */
+    public function yearsWithFinishedBooks(ReaderId $reader): array;
 }

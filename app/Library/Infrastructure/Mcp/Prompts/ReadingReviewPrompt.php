@@ -13,6 +13,8 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
+use Laravel\Mcp\Server\Completions\CompletionResponse;
+use Laravel\Mcp\Server\Contracts\Completable;
 use Laravel\Mcp\Server\Prompt;
 use Laravel\Mcp\Server\Prompts\Argument;
 use Webmozart\Assert\Assert;
@@ -20,7 +22,7 @@ use Webmozart\Assert\Assert;
 #[Name('reading_review')]
 #[Title('Review my reading year')]
 #[Description("Review the user's reading over a year: what they finished, what they abandoned, what stands out.")]
-final class ReadingReviewPrompt extends Prompt
+final class ReadingReviewPrompt extends Prompt implements Completable
 {
     public function __construct(
         private readonly BookQueries $books,
@@ -35,6 +37,15 @@ final class ReadingReviewPrompt extends Prompt
         return [
             new Argument('year', 'The year to review, e.g. "2025". Leave it out for the current year.'),
         ];
+    }
+
+    public function complete(string $argument, string $value, array $context): CompletionResponse
+    {
+        if ($argument !== 'year') {
+            return CompletionResponse::empty();
+        }
+
+        return CompletionResponse::match(array_map(strval(...), $this->books->yearsWithFinishedBooks($this->reader->id())));
     }
 
     public function handle(Request $request): Response

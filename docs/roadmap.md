@@ -118,9 +118,9 @@ appel.*
 
 *Apprendre : une primitive qui ne sert que l'humain, et ce qu'elle peut révéler.*
 
-- [ ] Documenter `completion/complete` ([08](./08-completions.md),
+- [x] Documenter `completion/complete` ([08](./08-completions.md),
   [ADR-0023](./decisions/0023-completer-seulement-ce-qu-un-humain-choisit.md))
-- [ ] Annoncer la capability `completions`, et compléter `reading_review.year` par les années de lecture du
+- [x] Annoncer la capability `completions`, et compléter `reading_review.year` par les années de lecture du
   lecteur ; l'`id` et `mood` restent sans complétion
 
 ## Plus tard (idées, sans engagement)

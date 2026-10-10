@@ -31,7 +31,7 @@ final class McpClientTest extends TestCase
         $this->assertSame('2025-11-25', data_get($initialize, 'result.protocolVersion'));
         $capabilities = data_get($initialize, 'result.capabilities');
         $this->assertIsArray($capabilities);
-        $this->assertSame(['tools', 'resources', 'prompts'], array_keys($capabilities));
+        $this->assertSame(['tools', 'resources', 'prompts', 'completions'], array_keys($capabilities));
         $this->assertSame('Marque-page', data_get($initialize, 'result.serverInfo.name'));
         $this->assertSame(0, $client->close());
     }
