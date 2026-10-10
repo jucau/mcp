@@ -400,3 +400,90 @@ Le volet `/api` attend un vrai client OAuth, le frontend : les tests jouent son 
   refusé partout, un token rafraîchi qui garde le sien.
 - **Pour de vrai** : Claude Code refait son parcours OAuth sur `library-http`. On vérifiera dans le journal qu'il
   envoie bien `resource`, et qu'il voit la mention du serveur sur l'écran d'accord.
+
+## Bilan de l'étape
+
+### La promesse de l'hexagone, mesurée
+
+Depuis le premier commit de l'étape (`git diff 7ec9b04^ HEAD`) :
+
+| Zone | Diff | Ce que c'est |
+|---|---|---|
+| `Domain` | **aucune ligne** | |
+| `Application` | +25 | `Shelf`, déplacé depuis `Infrastructure\Mcp` : un rangement corrigé, pas un ajout |
+| `Infrastructure\Mcp` | +26 −117 | des imports : `Shelf` et la lecture typée (`ValidatedData`) partent vers le cœur et vers `Infrastructure` |
+| `Infrastructure\Api` | +935 (22 fichiers) | le second adaptateur, entier |
+| `Infrastructure\Auth` | +346 | le destinataire des tokens, qui sert les deux adaptateurs |
+
+L'API expose les **dix mêmes use cases** que le serveur MCP sans qu'aucun handler ni aucune règle ne change. La promesse
+tient. Et le seul écart **corrige** le premier adaptateur au lieu de plier le cœur au second.
+
+### Ce que le second adaptateur a appris du premier
+
+Un second client révèle ce que le premier rendait invisible :
+
+- **Un concept mal rangé** : l'étagère, un mot du glossaire, vivait dans le dossier MCP parce que seul MCP s'en servait.
+- **Une brique crue spécifique** : `ToolArguments` n'avait rien de MCP. C'était la lecture typée d'un tableau validé.
+- **Un écart de conformité** : le destinataire implicite des tokens ([ADR-0020](./decisions/0020-passport-serveur-d-autorisation-destinataire-implicite.md))
+  tenait parce qu'il n'y avait qu'un serveur. L'API l'a fait tomber, et **`/mcp` en sort conforme à la spec**, ce qu'il
+  n'était pas.
+- **Une confiance excessive** : en préparant la validation du `resource`, on a vu que les métadonnées OAuth se fiaient
+  à l'en-tête `Host` ([ADR-0027](./decisions/0027-urls-annoncees-depuis-app-url.md)).
+
+### Ce que MCP fait autrement que HTTP
+
+| Sujet | MCP | REST |
+|---|---|---|
+| Qui lit la réponse | un **modèle** : il lit le message et s'adapte | un **programme** : il branche sur un statut |
+| Un refus | `isError` et un message | un statut (`404`, `409`, `422`) et des *Problem Details*, **avec le même message** |
+| La nature d'une action | des **indices** (`readOnlyHint`, `destructiveHint`…), pour demander une confirmation | des **garanties** des verbes (`GET` sûr, `DELETE` idempotent), sur lesquelles s'appuient caches et proxies |
+| Ce qui compte pour un humain | `destructiveHint` : une note écrasée est perdue | rien ne le dit |
+| Les types des entrées | du JSON typé, jusqu'au booléen | une query string, où tout est texte |
+| Le contrat | **dans le protocole** : `tools/list` donne les schémas, le client les découvre | **à côté** : un document OpenAPI, publié et versionné |
+| L'authentification | OAuth 2.1, découverte par le `401` et les métadonnées | **la même**, mot pour mot (RFC 9728, 8707) |
+
+La dernière ligne est la plus instructive : sur l'authentification, MCP n'invente rien. Il **rend obligatoire** de
+l'OAuth standard qu'une API REST peut adopter telle quelle. Le contrat est la vraie différence de nature : un client
+MCP n'a besoin d'aucune documentation, il interroge le serveur.
+
+### Les pièges, pour la prochaine fois
+
+- **Laravel** : un contrôleur est instancié **avant** ses middlewares, et l'authentification est triée devant tout
+  middleware absent de sa liste de priorité.
+- **Les tests** : une classe de base qui lie un lecteur pour tous masque la règle « fermé par défaut ». C'est
+  arrivé deux fois : avec le seeder, dont `make seed` était cassé depuis l'ADR-0021, et avec l'API, où le test qui
+  tranche s'authentifie avec un **autre** lecteur.
+- **PHP** : `DomainException` est une classe standard, qu'une bibliothèque peut lever. Seules celles du domaine
+  deviennent des *Problem Details*.
+- **Les contrats** : un exemple ne se vérifie pas, et un `null` n'a pas de sens dans une query string.
+- **L'observation** : l'essai de Claude Code en `127.0.0.1` ne permettait pas de conclure ce que j'en ai d'abord
+  tiré. Il a fallu corriger la doc. Une observation dit ce qu'elle montre, pas plus.
+
+### La méthode : où Infection ne regarde pas
+
+Infection ne mute que `Domain` et `Application`. Pour l'`Infrastructure`, on a cassé **à la main** chaque point clé :
+les accroches dans Passport, le choix du lecteur, le contrôle du destinataire, la lecture de la query string, les dates
+des actions, les `@throws`. Sur une trentaine de mutants, **quatre survivaient** (`?owned=true` lu comme `false`, la
+date ignorée de `start-reading` et d'`abandon-reading`, un `@throws` oublié). Chacun a reçu son test.
+
+Ces trous étaient des comportements que le code faisait bien, mais qu'aucun test ne demandait.
+
+**Étendre Infection à l'`Infrastructure` a été envisagé, puis écarté.** Le principe tient : le mutation testing mesure
+les tests, quel que soit leur niveau. Le coût, lui, ne tient pas :
+
+- **le temps** : chaque mutant paie le démarrage de Laravel et une base réelle, pour plusieurs centaines de mutants ;
+- **la base partagée** : des processus parallèles sur la même base de test donnent des échecs aléatoires, que
+  `timeoutsAsEscaped` transformerait en faux survivants ;
+- **le bruit** : une grande part de l'`Infrastructure` est de la colle (configuration, descriptions, ordre des
+  middlewares), où un mutant survivant est rarement un trou. Le MSI à 100 % n'y aurait pas de sens.
+
+La pratique retenue reste celle de cette étape : **casser à la main les points clés** d'un adaptateur quand on l'écrit,
+et donner un test à chaque mutant qui survit.
+
+### Ce qui reste ouvert
+
+- **La vérification réelle côté API**, quand un vrai client OAuth (le frontend) suivra la découverte jusqu'à `/api`.
+- **Les métadonnées de `laravel/mcp`**, servies pour n'importe quel chemin et qui annoncent `mcp:use` à l'API.
+- **Un refus qu'aucun test ne provoque** peut manquer au contrat OpenAPI sans que rien ne le signale.
+- **Scramble est en 0.x**, et son API d'extension peut changer.
+
