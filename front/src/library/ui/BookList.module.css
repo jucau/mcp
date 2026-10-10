@@ -1,0 +1,145 @@
+.list {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.list th {
+    padding: 0 12px 10px;
+    text-align: left;
+    font: 500 11px var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border-bottom: 2px solid var(--ink);
+}
+
+.list td {
+    padding: 12px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: middle;
+}
+
+.list tbody tr:hover {
+    background: var(--surface);
+}
+
+.signetCell {
+    width: 14px;
+    padding-inline: 12px 0;
+}
+
+.signet {
+    display: block;
+    width: 9px;
+    height: 22px;
+    background: var(--ribbon);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+}
+
+.title strong {
+    display: block;
+    font: 400 19px/1.2 var(--display);
+}
+
+.title span {
+    color: var(--ink-soft);
+    font-size: 14px;
+}
+
+.mono {
+    font: 13px/1.4 var(--mono);
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+}
+
+.out {
+    color: var(--ink);
+}
+
+.status,
+.wish {
+    display: inline-block;
+    font: 600 13px/1 var(--body);
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+}
+
+.wish {
+    color: var(--ink-soft);
+    border-style: dashed;
+}
+
+.reading {
+    color: var(--ribbon);
+}
+
+.read {
+    color: var(--done);
+}
+
+.abandoned {
+    color: var(--refusal);
+}
+
+.to_read {
+    color: var(--ink-soft);
+}
+
+.empty {
+    padding: 28px 12px;
+    color: var(--ink-soft);
+}
+
+.hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+
+@media (max-width: 720px) {
+    .list thead {
+        display: none;
+    }
+
+    .list tr {
+        display: grid;
+        grid-template-columns: 12px minmax(0, 1fr) auto;
+        grid-template-areas: 's title status' 's reading note' 's loan loan';
+        gap: 6px 10px;
+        padding: 12px;
+        border-bottom: 1px solid var(--rule);
+    }
+
+    .list td {
+        padding: 0;
+        border: 0;
+    }
+
+    .list td:nth-child(1) {
+        grid-area: s;
+    }
+
+    .list td:nth-child(2) {
+        grid-area: title;
+    }
+
+    .list td:nth-child(3) {
+        grid-area: status;
+    }
+
+    .list td:nth-child(4) {
+        grid-area: reading;
+    }
+
+    .list td:nth-child(5) {
+        grid-area: note;
+    }
+
+    .list td:nth-child(6) {
+        grid-area: loan;
+    }
+}

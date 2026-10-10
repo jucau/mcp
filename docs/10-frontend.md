@@ -155,6 +155,33 @@ Et deux défauts du contrat, que le front a révélés et qu'on a corrigés côt
 quelconque (il est désormais l'enum `ReadingStatus`), et les `operationId` reprenaient le namespace des contrôleurs
 (`infrastructure.searchBooks`). Les routes portent maintenant le nom de leur use case.
 
+## La bibliothèque
+
+Une liste en colonnes (titre et auteur, statut, lecture, note, prêt), triée par titre, avec des filtres, une
+recherche et la pagination de l'API. L'identité visuelle tient à peu de chose : une Caslon pour les titres, une
+chasse fixe pour les dates, et **le signet**, un repère cobalt dans la marge des livres en cours. Une première maquette
+montrait les livres comme des dos debout sur des étagères : jolie, mais on n'y lisait rien d'un coup d'œil.
+
+Ce qui revient au cœur, et que Stryker juge :
+
+- **Les étagères du front sont des recherches**, comme le glossaire le dit de celles du back
+  ([02](./02-langage-ubiquitaire.md)) : « En cours » est `reading_status=reading`, « Liste d'envies » est
+  `owned=false`. Ce ne sont pas des règles métier, seulement des critères nommés.
+- **Les compteurs** : une recherche par étagère, avec `per_page=1`. Seul le `total` compte, et l'API le donne
+  quelle que soit la taille de la page.
+- **Le nombre de pages**, qui vient du `total` et de la taille de page de l'API. L'API pagine par 20 :
+  sans pagination, la bibliothèque de démo (23 livres) en aurait caché trois sans le dire.
+
+Deux enseignements :
+
+- **Stryker a encore trouvé de la logique morte.** Le cœur n'envoyait pas de texte vide (`text === '' ? {} : …`), et
+  le mutant qui supprimait cette condition survivait : un texte vide ne filtre rien, ni dans l'API ni dans le double.
+  La condition n'avait de sens que pour une URL propre, sans `?query=` vide. Elle est passée dans l'adaptateur HTTP,
+  qui traduit vers la query string.
+- **Les polices sont embarquées** (`@fontsource`), pas chargées depuis Google Fonts. Ce CDN reçoit l'adresse IP de
+  chaque visiteur, et un tribunal allemand l'a jugé contraire au RGPD en 2022. Embarquer les fontes évite aussi une
+  dépendance réseau au premier affichage.
+
 ## Ce qu'on vérifiera
 
 - **Les couches** : le cœur ne dépend ni de React ni des adaptateurs ; seule la racine de composition branche un

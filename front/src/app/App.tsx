@@ -7,8 +7,9 @@ import { AuthorizationProvider } from '../auth/ui/authorization-context';
 import { RequireSignIn } from '../auth/ui/RequireSignIn';
 import { SignInCallback } from '../auth/ui/SignInCallback';
 import type { Library } from '../library/core/ports/library';
-import { BooksPage } from '../library/ui/BooksPage';
+import { LibraryPage } from '../library/ui/LibraryPage';
 import { LibraryProvider } from '../library/ui/library-context';
+import styles from './App.module.css';
 
 export interface Adapters {
     readonly authorization: Authorization;
@@ -36,20 +37,23 @@ export function App({ authorization, library }: Adapters) {
         <QueryClientProvider client={queryClient}>
             <AuthorizationProvider authorization={authorization}>
                 <LibraryProvider library={library}>
-                    <main>
-                        <h1>Marque-page</h1>
+                    <div className={styles.page}>
+                        <header className={styles.bar}>
+                            <span className={styles.mark} aria-hidden="true" />
+                            <h1 className={styles.brand}>Marque-page</h1>
+                        </header>
                         <Routes>
                             <Route path="/callback" element={<SignInCallback />} />
                             <Route
                                 path="/"
                                 element={
                                     <RequireSignIn>
-                                        <BooksPage />
+                                        <LibraryPage />
                                     </RequireSignIn>
                                 }
                             />
                         </Routes>
-                    </main>
+                    </div>
                 </LibraryProvider>
             </AuthorizationProvider>
         </QueryClientProvider>

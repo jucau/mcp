@@ -1,0 +1,26 @@
+.page {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 0 48px;
+}
+
+.bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-block: 22px 18px;
+}
+
+.mark {
+    width: 12px;
+    height: 26px;
+    background: var(--ribbon);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+}
+
+.brand {
+    margin: 0;
+    font: 400 34px/1 var(--display);
+    letter-spacing: -0.01em;
+}

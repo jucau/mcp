@@ -14,6 +14,7 @@ export class InMemoryLibrary implements Library {
 
     search(criteria: BookSearch): Promise<Page<Book>> {
         const page = criteria.page ?? 1;
+        const perPage = criteria.perPage ?? PER_PAGE;
         const found = this.books
             .filter((book) => criteria.text === undefined || this.mentions(book, criteria.text))
             .filter((book) => criteria.readingStatus === undefined || book.readingStatus === criteria.readingStatus)
@@ -22,9 +23,9 @@ export class InMemoryLibrary implements Library {
             .sort((one, other) => one.title.localeCompare(other.title));
 
         return Promise.resolve({
-            items: found.slice((page - 1) * PER_PAGE, page * PER_PAGE),
+            items: found.slice((page - 1) * perPage, page * perPage),
             page,
-            perPage: PER_PAGE,
+            perPage,
             total: found.length,
         });
     }

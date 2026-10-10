@@ -21,11 +21,12 @@ export class HttpLibrary implements Library {
         const { data, response } = await this.client.GET('/books', {
             params: {
                 query: {
-                    ...(criteria.text === undefined ? {} : { query: criteria.text }),
+                    ...(criteria.text === undefined || criteria.text === '' ? {} : { query: criteria.text }),
                     ...(criteria.readingStatus === undefined ? {} : { reading_status: criteria.readingStatus }),
                     ...(criteria.owned === undefined ? {} : { owned: flag(criteria.owned) }),
                     ...(criteria.lent === undefined ? {} : { lent: flag(criteria.lent) }),
                     ...(criteria.page === undefined ? {} : { page: criteria.page }),
+                    ...(criteria.perPage === undefined ? {} : { per_page: criteria.perPage }),
                 },
             },
         });

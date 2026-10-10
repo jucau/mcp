@@ -156,7 +156,7 @@ serveur, et un client typé par le contrat de l'API.*
   Stryker, les types du contrat ; **le front dans `make quality`**
 - [x] La connexion : le client OAuth pré-enregistré, CORS, la découverte depuis le `401`, PKCE et `resource`, le token
   en mémoire
-- [ ] La bibliothèque : la recherche, les filtres, la pagination, les étagères
+- [x] La bibliothèque : la recherche, les filtres, la pagination, les étagères
 - [ ] La fiche d'un livre et ses actions, les refus du domaine affichés tels quels
 - [ ] L'ajout d'un livre
 - [ ] Le bout en bout (Playwright), et pour de vrai dans un navigateur : la case laissée ouverte à l'étape 9

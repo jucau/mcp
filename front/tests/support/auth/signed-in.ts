@@ -13,7 +13,7 @@ export class SignedIn implements Authorization {
         return Promise.resolve();
     }
 
-    accessToken(): Promise<string> {
+    accessToken(): Promise<string | undefined> {
         return Promise.resolve('token');
     }
 }

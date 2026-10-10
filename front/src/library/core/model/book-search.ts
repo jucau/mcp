@@ -6,4 +6,5 @@ export interface BookSearch {
     readonly owned?: boolean;
     readonly lent?: boolean;
     readonly page?: number;
+    readonly perPage?: number;
 }

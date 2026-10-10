@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router';
 import { OAuthAuthorization } from '../auth/adapters/oauth/oauth-authorization';
 import { HttpLibrary } from '../library/adapters/http/http-library';
 import { App } from './App';
+import './theme.css';
 
 const root = document.getElementById('root');
 

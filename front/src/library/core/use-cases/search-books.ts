@@ -1,9 +1,15 @@
 import type { Book } from '../model/book';
-import type { BookSearch } from '../model/book-search';
 import type { Page } from '../model/page';
+import { criteriaOf, type Shelf } from '../model/shelf';
 import type { Library } from '../ports/library';
+
+export interface Browsing {
+    readonly shelf: Shelf;
+    readonly text: string;
+    readonly page: number;
+}
 
 export const searchBooks =
     (library: Library) =>
-    (criteria: BookSearch): Promise<Page<Book>> =>
-        library.search(criteria);
+    ({ shelf, text, page }: Browsing): Promise<Page<Book>> =>
+        library.search({ ...criteriaOf(shelf), text, page });

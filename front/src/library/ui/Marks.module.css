@@ -1,0 +1,16 @@
+.marks {
+    display: inline-flex;
+    gap: 4px;
+    vertical-align: middle;
+}
+
+.marks i {
+    width: 9px;
+    height: 18px;
+    background: var(--rule-strong);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+}
+
+.marks i.on {
+    background: var(--ribbon);
+}

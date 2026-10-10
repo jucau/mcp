@@ -1,0 +1,65 @@
+@import '@fontsource/libre-caslon-display/400.css';
+@import '@fontsource-variable/atkinson-hyperlegible-next/index.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+
+:root {
+    color-scheme: light;
+    --ground: #edeff2;
+    --surface: #f8f9fb;
+    --card: #fdfdfb;
+    --ink: #1d2738;
+    --ink-soft: #55607a;
+    --rule: #d3d8e1;
+    --rule-strong: #b7bfcc;
+    --ribbon: #2547c9;
+    --stamp: #2547c9;
+    --refusal: #a3341f;
+    --refusal-ground: #f9ebe6;
+    --done: #2f5b4e;
+    --display: 'Libre Caslon Display', 'Baskerville', 'Georgia', serif;
+    --body: 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+        --ground: #121620;
+        --surface: #181d29;
+        --card: #1c2230;
+        --ink: #e6e9ef;
+        --ink-soft: #9aa3b5;
+        --rule: #2b3344;
+        --rule-strong: #3b4558;
+        --ribbon: #6f8cff;
+        --stamp: #8aa1ff;
+        --refusal: #ff9a82;
+        --refusal-ground: #2c1a18;
+        --done: #7cc2a9;
+    }
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 16px/1.5 var(--body);
+}
+
+:focus-visible {
+    outline: 2px solid var(--ribbon);
+    outline-offset: 2px;
+}
+
+h1,
+h2,
+h3 {
+    text-wrap: balance;
+}
