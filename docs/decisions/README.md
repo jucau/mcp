@@ -43,3 +43,4 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0020](./0020-passport-serveur-d-autorisation-destinataire-implicite.md) | Passport comme serveur d'autorisation, et un destinataire de token implicite | Accepté |
 | [0021](./0021-chaque-transport-choisit-son-lecteur.md) | Chaque transport choisit son lecteur, et aucun lecteur n'est servi par défaut | Accepté |
 | [0022](./0022-invariants-gardes-par-le-constructeur.md) | Le constructeur d'un value object garde ses invariants, le constructeur nommé normalise | Accepté |
+| [0023](./0023-completer-seulement-ce-qu-un-humain-choisit.md) | Ne compléter que ce qu'un humain sait choisir, à partir des données du lecteur | Accepté |

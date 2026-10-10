@@ -114,9 +114,17 @@ appel.*
   (`$request->ask()`, [laravel/mcp#363](https://github.com/laravel/mcp/pull/363)) a été mergé puis reverté, et
   n'est pas publié. On reprend à sa release plutôt que de remplacer `tools/call` dans le SDK
 
+## Étape 8 — Les complétions d'arguments
+
+*Apprendre : une primitive qui ne sert que l'humain, et ce qu'elle peut révéler.*
+
+- [ ] Documenter `completion/complete` ([08](./08-completions.md),
+  [ADR-0023](./decisions/0023-completer-seulement-ce-qu-un-humain-choisit.md))
+- [ ] Annoncer la capability `completions`, et compléter `reading_review.year` par les années de lecture du
+  lecteur ; l'`id` et `mood` restent sans complétion
+
 ## Plus tard (idées, sans engagement)
 
-- Complétions d'arguments (`completion/complete`)
 - Notifications de progression pour un tool long (import d'une liste de livres)
 - *MCP Apps* : un tool qui rend une interface (`RendersApp`)
 - Un tool qui s'appuie sur une API ouverte (métadonnées ISBN) : `openWorldHint`
