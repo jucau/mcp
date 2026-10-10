@@ -16,6 +16,7 @@ use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\LibrarySeeder;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Passport\Passport;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -71,6 +72,18 @@ final class DemoLibrarySeederTest extends TestCase
         $this->seed(DatabaseSeeder::class);
 
         $this->assertSame(23, $this->booksOn(ReaderId::fromString(LibrarySeeder::JULIEN), new BookSearch()));
+    }
+
+    #[Test]
+    public function the_front_has_a_public_client_that_comes_back_to_its_callback(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $client = Passport::client()->newQuery()->whereKey(config('library.front_client_id'))->firstOrFail();
+
+        $this->assertNull($client->getAttribute('secret'));
+        $this->assertSame(['http://localhost:5173/callback'], $client->getAttribute('redirect_uris'));
+        $this->assertSame(['authorization_code', 'refresh_token'], $client->getAttribute('grant_types'));
     }
 
     private function booksOn(ReaderId $reader, BookSearch $shelf): int

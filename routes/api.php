@@ -26,16 +26,16 @@ Route::middleware([
     RequireTokenFor::class . ':' . ProtectedResource::Api->value,
     ServeTheAuthenticatedReader::class,
 ])->group(function (): void {
-    Route::get('/books', SearchBooksController::class);
-    Route::post('/books', AddBookController::class);
-    Route::get('/books/{book}', ShowBookController::class);
-    Route::delete('/books/{book}', RemoveBookController::class);
-    Route::post('/books/{book}/start-reading', StartReadingController::class);
-    Route::post('/books/{book}/finish-reading', FinishReadingController::class);
-    Route::post('/books/{book}/abandon-reading', AbandonReadingController::class);
-    Route::post('/books/{book}/rate', RateBookController::class);
-    Route::post('/books/{book}/lend', LendBookController::class);
-    Route::post('/books/{book}/return', ReturnBookController::class);
-    Route::post('/books/{book}/acquire', AcquireBookController::class);
-    Route::get('/shelves/{shelf}', ShowShelfController::class);
+    Route::get('/books', SearchBooksController::class)->name('searchBooks');
+    Route::post('/books', AddBookController::class)->name('addBook');
+    Route::get('/books/{book}', ShowBookController::class)->name('showBook');
+    Route::delete('/books/{book}', RemoveBookController::class)->name('removeBook');
+    Route::post('/books/{book}/start-reading', StartReadingController::class)->name('startReading');
+    Route::post('/books/{book}/finish-reading', FinishReadingController::class)->name('finishReading');
+    Route::post('/books/{book}/abandon-reading', AbandonReadingController::class)->name('abandonReading');
+    Route::post('/books/{book}/rate', RateBookController::class)->name('rateBook');
+    Route::post('/books/{book}/lend', LendBookController::class)->name('lendBook');
+    Route::post('/books/{book}/return', ReturnBookController::class)->name('returnBook');
+    Route::post('/books/{book}/acquire', AcquireBookController::class)->name('acquireBook');
+    Route::get('/shelves/{shelf}', ShowShelfController::class)->name('showShelf');
 });

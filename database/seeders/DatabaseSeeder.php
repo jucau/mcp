@@ -10,6 +10,6 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call([AccountSeeder::class, LibrarySeeder::class]);
+        $this->call([AccountSeeder::class, LibrarySeeder::class, FrontClientSeeder::class]);
     }
 }

@@ -123,6 +123,38 @@ BFF, le navigateur ne ferait plus d'OAuth. Le risque se réduit ainsi :
   parti, et `searchBooks` ne fait plus que déléguer au port. Quand le cœur n'a rien à muter, Stryker répond `n/a` sans
   casser la porte.
 
+## La connexion, pour de vrai
+
+Dans un navigateur, sur `http://localhost:5173`, le journal nginx (`make mcp-log`) montre le parcours du front :
+
+```
+GET  /.well-known/oauth-protected-resource/api   (suivi depuis le WWW-Authenticate du 401)
+GET  /.well-known/oauth-authorization-server
+GET  /oauth/authorize                            (l'écran d'accord : « Pour le serveur http://localhost:8090/api »)
+POST /oauth/authorize                            (Autoriser)
+GET  /.well-known/oauth-protected-resource/api   (de retour sur /callback, la page a tout oublié : nouvelle découverte)
+GET  /.well-known/oauth-authorization-server
+POST /oauth/token                                (le code, son verifier et le resource)
+```
+
+En base, le token de « Marque-page web » porte `resource = http://localhost:8090/api`. C'est la case que l'étape 9 avait
+laissée ouverte : un vrai client OAuth a suivi la découverte jusqu'à l'API, et son token n'ouvre qu'elle.
+
+Trois points vus en l'écrivant :
+
+- **La découverte se refait au retour** : la redirection vers le serveur d'autorisation est une navigation, et la
+  mémoire de la page ne survit pas. Seuls le `code_verifier` et le `state` ont traversé, par `sessionStorage`.
+- **React lance deux fois les effets en développement** (`StrictMode`) : sans garde, le retour échangerait deux fois
+  le même code, et la seconde fois échouerait. Un code ne vaut qu'un échange, le composant n'en tente qu'un.
+- **Une session qui s'achève n'est pas une panne.** Si le token expire et que son rafraîchissement échoue,
+  l'adaptateur HTTP lève `NotSignedIn`, et l'application relance l'autorisation au lieu d'afficher une erreur. C'est
+  Stryker qui l'a fait voir : le message de `NotSignedIn` survivait à toutes ses mutations, parce que rien ne devait le
+  lire.
+
+Et deux défauts du contrat, que le front a révélés et qu'on a corrigés côté API : `reading_status` y était un `string`
+quelconque (il est désormais l'enum `ReadingStatus`), et les `operationId` reprenaient le namespace des contrôleurs
+(`infrastructure.searchBooks`). Les routes portent maintenant le nom de leur use case.
+
 ## Ce qu'on vérifiera
 
 - **Les couches** : le cœur ne dépend ni de React ni des adaptateurs ; seule la racine de composition branche un

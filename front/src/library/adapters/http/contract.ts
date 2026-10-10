@@ -13,7 +13,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["infrastructure.abandonReading"];
+        post: operations["abandonReading"];
         delete?: never;
         options?: never;
         head?: never;
@@ -29,7 +29,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["infrastructure.acquireBook"];
+        post: operations["acquireBook"];
         delete?: never;
         options?: never;
         head?: never;
@@ -43,9 +43,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["infrastructure.searchBooks"];
+        get: operations["searchBooks"];
         put?: never;
-        post: operations["infrastructure.addBook"];
+        post: operations["addBook"];
         delete?: never;
         options?: never;
         head?: never;
@@ -61,7 +61,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["infrastructure.finishReading"];
+        post: operations["finishReading"];
         delete?: never;
         options?: never;
         head?: never;
@@ -77,7 +77,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["infrastructure.lendBook"];
+        post: operations["lendBook"];
         delete?: never;
         options?: never;
         head?: never;
@@ -93,7 +93,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["infrastructure.rateBook"];
+        post: operations["rateBook"];
         delete?: never;
         options?: never;
         head?: never;
@@ -107,10 +107,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["infrastructure.showBook"];
+        get: operations["showBook"];
         put?: never;
         post?: never;
-        delete: operations["infrastructure.removeBook"];
+        delete: operations["removeBook"];
         options?: never;
         head?: never;
         patch?: never;
@@ -125,7 +125,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["infrastructure.returnBook"];
+        post: operations["returnBook"];
         delete?: never;
         options?: never;
         head?: never;
@@ -139,7 +139,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["infrastructure.showShelf"];
+        get: operations["showShelf"];
         put?: never;
         post?: never;
         delete?: never;
@@ -157,7 +157,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["infrastructure.startReading"];
+        post: operations["startReading"];
         delete?: never;
         options?: never;
         head?: never;
@@ -175,7 +175,7 @@ export interface components {
             author: string;
             isbn: string | null;
             owned: boolean;
-            reading_status: string;
+            reading_status: components["schemas"]["ReadingStatus"];
             started_on: string | null;
             finished_on: string | null;
             rating: number | null;
@@ -226,7 +226,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    "infrastructure.abandonReading": {
+    abandonReading: {
         parameters: {
             query?: never;
             header?: never;
@@ -356,7 +356,7 @@ export interface operations {
             };
         };
     };
-    "infrastructure.acquireBook": {
+    acquireBook: {
         parameters: {
             query?: never;
             header?: never;
@@ -418,7 +418,7 @@ export interface operations {
             };
         };
     };
-    "infrastructure.searchBooks": {
+    searchBooks: {
         parameters: {
             query?: {
                 query?: string;
@@ -514,7 +514,7 @@ export interface operations {
             };
         };
     };
-    "infrastructure.addBook": {
+    addBook: {
         parameters: {
             query?: never;
             header?: never;
@@ -621,7 +621,7 @@ export interface operations {
             };
         };
     };
-    "infrastructure.finishReading": {
+    finishReading: {
         parameters: {
             query?: never;
             header?: never;
@@ -751,7 +751,7 @@ export interface operations {
             };
         };
     };
-    "infrastructure.lendBook": {
+    lendBook: {
         parameters: {
             query?: never;
             header?: never;
@@ -898,7 +898,7 @@ export interface operations {
             };
         };
     };
-    "infrastructure.rateBook": {
+    rateBook: {
         parameters: {
             query?: never;
             header?: never;
@@ -1027,7 +1027,7 @@ export interface operations {
             };
         };
     };
-    "infrastructure.showBook": {
+    showBook: {
         parameters: {
             query?: never;
             header?: never;
@@ -1089,7 +1089,7 @@ export interface operations {
             };
         };
     };
-    "infrastructure.removeBook": {
+    removeBook: {
         parameters: {
             query?: never;
             header?: never;
@@ -1168,7 +1168,7 @@ export interface operations {
             };
         };
     };
-    "infrastructure.returnBook": {
+    returnBook: {
         parameters: {
             query?: never;
             header?: never;
@@ -1251,7 +1251,7 @@ export interface operations {
             };
         };
     };
-    "infrastructure.showShelf": {
+    showShelf: {
         parameters: {
             query?: never;
             header?: never;
@@ -1278,7 +1278,7 @@ export interface operations {
             404: components["responses"]["ModelNotFoundException"];
         };
     };
-    "infrastructure.startReading": {
+    startReading: {
         parameters: {
             query?: never;
             header?: never;

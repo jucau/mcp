@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     plugins: [react()],
-    server: { port: 5173, strictPort: true },
+    server: { port: 5173, strictPort: true, watch: { ignored: ['**/.stryker-tmp/**', '**/reports/**'] } },
     test: {
         environment: 'jsdom',
         globals: true,

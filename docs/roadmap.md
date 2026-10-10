@@ -142,7 +142,7 @@ appel.*
 - [x] Le contrat OpenAPI, généré depuis le code et vérifié par chaque test de l'API
   ([ADR-0028](./decisions/0028-openapi-genere-par-scramble-verifie-par-spectator.md))
 - [x] Pour de vrai : Claude Code refait son parcours OAuth, et son nouveau token porte le destinataire `/mcp`
-- [ ] Pour de vrai, côté API : un client OAuth suit la découverte jusqu'à `/api` (avec le frontend)
+- [x] Pour de vrai, côté API : un client OAuth suit la découverte jusqu'à `/api` (le frontend, [10](./10-frontend.md))
 
 ## Étape 10 — Le frontend
 
@@ -154,7 +154,7 @@ serveur, et un client typé par le contrat de l'API.*
   [ADR-0032](./decisions/0032-client-http-type-par-le-contrat.md))
 - [x] Le socle : un service `node`, Vite + React + TypeScript strict, ESLint, Prettier, les couches vérifiées, Vitest,
   Stryker, les types du contrat ; **le front dans `make quality`**
-- [ ] La connexion : le client OAuth pré-enregistré, CORS, la découverte depuis le `401`, PKCE et `resource`, le token
+- [x] La connexion : le client OAuth pré-enregistré, CORS, la découverte depuis le `401`, PKCE et `resource`, le token
   en mémoire
 - [ ] La bibliothèque : la recherche, les filtres, la pagination, les étagères
 - [ ] La fiche d'un livre et ses actions, les refus du domaine affichés tels quels

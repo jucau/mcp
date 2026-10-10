@@ -18,7 +18,7 @@
     "paths": {
         "/books/{book}/abandon-reading": {
             "post": {
-                "operationId": "infrastructure.abandonReading",
+                "operationId": "abandonReading",
                 "tags": [
                     "AbandonReading"
                 ],
@@ -286,7 +286,7 @@
         },
         "/books/{book}/acquire": {
             "post": {
-                "operationId": "infrastructure.acquireBook",
+                "operationId": "acquireBook",
                 "tags": [
                     "AcquireBook"
                 ],
@@ -406,7 +406,7 @@
         },
         "/books": {
             "post": {
-                "operationId": "infrastructure.addBook",
+                "operationId": "addBook",
                 "tags": [
                     "AddBook"
                 ],
@@ -633,7 +633,7 @@
                 }
             },
             "get": {
-                "operationId": "infrastructure.searchBooks",
+                "operationId": "searchBooks",
                 "tags": [
                     "SearchBooks"
                 ],
@@ -936,7 +936,7 @@
         },
         "/books/{book}/finish-reading": {
             "post": {
-                "operationId": "infrastructure.finishReading",
+                "operationId": "finishReading",
                 "tags": [
                     "FinishReading"
                 ],
@@ -1204,7 +1204,7 @@
         },
         "/books/{book}/lend": {
             "post": {
-                "operationId": "infrastructure.lendBook",
+                "operationId": "lendBook",
                 "tags": [
                     "LendBook"
                 ],
@@ -1517,7 +1517,7 @@
         },
         "/books/{book}/rate": {
             "post": {
-                "operationId": "infrastructure.rateBook",
+                "operationId": "rateBook",
                 "tags": [
                     "RateBook"
                 ],
@@ -1785,7 +1785,7 @@
         },
         "/books/{book}": {
             "delete": {
-                "operationId": "infrastructure.removeBook",
+                "operationId": "removeBook",
                 "tags": [
                     "RemoveBook"
                 ],
@@ -1929,7 +1929,7 @@
                 }
             },
             "get": {
-                "operationId": "infrastructure.showBook",
+                "operationId": "showBook",
                 "tags": [
                     "ShowBook"
                 ],
@@ -2049,7 +2049,7 @@
         },
         "/books/{book}/return": {
             "post": {
-                "operationId": "infrastructure.returnBook",
+                "operationId": "returnBook",
                 "tags": [
                     "ReturnBook"
                 ],
@@ -2210,7 +2210,7 @@
         },
         "/shelves/{shelf}": {
             "get": {
-                "operationId": "infrastructure.showShelf",
+                "operationId": "showShelf",
                 "tags": [
                     "ShowShelf"
                 ],
@@ -2258,7 +2258,7 @@
         },
         "/books/{book}/start-reading": {
             "post": {
-                "operationId": "infrastructure.startReading",
+                "operationId": "startReading",
                 "tags": [
                     "StartReading"
                 ],
@@ -2525,7 +2525,7 @@
                         "type": "boolean"
                     },
                     "reading_status": {
-                        "type": "string"
+                        "$ref": "#/components/schemas/ReadingStatus"
                     },
                     "started_on": {
                         "type": [
