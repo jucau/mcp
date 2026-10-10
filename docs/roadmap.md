@@ -140,7 +140,8 @@ appel.*
 - [x] Les écritures : `POST /api/books`, `DELETE /api/books/{id}` et les sept actions
 - [x] Les refus en *Problem Details*, et le test qui garantit un statut à chaque refus du domaine
 - [ ] Le contrat OpenAPI, vérifié par les tests
-- [ ] Pour de vrai : Claude Code refait son parcours OAuth, l'API répond à un token émis pour elle
+- [x] Pour de vrai : Claude Code refait son parcours OAuth, et son nouveau token porte le destinataire `/mcp`
+- [ ] Pour de vrai, côté API : un client OAuth suit la découverte jusqu'à `/api` (avec le frontend)
 
 ## Plus tard (idées, sans engagement)
 

@@ -327,6 +327,34 @@ chemin (`/.well-known/oauth-protected-resource/n-importe-quoi` annonce une resso
 scope `mcp:use`, qui ne veut rien dire pour l'API. Sans conséquence aujourd'hui : aucun token ne vaut pour un chemin
 inconnu, et l'API ne vérifie pas de scope.
 
+## Pour de vrai : Claude Code refait son parcours
+
+Une fois le destinataire en place, le token obtenu le matin par Claude Code, sans destinataire, ne valait plus rien.
+Le journal nginx (`make mcp-log`) montre comment Claude Code s'en est remis, sans qu'on touche à sa configuration :
+
+```
+22:02:43 401 POST /oauth/token                  (rafraîchissement refusé : son client n'existe plus)
+22:02:43 401 POST /mcp     method=server/discover
+22:02:43 200 GET  /.well-known/oauth-protected-resource/mcp
+22:02:48 201 POST /oauth/register               (il se réenregistre)
+22:02:48 200 GET  /oauth/authorize              (l'écran d'accord, qui nomme le serveur)
+22:02:52 302 POST /oauth/authorize
+22:02:52 200 POST /oauth/token
+22:02:52 200 POST /mcp     method=server/discover
+22:03:12 200 POST /mcp     method=tools/call name=search_books
+```
+
+- **Il a d'abord tenté de rafraîchir son token**, et Passport a répondu `401` (`invalid_client`) : entre-temps, un
+  `make seed` (`migrate:fresh`) avait effacé la base, et avec elle le client que Claude Code avait enregistré. Le
+  client n'existait plus, son *refresh token* non plus.
+- **Il a recommencé toute la découverte**, à partir du `401` de `/mcp` : métadonnées, nouvel enregistrement (DCR),
+  autorisation. Un client MCP n'a rien à garder qu'il ne sache redécouvrir.
+- **Le nouveau token porte son destinataire**, relu en base : `resource = http://localhost:8090/mcp`, comme le code
+  d'autorisation qui l'a précédé.
+
+Le volet `/api` attend un vrai client OAuth, le frontend : les tests jouent son parcours complet, et un token émis par
+`library:token --resource=api` ouvre l'API, mais aucun client n'a encore suivi la découverte jusqu'à elle.
+
 ## Ce qu'on vérifiera
 
 - **Le cœur** : `git diff` sur `Domain` vide ; sur `Application`, le seul déplacement de `Shelf`.
