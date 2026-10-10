@@ -1,0 +1,6 @@
+node_modules
+dist
+reports
+.stryker-tmp
+package-lock.json
+src/library/adapters/http/contract.ts

@@ -4,14 +4,15 @@ DC = docker compose
 AGENT_ENV = $(if $(AI_AGENT),-e AI_AGENT='$(AI_AGENT)')
 EXEC = $(DC) exec -T $(AGENT_ENV) php
 ARTISAN = $(EXEC) php artisan
+NPM = $(DC) exec -T node npm
 
-.PHONY: ci seed-check quality ide-helper rector pint openapi stan ark test coverage infection inspector raw-session raw-http-session benchmark mcp-log test-db start stop restart build rebuild destroy ps logs shell \
+.PHONY: ci seed-check quality ide-helper rector pint openapi front-contract front-format stan ark front-lint front-typecheck test front-test infection front-mutation front-install ark test coverage infection inspector raw-session raw-http-session benchmark mcp-log test-db start stop restart build rebuild destroy ps logs shell \
         migrate fresh seed composer artisan tinker
 
 # The one gate, run before every commit. The order is load-bearing: the writing tools come first, Pint
 # last among them (it imports and shortens the fully-qualified names ide-helper writes), then the
 # read-only checks judge the settled tree.
-quality: ide-helper rector pint openapi stan ark test infection
+quality: ide-helper rector pint openapi front-contract front-format stan ark front-lint front-typecheck test front-test infection front-mutation
 
 # What a CI would run, from a fresh test database. The demo seeds the test database, never the dev one, and
 # leaves it empty again: the suite runs in transactions over an empty database.
@@ -37,6 +38,28 @@ pint:
 # The contract of the REST API, generated from its code and versioned: a change of the API shows in the diff.
 openapi:
 	$(ARTISAN) scramble:export
+
+# The types of the front's HTTP client, generated from that contract: an API drift breaks the front's compilation.
+front-contract:
+	$(NPM) run contract
+
+front-format:
+	$(NPM) run format
+
+front-lint:
+	$(NPM) run lint
+
+front-typecheck:
+	$(NPM) run typecheck
+
+front-test:
+	$(NPM) run test
+
+front-mutation:
+	$(NPM) run mutation
+
+front-install:
+	$(NPM) ci
 
 stan:
 	$(EXEC) ./vendor/bin/phpstan analyse --memory-limit=1G

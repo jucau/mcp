@@ -58,6 +58,13 @@ intérieure ne connaît `Laravel\Mcp`**) sont vérifiées par PHPArkitect. **Un 
 
 **Une migration ne touche qu'une table** : chacune s'applique, échoue et se rejoue seule.
 
+## Frontend
+
+`front/` : React + TypeScript strict ([ADR-0029](docs/decisions/0029-hexagone-front-sans-domaine-duplique.md)), dans le
+conteneur `node` (`make front-*`). **Aucune règle métier côté front** : le cœur (`src/*/core`) ne contient que use
+cases, modèle de lecture et ports, et ne connaît ni React, ni `fetch`, ni les adaptateurs (ESLint le vérifie). Les
+tests et le double en mémoire vivent dans `front/tests/`, hors de `src/`. Le double ne simule aucune règle du domaine.
+
 ## Données de démo
 
 **Chaque feature livre ses données de démo** dans `LibrarySeeder`, avec des cas variés. L'agrégat se seede
@@ -101,6 +108,9 @@ Stack : **nginx (8090) → php-fpm 8.5 → postgres 18** ([ADR-0005](docs/decisi
 **`make quality` est la porte unique**, lancée **en entier** et **verte** avant chaque commit — jamais un
 sous-ensemble. Les outils qui écrivent corrigent au passage : la porte passe **avant** le commit, sinon la
 correction arrive dans un commit de rattrapage.
+
+Le front est **dans la porte** : `front-contract` (les types du client, générés depuis le contrat) et `front-format`
+écrivent, `front-lint`, `front-typecheck`, `front-test` et `front-mutation` (Stryker, MSI 100 sur le cœur) vérifient.
 
 **`make ci`** simule une CI : base de test neuve, la porte entière, puis les données de démo seedées sur la base
 de test (jamais celle de dev) avant de la revider.

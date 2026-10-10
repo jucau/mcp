@@ -16,6 +16,10 @@
 /.zed
 /auth.json
 /node_modules
+/front/node_modules
+/front/dist
+/front/reports
+/front/.stryker-tmp
 /public/build
 /public/fonts-manifest.dev.json
 /public/hot

@@ -144,6 +144,23 @@ appel.*
 - [x] Pour de vrai : Claude Code refait son parcours OAuth, et son nouveau token porte le destinataire `/mcp`
 - [ ] Pour de vrai, côté API : un client OAuth suit la découverte jusqu'à `/api` (avec le frontend)
 
+## Étape 10 — Le frontend
+
+*Apprendre : le parcours OAuth vu d'un client public, ce qu'est le cœur d'un client quand les règles vivent sur le
+serveur, et un client typé par le contrat de l'API.*
+
+- [x] Documenter le frontend ([10](./10-frontend.md), [ADR-0029](./decisions/0029-hexagone-front-sans-domaine-duplique.md),
+  [ADR-0030](./decisions/0030-spa-cliente-oauth-publique.md), [ADR-0031](./decisions/0031-tenter-puis-afficher-le-refus.md),
+  [ADR-0032](./decisions/0032-client-http-type-par-le-contrat.md))
+- [x] Le socle : un service `node`, Vite + React + TypeScript strict, ESLint, Prettier, les couches vérifiées, Vitest,
+  Stryker, les types du contrat ; **le front dans `make quality`**
+- [ ] La connexion : le client OAuth pré-enregistré, CORS, la découverte depuis le `401`, PKCE et `resource`, le token
+  en mémoire
+- [ ] La bibliothèque : la recherche, les filtres, la pagination, les étagères
+- [ ] La fiche d'un livre et ses actions, les refus du domaine affichés tels quels
+- [ ] L'ajout d'un livre
+- [ ] Le bout en bout (Playwright), et pour de vrai dans un navigateur : la case laissée ouverte à l'étape 9
+
 ## Plus tard (idées, sans engagement)
 
 - Notifications de progression pour un tool long (import d'une liste de livres)
