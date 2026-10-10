@@ -40,7 +40,10 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0017](./0017-refus-de-resource-en-parametres-invalides.md) | Un refus de resource est une erreur de paramètres (`-32602`), pas une erreur interne | Accepté |
 | [0018](./0018-un-lecteur-par-livre-sans-compte-dans-le-domaine.md) | Un lecteur par livre, et aucun compte dans le domaine | Accepté |
 | [0019](./0019-comptes-en-infrastructure-lecteur-ferme-par-defaut.md) | Des comptes en infrastructure, et un lecteur courant fermé par défaut | Accepté, lecteur par défaut remplacé par 0021 |
-| [0020](./0020-passport-serveur-d-autorisation-destinataire-implicite.md) | Passport comme serveur d'autorisation, et un destinataire de token implicite | Accepté |
+| [0020](./0020-passport-serveur-d-autorisation-destinataire-implicite.md) | Passport comme serveur d'autorisation, et un destinataire de token implicite | Accepté, destinataire remplacé par 0026 |
 | [0021](./0021-chaque-transport-choisit-son-lecteur.md) | Chaque transport choisit son lecteur, et aucun lecteur n'est servi par défaut | Accepté |
 | [0022](./0022-invariants-gardes-par-le-constructeur.md) | Le constructeur d'un value object garde ses invariants, le constructeur nommé normalise | Accepté |
 | [0023](./0023-completer-seulement-ce-qu-un-humain-choisit.md) | Ne compléter que ce qu'un humain sait choisir, à partir des données du lecteur | Accepté |
+| [0024](./0024-api-rest-une-url-par-use-case.md) | L'API REST parle métier : une URL par use case, et les refus en *Problem Details* | Accepté |
+| [0025](./0025-chaque-adaptateur-possede-son-contrat.md) | Chaque adaptateur possède son contrat : des `JsonResource` pour l'API, et des adaptateurs qui s'ignorent | Accepté |
+| [0026](./0026-un-destinataire-explicite-par-token.md) | Un destinataire explicite par token, enregistré avec lui | Accepté |

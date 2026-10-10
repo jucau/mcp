@@ -1,6 +1,7 @@
 # ADR-0020 — Passport comme serveur d'autorisation, et un destinataire de token implicite
 
-- **Statut** : Accepté (2026-10-04)
+- **Statut** : Accepté (2026-10-04). Le destinataire implicite est remplacé par
+  [ADR-0026](./0026-un-destinataire-explicite-par-token.md).
 
 ## Contexte
 

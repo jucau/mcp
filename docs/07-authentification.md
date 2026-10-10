@@ -73,7 +73,7 @@ Les pièces, une par une :
 | Écran d'accord | ⚠️ vue `mcp.authorize` du SDK | remplacée par la nôtre : elle exige un build Vite et un thème Tailwind que nous n'avons pas |
 | DCR (déprécié) | ✅ `POST /oauth/register` | |
 | CIMD côté serveur | ❌ | plus tard (roadmap) |
-| Vérifier que le token vise ce serveur (RFC 8707) | ❌ | écart assumé : [ADR-0020](./decisions/0020-passport-serveur-d-autorisation-destinataire-implicite.md) |
+| Vérifier que le token vise ce serveur (RFC 8707) | ❌ | écart assumé tant qu'il n'y avait qu'un serveur ([ADR-0020](./decisions/0020-passport-serveur-d-autorisation-destinataire-implicite.md)), refermé à l'arrivée de l'API ([ADR-0026](./decisions/0026-un-destinataire-explicite-par-token.md)) |
 | Scopes personnalisés | ❌ un seul, `mcp:use` | la troisième partie devra les ajouter |
 | Un écran de connexion | ❌ | à nous : Passport exige un utilisateur connecté pour `/oauth/authorize` |
 

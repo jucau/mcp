@@ -29,6 +29,7 @@ Il est juste assez riche pour faire vivre les trois primitives MCP :
 | 06 | [Le transport Streamable HTTP](./06-transport-http.md) | Que change HTTP, et que change un protocole sans état ? |
 | 07 | [L'authentification](./07-authentification.md) | Comment un client obtient un token, et comment un token devient un lecteur ? |
 | 08 | [Les complétions d'arguments](./08-completions.md) | À qui sert la complétion, et quoi compléter ? |
+| 09 | [Un second adaptateur : l'API REST](./09-api-rest.md) | Le cœur tient-il face à un autre adaptateur, et à qui est destiné un token ? |
 | — | [Roadmap](./roadmap.md) | Dans quel ordre construit-on, et qu'apprend-on à chaque étape ? |
 | — | [Décisions (ADR)](./decisions/README.md) | Pourquoi c'est fait comme ça ? |
 
