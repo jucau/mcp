@@ -5,26 +5,12 @@ declare(strict_types=1);
 namespace Tests\Feature\Library\Api;
 
 use App\Library\Domain\Book\BookRepository;
-use App\Library\Infrastructure\Auth\ProtectedResource;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\Support\Library\Accounts;
 use Tests\Support\Library\Books;
 use Tests\Support\Library\Readers;
-use Tests\Support\Library\Tokens;
-use Tests\TestCase;
 
-final class ShowBookTest extends TestCase
+final class ShowBookTest extends ApiTestCase
 {
-    use DatabaseTransactions;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        Tokens::actingAs(Accounts::of(Readers::ME), ProtectedResource::Api);
-    }
-
     #[Test]
     public function it_shows_a_book_of_the_reader(): void
     {

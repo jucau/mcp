@@ -139,7 +139,8 @@ appel.*
   choisi par le groupe `/api`, les métadonnées de la ressource et le `401`
 - [x] Les écritures : `POST /api/books`, `DELETE /api/books/{id}` et les sept actions
 - [x] Les refus en *Problem Details*, et le test qui garantit un statut à chaque refus du domaine
-- [ ] Le contrat OpenAPI, vérifié par les tests
+- [x] Le contrat OpenAPI, généré depuis le code et vérifié par chaque test de l'API
+  ([ADR-0028](./decisions/0028-openapi-genere-par-scramble-verifie-par-spectator.md))
 - [x] Pour de vrai : Claude Code refait son parcours OAuth, et son nouveau token porte le destinataire `/mcp`
 - [ ] Pour de vrai, côté API : un client OAuth suit la découverte jusqu'à `/api` (avec le frontend)
 

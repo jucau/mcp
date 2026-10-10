@@ -4,31 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Library\Api;
 
-use App\Library\Domain\Book\Book;
-use App\Library\Domain\Book\BookRepository;
 use App\Library\Domain\Book\Borrower;
-use App\Library\Infrastructure\Auth\ProtectedResource;
 use DateTimeImmutable;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
-use Tests\Support\Library\Accounts;
 use Tests\Support\Library\Books;
 use Tests\Support\Library\Readers;
-use Tests\Support\Library\Tokens;
-use Tests\TestCase;
 
-final class SearchBooksTest extends TestCase
+final class SearchBooksTest extends ApiTestCase
 {
-    use DatabaseTransactions;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        Tokens::actingAs(Accounts::of(Readers::ME), ProtectedResource::Api);
-    }
-
     #[Test]
     public function it_lists_the_books_of_the_reader_only_sorted_by_title_with_the_pagination(): void
     {
@@ -156,10 +140,5 @@ final class SearchBooksTest extends TestCase
                 'status' => 422,
                 'detail' => '"123" is not a valid ISBN-10 or ISBN-13.',
             ]);
-    }
-
-    private function given(Book $book): void
-    {
-        $this->app->make(BookRepository::class)->save($book);
     }
 }

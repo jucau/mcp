@@ -11,12 +11,21 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\Library\Accounts;
 use Tests\Support\Library\Books;
 use Tests\Support\Library\Readers;
+use Tests\Support\Library\RespectsTheApiContract;
 use Tests\Support\Library\Tokens;
 use Tests\TestCase;
 
 final class ApiAuthenticationTest extends TestCase
 {
     use DatabaseTransactions;
+    use RespectsTheApiContract;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->setUpTheApiContract();
+    }
 
     #[Test]
     public function without_a_token_the_api_says_where_to_learn_how_to_get_one(): void

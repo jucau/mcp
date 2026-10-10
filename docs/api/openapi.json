@@ -1,0 +1,2638 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Marque-page",
+        "version": "0.1.0",
+        "description": "The personal library of the reader behind the token: the same use cases as the MCP server, over REST."
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8090/api"
+        }
+    ],
+    "security": [
+        {
+            "scheme": []
+        }
+    ],
+    "paths": {
+        "/books/{book}/abandon-reading": {
+            "post": {
+                "operationId": "infrastructure.abandonReading",
+                "tags": [
+                    "AbandonReading"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "on": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`BookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request\n\nFinished before started",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-request"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid request"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        422
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                },
+                                                "errors": {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail",
+                                                "errors"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/finished-before-started"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Finished before started"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        422
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown book\n\nInvalid book id",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/unknown-book"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Unknown book"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-book-id"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid book id"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Reading transition not allowed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "enum": [
+                                                "http://localhost:8090/problems/reading-transition-not-allowed"
+                                            ]
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Reading transition not allowed"
+                                            ]
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "enum": [
+                                                409
+                                            ]
+                                        },
+                                        "detail": {
+                                            "type": "string",
+                                            "description": "The message of the refusal, as the domain wrote it."
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "title",
+                                        "status",
+                                        "detail"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/books/{book}/acquire": {
+            "post": {
+                "operationId": "infrastructure.acquireBook",
+                "tags": [
+                    "AcquireBook"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`BookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown book\n\nInvalid book id",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/unknown-book"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Unknown book"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-book-id"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid book id"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/books": {
+            "post": {
+                "operationId": "infrastructure.addBook",
+                "tags": [
+                    "AddBook"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "author": {
+                                        "type": "string"
+                                    },
+                                    "isbn": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "owned": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "title",
+                                    "author"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`BookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request\n\nInvalid text\n\nInvalid isbn",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-request"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid request"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        422
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                },
+                                                "errors": {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail",
+                                                "errors"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-text"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid text"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        422
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-isbn"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid isbn"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        422
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Duplicate isbn",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "enum": [
+                                                "http://localhost:8090/problems/duplicate-isbn"
+                                            ]
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Duplicate isbn"
+                                            ]
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "enum": [
+                                                409
+                                            ]
+                                        },
+                                        "detail": {
+                                            "type": "string",
+                                            "description": "The message of the refusal, as the domain wrote it."
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "title",
+                                        "status",
+                                        "detail"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "get": {
+                "operationId": "infrastructure.searchBooks",
+                "tags": [
+                    "SearchBooks"
+                ],
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "isbn",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "reading_status",
+                        "in": "query",
+                        "schema": {
+                            "$ref": "#/components/schemas/ReadingStatus"
+                        }
+                    },
+                    {
+                        "name": "owned",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "true",
+                                "false"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "lent",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "true",
+                                "false"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated set of `BookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BookResource"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "description": "Generated paginator links.",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "url": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "label": {
+                                                                "type": "string"
+                                                            },
+                                                            "active": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "url",
+                                                            "label",
+                                                            "active"
+                                                        ]
+                                                    }
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "description": "Total number of items being paginated.",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "last_page",
+                                                "links",
+                                                "path",
+                                                "per_page",
+                                                "to",
+                                                "total"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request\n\nInvalid isbn",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-request"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid request"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        422
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                },
+                                                "errors": {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail",
+                                                "errors"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-isbn"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid isbn"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        422
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/books/{book}/finish-reading": {
+            "post": {
+                "operationId": "infrastructure.finishReading",
+                "tags": [
+                    "FinishReading"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "on": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`BookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request\n\nFinished before started",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-request"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid request"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        422
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                },
+                                                "errors": {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail",
+                                                "errors"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/finished-before-started"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Finished before started"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        422
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown book\n\nInvalid book id",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/unknown-book"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Unknown book"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-book-id"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid book id"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Reading transition not allowed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "enum": [
+                                                "http://localhost:8090/problems/reading-transition-not-allowed"
+                                            ]
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Reading transition not allowed"
+                                            ]
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "enum": [
+                                                409
+                                            ]
+                                        },
+                                        "detail": {
+                                            "type": "string",
+                                            "description": "The message of the refusal, as the domain wrote it."
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "title",
+                                        "status",
+                                        "detail"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/books/{book}/lend": {
+            "post": {
+                "operationId": "infrastructure.lendBook",
+                "tags": [
+                    "LendBook"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "borrower": {
+                                        "type": "string"
+                                    },
+                                    "on": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date"
+                                    }
+                                },
+                                "required": [
+                                    "borrower"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`BookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request\n\nInvalid text",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-request"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid request"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        422
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                },
+                                                "errors": {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail",
+                                                "errors"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-text"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid text"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        422
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown book\n\nInvalid book id",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/unknown-book"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Unknown book"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-book-id"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid book id"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Book not owned\n\nBook already lent",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/book-not-owned"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Book not owned"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/book-already-lent"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Book already lent"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/books/{book}/rate": {
+            "post": {
+                "operationId": "infrastructure.rateBook",
+                "tags": [
+                    "RateBook"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "rating": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "required": [
+                                    "rating"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`BookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request\n\nInvalid rating",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-request"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid request"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        422
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                },
+                                                "errors": {
+                                                    "type": "object",
+                                                    "additionalProperties": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail",
+                                                "errors"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-rating"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid rating"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        422
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown book\n\nInvalid book id",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/unknown-book"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Unknown book"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-book-id"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid book id"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Book not finished",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "enum": [
+                                                "http://localhost:8090/problems/book-not-finished"
+                                            ]
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Book not finished"
+                                            ]
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "enum": [
+                                                409
+                                            ]
+                                        },
+                                        "detail": {
+                                            "type": "string",
+                                            "description": "The message of the refusal, as the domain wrote it."
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "title",
+                                        "status",
+                                        "detail"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/books/{book}": {
+            "delete": {
+                "operationId": "infrastructure.removeBook",
+                "tags": [
+                    "RemoveBook"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "description": "Unknown book\n\nInvalid book id",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/unknown-book"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Unknown book"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-book-id"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid book id"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Book lent",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "enum": [
+                                                "http://localhost:8090/problems/book-lent"
+                                            ]
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Book lent"
+                                            ]
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "enum": [
+                                                409
+                                            ]
+                                        },
+                                        "detail": {
+                                            "type": "string",
+                                            "description": "The message of the refusal, as the domain wrote it."
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "title",
+                                        "status",
+                                        "detail"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "get": {
+                "operationId": "infrastructure.showBook",
+                "tags": [
+                    "ShowBook"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`BookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown book\n\nInvalid book id",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/unknown-book"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Unknown book"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-book-id"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid book id"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/books/{book}/return": {
+            "post": {
+                "operationId": "infrastructure.returnBook",
+                "tags": [
+                    "ReturnBook"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`BookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown book\n\nInvalid book id",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/unknown-book"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Unknown book"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-book-id"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid book id"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Book not lent",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "enum": [
+                                                "http://localhost:8090/problems/book-not-lent"
+                                            ]
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Book not lent"
+                                            ]
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "enum": [
+                                                409
+                                            ]
+                                        },
+                                        "detail": {
+                                            "type": "string",
+                                            "description": "The message of the refusal, as the domain wrote it."
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "title",
+                                        "status",
+                                        "detail"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/shelves/{shelf}": {
+            "get": {
+                "operationId": "infrastructure.showShelf",
+                "tags": [
+                    "ShowShelf"
+                ],
+                "parameters": [
+                    {
+                        "name": "shelf",
+                        "in": "path",
+                        "required": true,
+                        "description": "The shelf ID",
+                        "schema": {
+                            "$ref": "#/components/schemas/ShelfName"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `BookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/BookResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/books/{book}/start-reading": {
+            "post": {
+                "operationId": "infrastructure.startReading",
+                "tags": [
+                    "StartReading"
+                ],
+                "parameters": [
+                    {
+                        "name": "book",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "on": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`BookResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/BookResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid request",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "enum": [
+                                                "http://localhost:8090/problems/invalid-request"
+                                            ]
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Invalid request"
+                                            ]
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "enum": [
+                                                422
+                                            ]
+                                        },
+                                        "detail": {
+                                            "type": "string",
+                                            "description": "The message of the refusal, as the domain wrote it."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "title",
+                                        "status",
+                                        "detail",
+                                        "errors"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Unknown book\n\nInvalid book id",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/unknown-book"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Unknown book"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/invalid-book-id"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Invalid book id"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        404
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Reading transition not allowed",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "enum": [
+                                                "http://localhost:8090/problems/reading-transition-not-allowed"
+                                            ]
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Reading transition not allowed"
+                                            ]
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "enum": [
+                                                409
+                                            ]
+                                        },
+                                        "detail": {
+                                            "type": "string",
+                                            "description": "The message of the refusal, as the domain wrote it."
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "title",
+                                        "status",
+                                        "detail"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "scheme": {
+                "type": "oauth2",
+                "description": "Authorization code with PKCE (S256). Name this API as the resource (RFC 8707): a token issued for another server is refused.",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": "http://localhost:8090/oauth/authorize",
+                        "tokenUrl": "http://localhost:8090/oauth/token",
+                        "refreshUrl": "http://localhost:8090/oauth/token",
+                        "scopes": {}
+                    }
+                }
+            }
+        },
+        "schemas": {
+            "BookResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "author": {
+                        "type": "string"
+                    },
+                    "isbn": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "owned": {
+                        "type": "boolean"
+                    },
+                    "reading_status": {
+                        "type": "string"
+                    },
+                    "started_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "finished_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "rating": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "lent_to": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "lent_on": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "title",
+                    "author",
+                    "isbn",
+                    "owned",
+                    "reading_status",
+                    "started_on",
+                    "finished_on",
+                    "rating",
+                    "lent_to",
+                    "lent_on"
+                ],
+                "title": "BookResource"
+            },
+            "ReadingStatus": {
+                "type": "string",
+                "enum": [
+                    "to_read",
+                    "reading",
+                    "read",
+                    "abandoned"
+                ],
+                "title": "ReadingStatus"
+            },
+            "ShelfName": {
+                "type": "string",
+                "enum": [
+                    "to-read",
+                    "reading",
+                    "lent",
+                    "wishlist"
+                ],
+                "title": "ShelfName"
+            }
+        },
+        "responses": {
+            "AuthenticationException": {
+                "description": "Unauthenticated",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            },
+            "ModelNotFoundException": {
+                "description": "Not found",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -8,6 +8,9 @@ use App\Library\Application\Book\AddBook\AddBook;
 use App\Library\Application\Book\AddBook\AddBookHandler;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
+use App\Library\Domain\Book\DuplicateIsbn;
+use App\Library\Domain\Book\InvalidIsbn;
+use App\Library\Domain\Book\InvalidText;
 use App\Library\Infrastructure\Api\Resources\BookResource;
 use App\Library\Infrastructure\Reader\CurrentReader;
 use App\Library\Infrastructure\ValidatedData;
@@ -22,6 +25,11 @@ final readonly class AddBookController
     {
     }
 
+    /**
+     * @throws InvalidText
+     * @throws InvalidIsbn
+     * @throws DuplicateIsbn
+     */
     public function __invoke(Request $request, CurrentReader $reader): JsonResponse
     {
         $body = ValidatedData::of($request->validate([

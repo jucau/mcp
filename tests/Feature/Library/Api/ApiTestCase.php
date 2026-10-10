@@ -13,16 +13,20 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\Support\Library\Accounts;
 use Tests\Support\Library\FrozenClock;
 use Tests\Support\Library\Readers;
+use Tests\Support\Library\RespectsTheApiContract;
 use Tests\Support\Library\Tokens;
 use Tests\TestCase;
 
 abstract class ApiTestCase extends TestCase
 {
     use DatabaseTransactions;
+    use RespectsTheApiContract;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->setUpTheApiContract();
 
         $this->app->instance(Clock::class, new FrozenClock(new DateTimeImmutable('2026-09-27')));
         Tokens::actingAs(Accounts::of(Readers::ME), ProtectedResource::Api);

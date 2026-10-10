@@ -8,6 +8,9 @@ use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
 use App\Library\Application\Book\ReturnBook\ReturnBook;
 use App\Library\Application\Book\ReturnBook\ReturnBookHandler;
+use App\Library\Domain\Book\BookNotLent;
+use App\Library\Domain\Book\InvalidBookId;
+use App\Library\Domain\Book\UnknownBook;
 use App\Library\Infrastructure\Api\Resources\BookResource;
 use App\Library\Infrastructure\Reader\CurrentReader;
 use Webmozart\Assert\Assert;
@@ -18,6 +21,11 @@ final readonly class ReturnBookController
     {
     }
 
+    /**
+     * @throws UnknownBook
+     * @throws InvalidBookId
+     * @throws BookNotLent
+     */
     public function __invoke(string $book, CurrentReader $reader): BookResource
     {
         $this->handler->handle(new ReturnBook($reader->id()->value, $book));

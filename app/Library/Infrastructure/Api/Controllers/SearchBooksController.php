@@ -6,6 +6,7 @@ namespace App\Library\Infrastructure\Api\Controllers;
 
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookSearch;
+use App\Library\Domain\Book\InvalidIsbn;
 use App\Library\Domain\Book\Isbn;
 use App\Library\Domain\Book\ReadingStatus;
 use App\Library\Infrastructure\Api\Resources\BookResource;
@@ -21,6 +22,9 @@ final readonly class SearchBooksController
     {
     }
 
+    /**
+     * @throws InvalidIsbn
+     */
     public function __invoke(Request $request, CurrentReader $reader): AnonymousResourceCollection
     {
         $request->validate([

@@ -16,8 +16,10 @@
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",
+        "dedoc/scramble": "^0.13.47",
         "driftingly/rector-laravel": "^2.6",
         "fakerphp/faker": "^1.23",
+        "hotmeteor/spectator": "^3.0",
         "infection/infection": "^0.35.4",
         "justinrainbow/json-schema": "^6.13",
         "larastan/larastan": "^3.12",

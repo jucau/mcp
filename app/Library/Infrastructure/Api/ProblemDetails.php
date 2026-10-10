@@ -27,6 +27,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ProblemDetails
 {
+    public const string INVALID_REQUEST = 'invalid-request';
+
     /**
      * @param class-string<DomainException> $refusal
      */
@@ -56,7 +58,7 @@ final class ProblemDetails
         $status = self::statusOf($refusal::class);
 
         return self::problem(
-            Str::kebab(class_basename($refusal)),
+            self::typeOf($refusal::class),
             $status,
             $status === Response::HTTP_INTERNAL_SERVER_ERROR ? 'The server could not serve this request.' : $refusal->getMessage(),
         );
@@ -64,7 +66,7 @@ final class ProblemDetails
 
     public static function forInvalidRequest(ValidationException $invalid): JsonResponse
     {
-        return self::problem('invalid-request', Response::HTTP_UNPROCESSABLE_ENTITY, $invalid->getMessage(), ['errors' => $invalid->errors()]);
+        return self::problem(self::INVALID_REQUEST, Response::HTTP_UNPROCESSABLE_ENTITY, $invalid->getMessage(), ['errors' => $invalid->errors()]);
     }
 
     /**
@@ -73,11 +75,26 @@ final class ProblemDetails
     private static function problem(string $type, int $status, string $detail, array $extensions = []): JsonResponse
     {
         return new JsonResponse([
-            'type' => url('problems/' . $type),
-            'title' => ucfirst(str_replace('-', ' ', $type)),
+            'type' => self::typeUri($type),
+            'title' => self::title($type),
             'status' => $status,
             'detail' => $detail,
             ...$extensions,
         ], $status, ['Content-Type' => 'application/problem+json']);
+    }
+
+    public static function typeOf(string $refusal): string
+    {
+        return Str::kebab(class_basename($refusal));
+    }
+
+    public static function typeUri(string $type): string
+    {
+        return url('problems/' . $type);
+    }
+
+    public static function title(string $type): string
+    {
+        return ucfirst(str_replace('-', ' ', $type));
     }
 }

@@ -8,6 +8,9 @@ use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
 use App\Library\Application\Book\StartReading\StartReading;
 use App\Library\Application\Book\StartReading\StartReadingHandler;
+use App\Library\Domain\Book\InvalidBookId;
+use App\Library\Domain\Book\ReadingTransitionNotAllowed;
+use App\Library\Domain\Book\UnknownBook;
 use App\Library\Infrastructure\Api\Resources\BookResource;
 use App\Library\Infrastructure\Reader\CurrentReader;
 use App\Library\Infrastructure\ValidatedData;
@@ -20,6 +23,11 @@ final readonly class StartReadingController
     {
     }
 
+    /**
+     * @throws UnknownBook
+     * @throws InvalidBookId
+     * @throws ReadingTransitionNotAllowed
+     */
     public function __invoke(Request $request, string $book, CurrentReader $reader): BookResource
     {
         $body = ValidatedData::of($request->validate(['on' => ['nullable', 'date_format:Y-m-d']]));

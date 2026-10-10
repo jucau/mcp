@@ -37,5 +37,5 @@ Route::middleware([
     Route::post('/books/{book}/lend', LendBookController::class);
     Route::post('/books/{book}/return', ReturnBookController::class);
     Route::post('/books/{book}/acquire', AcquireBookController::class);
-    Route::get('/shelves/{shelf}', ShowShelfController::class)->whereIn('shelf', array_keys(ShowShelfController::SHELVES));
+    Route::get('/shelves/{shelf}', ShowShelfController::class);
 });

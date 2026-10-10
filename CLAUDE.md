@@ -106,8 +106,9 @@ correction arrive dans un commit de rattrapage.
 de test (jamais celle de dev) avant de la revider.
 
 Ordre : **ide-helper** → **rector** → **pint** (écrivent ; pint en dernier, il importe et raccourcit les
-noms qualifiés qu'ide-helper et rector écrivent) → **stan** → **ark** → **test** → **infection**.
-Configs : `config/ide-helper.php`, `rector.php`, `pint.json`, `phpstan.neon` (Larastan, niveau **max**),
+noms qualifiés qu'ide-helper et rector écrivent) → **openapi** (écrit le contrat de l'API, que les tests vérifient) →
+**stan** → **ark** → **test** → **infection**.
+Configs : `config/ide-helper.php`, `rector.php`, `pint.json`, `config/scramble.php`, `phpstan.neon` (Larastan, niveau **max**),
 `phparkitect.php`, `infection.json5`.
 
 **Infection** (mutation testing) juge `Domain` + `Application` contre la suite **Unit seule**, `minMsi` et

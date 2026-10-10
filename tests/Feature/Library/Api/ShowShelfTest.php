@@ -4,31 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Library\Api;
 
-use App\Library\Domain\Book\Book;
-use App\Library\Domain\Book\BookRepository;
 use App\Library\Domain\Book\Borrower;
-use App\Library\Infrastructure\Auth\ProtectedResource;
 use DateTimeImmutable;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
-use Tests\Support\Library\Accounts;
 use Tests\Support\Library\Books;
 use Tests\Support\Library\Readers;
-use Tests\Support\Library\Tokens;
-use Tests\TestCase;
 
-final class ShowShelfTest extends TestCase
+final class ShowShelfTest extends ApiTestCase
 {
-    use DatabaseTransactions;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        Tokens::actingAs(Accounts::of(Readers::ME), ProtectedResource::Api);
-    }
-
     /**
      * @param list<string> $titles
      */
@@ -58,10 +42,5 @@ final class ShowShelfTest extends TestCase
     public function a_shelf_the_library_does_not_have_is_not_found(): void
     {
         $this->getJson('/api/shelves/favourites')->assertNotFound();
-    }
-
-    private function given(Book $book): void
-    {
-        $this->app->make(BookRepository::class)->save($book);
     }
 }

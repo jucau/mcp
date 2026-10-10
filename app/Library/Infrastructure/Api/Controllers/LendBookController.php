@@ -8,6 +8,11 @@ use App\Library\Application\Book\LendBook\LendBook;
 use App\Library\Application\Book\LendBook\LendBookHandler;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
+use App\Library\Domain\Book\BookAlreadyLent;
+use App\Library\Domain\Book\BookNotOwned;
+use App\Library\Domain\Book\InvalidBookId;
+use App\Library\Domain\Book\InvalidText;
+use App\Library\Domain\Book\UnknownBook;
 use App\Library\Infrastructure\Api\Resources\BookResource;
 use App\Library\Infrastructure\Reader\CurrentReader;
 use App\Library\Infrastructure\ValidatedData;
@@ -20,6 +25,13 @@ final readonly class LendBookController
     {
     }
 
+    /**
+     * @throws UnknownBook
+     * @throws InvalidBookId
+     * @throws InvalidText
+     * @throws BookNotOwned
+     * @throws BookAlreadyLent
+     */
     public function __invoke(Request $request, string $book, CurrentReader $reader): BookResource
     {
         $body = ValidatedData::of($request->validate(['borrower' => ['required', 'string'], 'on' => ['nullable', 'date_format:Y-m-d']]));

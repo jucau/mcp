@@ -7,6 +7,8 @@ namespace App\Library\Infrastructure;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Clock;
 use App\Library\Domain\Book\BookRepository;
+use App\Library\Infrastructure\Api\OpenApi\DescribeTheApi;
+use App\Library\Infrastructure\Api\OpenApi\QueryParametersAreNeverNull;
 use App\Library\Infrastructure\Auth\IssueToken;
 use App\Library\Infrastructure\Auth\Passport\AccessTokenRepository;
 use App\Library\Infrastructure\Auth\Passport\ApproveAuthorizationController;
@@ -18,6 +20,7 @@ use App\Library\Infrastructure\Persistence\Eloquent\Queries\EloquentBookQueries;
 use App\Library\Infrastructure\Persistence\Eloquent\Repositories\EloquentBookRepository;
 use App\Library\Infrastructure\Reader\CurrentReader;
 use Carbon\CarbonInterval;
+use Dedoc\Scramble\Scramble;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Config\Repository;
@@ -65,6 +68,12 @@ final class LibraryServiceProvider extends ServiceProvider
         $url->forceRootUrl($root);
 
         $this->commands([IssueToken::class]);
+
+        if (class_exists(Scramble::class)) {
+            Scramble::configure()
+                ->withDocumentTransformers(DescribeTheApi::class)
+                ->withOperationTransformers(QueryParametersAreNeverNull::class);
+        }
 
         Passport::authorizationView(static fn (array $parameters): Response => response()->view('auth.authorize', $parameters));
         Passport::tokensExpireIn(CarbonInterval::hour());

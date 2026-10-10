@@ -8,6 +8,8 @@ use App\Library\Application\Book\AcquireBook\AcquireBook;
 use App\Library\Application\Book\AcquireBook\AcquireBookHandler;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
+use App\Library\Domain\Book\InvalidBookId;
+use App\Library\Domain\Book\UnknownBook;
 use App\Library\Infrastructure\Api\Resources\BookResource;
 use App\Library\Infrastructure\Reader\CurrentReader;
 use Webmozart\Assert\Assert;
@@ -18,6 +20,10 @@ final readonly class AcquireBookController
     {
     }
 
+    /**
+     * @throws UnknownBook
+     * @throws InvalidBookId
+     */
     public function __invoke(string $book, CurrentReader $reader): BookResource
     {
         $this->handler->handle(new AcquireBook($reader->id()->value, $book));

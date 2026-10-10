@@ -160,9 +160,43 @@ définition de chaque étagère, comme `BookSearchTest` fixe celle d'une recherc
 le code **est** ici une définition du glossaire. Un double in-memory de `BookQueries` aurait permis de tester les
 étagères par leur effet, mais au prix d'une recherche insensible aux accents réécrite en mémoire, pour quatre lignes.
 
-Le contrat de l'API s'écrit dans un document **OpenAPI** versionné, et les tests vérifient que chaque réponse le
-respecte : c'est l'équivalent de l'`outputSchema` vérifié par les tests
-([ADR-0013](./decisions/0013-output-schema-verifie-par-les-tests.md)).
+## Le contrat OpenAPI : généré depuis le code, vérifié par chaque test
+
+Le contrat de l'API est un document **OpenAPI 3.1** (`docs/api/openapi.json`), **généré** par Scramble depuis le code
+(`make openapi`, dans la porte) et versionné : un changement de l'API se voit dans le diff. Chaque test de l'API le
+vérifie avec Spectator. C'est l'équivalent de l'`outputSchema` vérifié par les tests
+([ADR-0013](./decisions/0013-output-schema-verifie-par-les-tests.md)), et le choix des outils est dans
+l'[ADR-0028](./decisions/0028-openapi-genere-par-scramble-verifie-par-spectator.md).
+
+**Ce que Scramble lit seul**, sans rien exécuter : les routes, les corps validés et leurs champs requis, les lectures
+de la query string, le `toArray()` de `BookResource` (nullables compris), la pagination, le `201` de l'ajout, le `204`
+du retrait, l'enum des étagères (`ShelfName`, liée par Laravel à la route) et celle des statuts de lecture.
+
+**Là où l'on reprend la main**, du plus léger au plus lourd :
+
+| Besoin | Prise | Où |
+|---|---|---|
+| quels refus pour quel endpoint | un `@throws` par refus, sur le contrôleur | `Api\Controllers\*` |
+| refus et validation en *Problem Details* | deux `ExceptionToResponseExtension` | `Api\OpenApi\RefusalToProblem`, `ValidationToProblem` |
+| un paramètre de query n'est jamais `null` | un *operation transformer* | `Api\OpenApi\QueryParametersAreNeverNull` |
+| le titre, la sécurité OAuth2 | un *document transformer* | `Api\OpenApi\DescribeTheApi` |
+
+Trois enseignements de l'essai, qui valent au-delà de cet outil :
+
+- **Une seule table pour la réponse et le contrat.** Les extensions demandent à `ProblemDetails` le statut, le `type`
+  et le `title` de chaque refus : ce que l'API répond et ce que le contrat annonce ne peuvent pas diverger.
+- **Un exemple ne se vérifie pas.** Avec le `type` d'un refus documenté en *exemple*, un `@throws BookNotOwned` oublié
+  passait : `BookAlreadyLent` documentait aussi un `409`, de même forme. Documentés en **valeurs imposées**, le `type`
+  et le `title` désignent un refus précis, et l'oubli fait échouer le test qui le provoque.
+- **Le contrat avait tort, l'outil de test aussi.** Spectator refusait `?per_page=1` : il ne convertit une query
+  string en entier que si le type est exactement `integer`, pas `["integer", "null"]` (sa lecture de la 3.1 a cette
+  limite). Mais ce `null` n'avait rien à faire là : une query string ne porte pas `null`, un paramètre y est présent ou
+  absent. Le corriger dans le contrat a réglé les deux.
+
+**La règle des tests** (`RespectsTheApiContract`) : toute **réponse** doit respecter le contrat, et toute **requête**
+que l'API accepte aussi. Une requête refusée exprès par un test (un `owned=yes`, un corps sans `title`) sort du contrat
+par construction : seule sa réponse est vérifiée. La limite, assumée : un refus qu'aucun test ne provoque peut manquer
+au contrat sans que rien ne le signale.
 
 ## Qui demande ? Le même lecteur, choisi par l'API
 
@@ -360,7 +394,7 @@ Le volet `/api` attend un vrai client OAuth, le frontend : les tests jouent son 
 - **Le cœur** : `git diff` sur `Domain` vide ; sur `Application`, le seul déplacement de `Shelf`.
 - **Les adaptateurs s'ignorent** : PHPArkitect, dans la porte.
 - **Chaque endpoint** : son succès, ses refus (statut et *Problem Details*), sa validation de forme, par des tests
-  Feature, comme les tools ; et chaque réponse conforme au document OpenAPI.
+  Feature, comme les tools ; et chaque réponse conforme au contrat OpenAPI généré, par Spectator.
 - **Chaque refus du domaine a un statut** : le test qui les parcourt tous.
 - **Le destinataire** : un token MCP refusé par l'API, un token API refusé par `/mcp`, un token sans destinataire
   refusé partout, un token rafraîchi qui garde le sien.
