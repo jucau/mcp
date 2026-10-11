@@ -4,6 +4,7 @@ import type { Authorization } from '../../../auth/core/ports/authorization';
 import type { Book } from '../../core/model/book';
 import type { BookSearch } from '../../core/model/book-search';
 import type { Page } from '../../core/model/page';
+import type { Outcome } from '../../core/model/refusal';
 import type { Library } from '../../core/ports/library';
 import type { components, paths } from './contract';
 
@@ -42,6 +43,52 @@ export class HttpLibrary implements Library {
             total: data.meta.total,
         };
     }
+
+    startReading(bookId: string): Promise<Outcome<Book>> {
+        return this.act(this.client.POST('/books/{book}/start-reading', { params: { path: { book: bookId } } }));
+    }
+
+    finishReading(bookId: string): Promise<Outcome<Book>> {
+        return this.act(this.client.POST('/books/{book}/finish-reading', { params: { path: { book: bookId } } }));
+    }
+
+    abandonReading(bookId: string): Promise<Outcome<Book>> {
+        return this.act(this.client.POST('/books/{book}/abandon-reading', { params: { path: { book: bookId } } }));
+    }
+
+    rate(bookId: string, rating: number): Promise<Outcome<Book>> {
+        return this.act(
+            this.client.POST('/books/{book}/rate', { params: { path: { book: bookId } }, body: { rating } }),
+        );
+    }
+
+    lend(bookId: string, borrower: string): Promise<Outcome<Book>> {
+        return this.act(
+            this.client.POST('/books/{book}/lend', { params: { path: { book: bookId } }, body: { borrower } }),
+        );
+    }
+
+    returnBook(bookId: string): Promise<Outcome<Book>> {
+        return this.act(this.client.POST('/books/{book}/return', { params: { path: { book: bookId } } }));
+    }
+
+    acquire(bookId: string): Promise<Outcome<Book>> {
+        return this.act(this.client.POST('/books/{book}/acquire', { params: { path: { book: bookId } } }));
+    }
+
+    async remove(bookId: string): Promise<Outcome<null>> {
+        const { error, response } = await this.client.DELETE('/books/{book}', { params: { path: { book: bookId } } });
+
+        return response.ok ? { ok: true, value: null } : refusal(error, response);
+    }
+
+    private async act(
+        call: Promise<{ data?: { data: BookResource }; error?: unknown; response: Response }>,
+    ): Promise<Outcome<Book>> {
+        const { data, error, response } = await call;
+
+        return data === undefined ? refusal(error, response) : { ok: true, value: toBook(data.data) };
+    }
 }
 
 const bearer = (authorization: Authorization): Middleware => ({
@@ -57,6 +104,22 @@ const bearer = (authorization: Authorization): Middleware => ({
         return request;
     },
 });
+
+const refusal = (problem: unknown, response: Response): { ok: false; refusal: { type: string; detail: string } } => {
+    if (![404, 409, 422].includes(response.status) || !isProblem(problem)) {
+        throw failure(response);
+    }
+
+    return { ok: false, refusal: { type: problem.type.split('/').pop() ?? problem.type, detail: problem.detail } };
+};
+
+const isProblem = (problem: unknown): problem is { type: string; detail: string } =>
+    typeof problem === 'object' &&
+    problem !== null &&
+    'type' in problem &&
+    'detail' in problem &&
+    typeof problem.type === 'string' &&
+    typeof problem.detail === 'string';
 
 const flag = (value: boolean): 'true' | 'false' => (value ? 'true' : 'false');
 

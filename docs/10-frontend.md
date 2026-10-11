@@ -182,6 +182,37 @@ Deux enseignements :
   chaque visiteur, et un tribunal allemand l'a jugé contraire au RGPD en 2022. Embarquer les fontes évite aussi une
   dépendance réseau au premier affichage.
 
+## La fiche d'un livre et ses actions
+
+Choisir un livre dans la liste ouvre sa fiche, à droite (ou dessous, sur un téléphone) : ses dates tamponnées, sa
+note, son prêt, et **toutes** ses actions (commencer, terminer, abandonner, noter, prêter, rendre, acquérir,
+retirer). L'API décide ([ADR-0031](./decisions/0031-tenter-puis-afficher-le-refus.md)), et le front affiche son refus
+**en français**, traduit par son `type` ([ADR-0033](./decisions/0033-refus-traduits-par-leur-type.md)).
+
+- **Un use case pour toutes les actions** (`actOn`) : l'écran décrit l'action (`{ kind: 'lend', borrower: 'Marie' }`),
+  le cœur choisit la méthode du port. Son issue est une **valeur**, le livre mis à jour ou un refus : un refus est une
+  réponse prévue, pas une panne. Les vraies pannes (un `500`, un refus sans *Problem Details*) restent des exceptions.
+- **Le double applique l'effet sans les conditions** : commencer met le livre en cours, sans vérifier qu'il pouvait
+  l'être. Un test qui veut un refus le programme (`refuseNext('book-lent')`).
+- **Une action réussie rafraîchit tout** : la fiche prend le livre rendu par l'API, la liste et les compteurs sont
+  relus.
+- **Le retrait demande confirmation**, puisque `remove_book` est le seul use case destructif sans retour.
+
+Ce que les tests ont fait voir :
+
+- **L'élision du français.** « Impossible de abandonner » : devant une voyelle, *de* devient *d'*. La table porte
+  la préposition avec le verbe.
+- **Une entrée qui ne servait à rien.** Stryker laissait survivre la mutation de « Impossible de noter » : un refus
+  de transition de lecture ne naît que de commencer, terminer ou abandonner. La table ne garde que ces trois verbes,
+  et retombe sur le message du domaine pour le reste.
+- **Un délai trop court cache un échec.** Un mutant faisait échouer un test d'interface, mais lentement (une recherche
+  à l'écran attend avant d'abandonner), et Stryker le comptait en *timeout*, donc tué, sans l'avoir vu échouer. Stryker
+  n'a pas d'équivalent au `timeoutsAsEscaped` d'Infection : son délai passe à 15 s, et deux passages donnent le même
+  résultat sans un seul *timeout*.
+- **Le `type` d'un refus contient l'hôte** (`http://localhost:8090/problems/book-lent`) : il change d'un environnement
+  à l'autre, alors qu'un type de problème devrait être un identifiant stable. Le front n'en lit que le dernier segment.
+  C'est à corriger côté API.
+
 ## Ce qu'on vérifiera
 
 - **Les couches** : le cœur ne dépend ni de React ni des adaptateurs ; seule la racine de composition branche un

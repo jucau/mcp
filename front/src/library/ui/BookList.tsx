@@ -16,7 +16,13 @@ const loan = (book: Book): string => {
     return book.owned ? 'à la maison' : 'pas encore à vous';
 };
 
-export function BookList({ books }: { books: readonly Book[] }) {
+interface Props {
+    readonly books: readonly Book[];
+    readonly selected: string | undefined;
+    readonly onSelect: (book: Book) => void;
+}
+
+export function BookList({ books, selected, onSelect }: Props) {
     if (books.length === 0) {
         return <p className={styles.empty}>Aucun livre ne correspond.</p>;
     }
@@ -37,15 +43,26 @@ export function BookList({ books }: { books: readonly Book[] }) {
             </thead>
             <tbody>
                 {books.map((book) => (
-                    <tr key={book.id}>
+                    <tr
+                        key={book.id}
+                        aria-selected={book.id === selected}
+                        className={classes(book.id === selected && styles.selected)}
+                    >
                         <td className={styles.signetCell}>
                             {book.readingStatus === 'reading' && (
                                 <span className={styles.signet} aria-label="En cours" />
                             )}
                         </td>
                         <td className={styles.title}>
-                            <strong>{book.title}</strong>
-                            <span>{book.author}</span>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    onSelect(book);
+                                }}
+                            >
+                                <strong>{book.title}</strong>
+                                <span>{book.author}</span>
+                            </button>
                         </td>
                         <td>
                             {book.owned ? (

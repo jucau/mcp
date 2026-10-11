@@ -1,6 +1,7 @@
 # ADR-0031 — L'écran propose les actions, et c'est l'API qui refuse
 
-- **Statut** : Accepté (2026-10-10)
+- **Statut** : Accepté (2026-10-10). L'affichage du `detail` tel quel est complété par
+  [ADR-0033](./0033-refus-traduits-par-leur-type.md).
 
 ## Contexte
 

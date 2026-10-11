@@ -1,0 +1,199 @@
+.card {
+    position: sticky;
+    top: calc(env(safe-area-inset-top, 0px) + 16px);
+    display: grid;
+    gap: 18px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    box-shadow:
+        0 1px 0 var(--rule),
+        0 14px 32px -24px rgb(20 30 50 / 0.45);
+    padding: 22px 24px 24px;
+}
+
+.call {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font: 500 11px var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 8px;
+}
+
+.title {
+    margin: 0;
+    font: 400 30px/1.1 var(--display);
+}
+
+.author {
+    margin: -12px 0 0;
+    color: var(--ink-soft);
+    font-weight: 600;
+}
+
+.facts {
+    display: grid;
+    grid-template-columns: 104px 1fr;
+    margin: 0;
+    line-height: 32px;
+    background-image: repeating-linear-gradient(to bottom, transparent 0 31px, var(--rule) 31px 32px);
+}
+
+.facts dt {
+    font: 500 11px/32px var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+.facts dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.status {
+    display: inline-block;
+    font: 600 13px/1 var(--body);
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+}
+
+.reading {
+    color: var(--ribbon);
+}
+
+.read {
+    color: var(--done);
+}
+
+.abandoned {
+    color: var(--refusal);
+}
+
+.to_read {
+    color: var(--ink-soft);
+}
+
+.stamp {
+    display: inline-block;
+    transform: rotate(-2.5deg);
+    font: 500 13px/1 var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--stamp);
+    border: 2px solid var(--stamp);
+    border-radius: 3px;
+    padding: 4px 8px;
+}
+
+.group {
+    display: grid;
+    gap: 10px;
+}
+
+.group h3 {
+    margin: 0;
+    font: 500 11px var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.card button {
+    font: 600 14px var(--body);
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--rule-strong);
+    border-radius: 6px;
+    padding: 7px 12px;
+    cursor: pointer;
+}
+
+.card button:hover:not(:disabled) {
+    border-color: var(--ink);
+}
+
+.card button:disabled {
+    cursor: progress;
+    opacity: 0.6;
+}
+
+.card .rating {
+    width: 36px;
+    padding-inline: 0;
+    font-family: var(--mono);
+}
+
+.lend {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+}
+
+.lend label {
+    font: 500 12px var(--mono);
+    color: var(--ink-soft);
+}
+
+.lend input {
+    min-width: 0;
+    font: 15px var(--body);
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--rule-strong);
+    border-radius: 6px;
+    padding: 7px 10px;
+}
+
+.card .quiet {
+    justify-self: start;
+    background: transparent;
+    border-color: transparent;
+    color: var(--refusal);
+    padding-inline: 0;
+}
+
+.confirm {
+    display: grid;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--refusal);
+    border-radius: 4px;
+}
+
+.confirm p {
+    margin: 0;
+}
+
+.card .danger {
+    background: var(--refusal);
+    border-color: var(--refusal);
+    color: var(--card);
+}
+
+.slip {
+    margin: 0;
+    padding: 12px 14px;
+    background: var(--refusal-ground);
+    color: var(--refusal);
+    border-left: 3px solid var(--refusal);
+    border-radius: 2px;
+}
+
+.slip.ok {
+    background: var(--surface);
+    color: var(--done);
+    border-left-color: var(--done);
+}

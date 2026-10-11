@@ -157,7 +157,7 @@ serveur, et un client typé par le contrat de l'API.*
 - [x] La connexion : le client OAuth pré-enregistré, CORS, la découverte depuis le `401`, PKCE et `resource`, le token
   en mémoire
 - [x] La bibliothèque : la recherche, les filtres, la pagination, les étagères
-- [ ] La fiche d'un livre et ses actions, les refus du domaine affichés tels quels
+- [x] La fiche d'un livre et ses actions, les refus du domaine traduits par leur type
 - [ ] L'ajout d'un livre
 - [ ] Le bout en bout (Playwright), et pour de vrai dans un navigateur : la case laissée ouverte à l'étape 9
 

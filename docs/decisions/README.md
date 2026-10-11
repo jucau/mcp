@@ -51,5 +51,6 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0028](./0028-openapi-genere-par-scramble-verifie-par-spectator.md) | Le contrat OpenAPI est généré depuis le code par Scramble, et chaque test de l'API le vérifie avec Spectator | Accepté |
 | [0029](./0029-hexagone-front-sans-domaine-duplique.md) | Un hexagone côté front, sans y recopier le domaine | Accepté |
 | [0030](./0030-spa-cliente-oauth-publique.md) | Le frontend est une SPA cliente OAuth publique, et le token reste en mémoire | Accepté |
-| [0031](./0031-tenter-puis-afficher-le-refus.md) | L'écran propose les actions, et c'est l'API qui refuse | Accepté |
+| [0031](./0031-tenter-puis-afficher-le-refus.md) | L'écran propose les actions, et c'est l'API qui refuse | Accepté, affichage complété par 0033 |
 | [0032](./0032-client-http-type-par-le-contrat.md) | Le client HTTP du front est typé par le contrat OpenAPI | Accepté |
+| [0033](./0033-refus-traduits-par-leur-type.md) | Le front traduit les refus par leur type, et retombe sur le message du domaine | Accepté |

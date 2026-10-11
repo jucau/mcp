@@ -1,3 +1,28 @@
+.layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 32px;
+    align-items: start;
+}
+
+@media (max-width: 960px) {
+    .layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.aside {
+    scroll-margin-top: 16px;
+}
+
+.hint {
+    margin: 0;
+    padding: 22px 24px;
+    border: 1px dashed var(--rule-strong);
+    border-radius: 4px;
+    color: var(--ink-soft);
+}
+
 .library {
     display: grid;
     gap: 18px;

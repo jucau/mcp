@@ -14,5 +14,6 @@
     "tempDirName": ".stryker-tmp",
     "vitest": {
         "related": false
-    }
+    },
+    "timeoutMS": 15000
 }
