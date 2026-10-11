@@ -119,9 +119,12 @@ sur la base de test (jamais celle de dev) avant de la revider.
 
 Ordre de `make quality` : **ide-helper** → **rector** → **pint** (écrivent ; pint en dernier, il importe et raccourcit les
 noms qualifiés qu'ide-helper et rector écrivent) → **openapi** (écrit le contrat de l'API, que les tests vérifient) →
-**stan** → **ark** → **test** → **infection**.
+**stan** → **ark** → **test** → **coverage** → **infection**.
 Configs : `config/ide-helper.php`, `rector.php`, `pint.json`, `config/scramble.php`, `phpstan.neon` (Larastan, niveau **max**),
 `phparkitect.php`, `infection.json5`.
+
+**Couverture** (`make coverage`, dans la porte) : **100 % des lignes** de `app/`, et la porte échoue en dessous. Une
+ligne qu'aucun test n'exécute se traite par un test, ou se supprime si rien ne l'atteint : jamais par une exclusion.
 
 **Infection** (mutation testing) juge `Domain` + `Application` contre la suite **Unit seule**, `minMsi` et
 `minCoveredMsi` à **100** : un mutant survivant est un comportement qu'aucun test de use case ne contraint, et

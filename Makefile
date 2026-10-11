@@ -68,7 +68,7 @@ ci: test-db quality quality-front seed-check
 
 # The back's gate. The order is load-bearing: the writing tools come first, Pint last among them (it imports
 # and shortens the fully-qualified names ide-helper writes), then the read-only checks judge the settled tree.
-quality: ide-helper rector pint openapi stan ark test infection
+quality: ide-helper rector pint openapi stan ark test coverage infection
 
 # --reset keeps annotations honest with the schema.
 ide-helper:
@@ -108,9 +108,13 @@ infection:
 	@grep -qx 'Errored: 0' storage/logs/infection-summary.log && grep -qx 'Syntax Errors: 0' storage/logs/infection-summary.log \
 		|| { echo 'Errored mutants count as killed: see storage/logs/infection.log'; exit 1; }
 
-# Outside the gate, on demand. PAO_DISABLE: Pao's one JSON line would swallow the coverage summary.
+# Every line of app/ is run by a test, or the gate fails. PAO_DISABLE: Pao's one JSON line would swallow the
+# coverage summary.
 coverage:
-	$(EXEC) env PAO_DISABLE=true php vendor/bin/phpunit --coverage-html storage/coverage --coverage-text
+	$(EXEC) env PAO_DISABLE=true php vendor/bin/phpunit --coverage-html storage/coverage --coverage-text=storage/logs/coverage-summary.log --colors=never
+	@cat storage/logs/coverage-summary.log
+	@grep -qE '^ +Lines: +100\.00%' storage/logs/coverage-summary.log \
+		|| { echo 'A line no test runs: see storage/coverage/index.html'; exit 1; }
 
 test-db:
 	$(DC) exec -T postgres psql -U marquepage -d marquepage -tc "SELECT 1 FROM pg_database WHERE datname = 'marquepage_testing'" | grep -q 1 || $(DC) exec -T postgres createdb -U marquepage marquepage_testing

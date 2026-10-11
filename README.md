@@ -31,7 +31,7 @@ make install
 |----------|-------|
 | `make install` | du clone au projet fonctionnel, à jouer une fois |
 | `make start` / `make stop` | démarrer / arrêter la stack |
-| `make quality` | la porte du back : **ide-helper** → **rector** → **pint** → **openapi** (appliquent) puis **stan** → **ark** → **test** → **infection** |
+| `make quality` | la porte du back : **ide-helper** → **rector** → **pint** → **openapi** (appliquent) puis **stan** → **ark** → **test** → **coverage** → **infection** |
 | `make quality-front` | la porte du front : **openapi** → **front-contract** → **front-format** (appliquent) puis **front-lint** → **front-typecheck** → **front-test** → **front-mutation** |
 | `make ci` | ce que jouerait une CI : base de test neuve, les deux portes, puis les données de démo seedées sur la base de test |
 | `make pint` | le style de code (Pint), appliqué |
@@ -51,7 +51,7 @@ make install
 | `make inspector` | ouvre le MCP Inspector sur le serveur `library` (Node requis sur l'hôte) |
 | `make raw-session` | un client MCP écrit à la main (`client/`) joue une session complète et affiche chaque ligne JSON-RPC |
 | `make test` | PHPUnit (BDD Postgres dédiée `marquepage_testing`) |
-| `make coverage` | la couverture PHPUnit (pcov) : résumé et fichiers incomplets dans le terminal, rapport HTML dans `storage/coverage/index.html` ; hors porte |
+| `make coverage` | la couverture PHPUnit (pcov) : résumé dans le terminal, rapport HTML dans `storage/coverage/index.html` ; échoue sous 100 % des lignes |
 | `make test-db` | (re)crée + migre la BDD de test |
 | `make migrate` / `make fresh` / `make seed` | migrations / reset / reset + données de démo |
 | `make artisan ARGS="…"` | une commande artisan (ex. `make artisan ARGS="migrate:status"`) |

@@ -84,6 +84,17 @@ final class TokenResourceTest extends TestCase
     }
 
     #[Test]
+    public function a_consent_given_without_any_scope_is_kept_for_its_server_and_asked_again_for_the_other(): void
+    {
+        $this->exchange($this->approve(scope: ''))->assertOk();
+
+        $this->codeFrom($this->authorize(ProtectedResource::Mcp->uri(), scope: ''));
+        $this->authorize(ProtectedResource::Api->uri(), scope: '')
+            ->assertOk()
+            ->assertSee(ProtectedResource::Api->uri());
+    }
+
+    #[Test]
     public function a_consent_given_for_the_mcp_server_is_asked_again_for_the_api(): void
     {
         $this->exchange($this->approve())->assertOk();
@@ -142,13 +153,13 @@ final class TokenResourceTest extends TestCase
     /**
      * @return TestResponse<Response>
      */
-    private function authorize(?string $resource): TestResponse
+    private function authorize(?string $resource, string $scope = 'mcp:use'): TestResponse
     {
         return $this->get('/oauth/authorize?' . http_build_query(array_filter([
             'client_id' => $this->client->getKey(),
             'redirect_uri' => self::CALLBACK,
             'response_type' => 'code',
-            'scope' => 'mcp:use',
+            'scope' => $scope,
             'state' => 'state',
             'code_challenge' => rtrim(strtr(base64_encode(hash('sha256', self::VERIFIER, true)), '+/', '-_'), '='),
             'code_challenge_method' => 'S256',
@@ -156,9 +167,9 @@ final class TokenResourceTest extends TestCase
         ])));
     }
 
-    private function approve(ProtectedResource $resource = ProtectedResource::Mcp): string
+    private function approve(ProtectedResource $resource = ProtectedResource::Mcp, string $scope = 'mcp:use'): string
     {
-        $this->authorize($resource->uri())->assertOk();
+        $this->authorize($resource->uri(), $scope)->assertOk();
 
         return $this->codeFrom($this->post('/oauth/authorize', [
             'client_id' => $this->client->getKey(),
