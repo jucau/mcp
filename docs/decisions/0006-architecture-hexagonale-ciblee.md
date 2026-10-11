@@ -23,6 +23,15 @@ On reprend de `ddd/` **ce qui structure un context**, et rien de ce qui sert l'i
 - **Domaine pur**, vérifié par **PHPArkitect** : `Domain` ne dépend ni de `Illuminate` ni des autres couches ;
   `Application` ne dépend ni d'`Infrastructure`, ni de `Illuminate\Database`, ni des façades. Libs de
   valeur pures autorisées dans le domaine (`ramsey/uuid`).
+  **Précisé le 2026-10-11** : pour le domaine, la règle est une **liste blanche**. Il ne dépend que de lui-même, de
+  PHP et de `Ramsey\Uuid`. Une interdiction laissait passer toute bibliothèque qu'elle ne nommait pas ; une
+  nouvelle dépendance du domaine demande maintenant une décision, et une ligne dans `phparkitect.php`.
+  La couche application suit la même règle : elle ne dépend que du domaine, d'elle-même, de PHP et de
+  `Webmozart\Assert` ([ADR-0015](./0015-webmozart-assert-jamais-assert-natif.md)). `Illuminate\Support`, que
+  l'ancienne règle laissait ouvert, ne l'est plus : rien ne s'en servait.
+  Ces règles s'écrivent **une fois par bounded context**, listé dans `phparkitect.php`, jamais avec un joker : le
+  domaine d'un contexte ne peut pas dépendre de celui d'un autre, et une classe hors des contextes listés fait
+  échouer la porte.
 - **Package par agrégat** : `Domain/Book/` contient la racine, ses VO, ses erreurs et son port repository.
 - **Identité** : UUID de domaine (`BookId`) + PK technique `BIGINT` auto-incrémentée qui ne fuit jamais.
 - **Use cases en vertical slices** : un dossier par use case (command + handler), lectures regroupées dans
