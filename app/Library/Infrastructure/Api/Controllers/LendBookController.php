@@ -9,6 +9,7 @@ use App\Library\Application\Book\LendBook\LendBookHandler;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
 use App\Library\Domain\Book\BookAlreadyLent;
+use App\Library\Domain\Book\BookChangedMeanwhile;
 use App\Library\Domain\Book\BookNotOwned;
 use App\Library\Domain\Book\InvalidBookId;
 use App\Library\Domain\Book\InvalidText;
@@ -31,6 +32,7 @@ final readonly class LendBookController
      * @throws InvalidText
      * @throws BookNotOwned
      * @throws BookAlreadyLent
+     * @throws BookChangedMeanwhile
      */
     public function __invoke(Request $request, string $book, CurrentReader $reader): BookResource
     {

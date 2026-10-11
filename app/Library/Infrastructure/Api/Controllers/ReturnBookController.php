@@ -8,6 +8,7 @@ use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
 use App\Library\Application\Book\ReturnBook\ReturnBook;
 use App\Library\Application\Book\ReturnBook\ReturnBookHandler;
+use App\Library\Domain\Book\BookChangedMeanwhile;
 use App\Library\Domain\Book\BookNotLent;
 use App\Library\Domain\Book\InvalidBookId;
 use App\Library\Domain\Book\UnknownBook;
@@ -25,6 +26,7 @@ final readonly class ReturnBookController
      * @throws UnknownBook
      * @throws InvalidBookId
      * @throws BookNotLent
+     * @throws BookChangedMeanwhile
      */
     public function __invoke(string $book, CurrentReader $reader): BookResource
     {

@@ -6,6 +6,7 @@ namespace App\Library\Infrastructure\Api\Controllers;
 
 use App\Library\Application\Book\RemoveBook\RemoveBook;
 use App\Library\Application\Book\RemoveBook\RemoveBookHandler;
+use App\Library\Domain\Book\BookChangedMeanwhile;
 use App\Library\Domain\Book\BookLent;
 use App\Library\Domain\Book\InvalidBookId;
 use App\Library\Domain\Book\UnknownBook;
@@ -22,6 +23,7 @@ final readonly class RemoveBookController
      * @throws UnknownBook
      * @throws InvalidBookId
      * @throws BookLent
+     * @throws BookChangedMeanwhile
      */
     public function __invoke(string $book, CurrentReader $reader): Response
     {

@@ -238,41 +238,79 @@
                         }
                     },
                     "409": {
-                        "description": "Reading transition not allowed",
+                        "description": "Reading transition not allowed\n\nBook changed meanwhile",
                         "content": {
                             "application/problem+json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "type": {
-                                            "type": "string",
-                                            "format": "uri",
-                                            "enum": [
-                                                "http://localhost:8090/problems/reading-transition-not-allowed"
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/reading-transition-not-allowed"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Reading transition not allowed"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
                                             ]
                                         },
-                                        "title": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Reading transition not allowed"
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/book-changed-meanwhile"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Book changed meanwhile"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
                                             ]
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "enum": [
-                                                409
-                                            ]
-                                        },
-                                        "detail": {
-                                            "type": "string",
-                                            "description": "The message of the refusal, as the domain wrote it."
                                         }
-                                    },
-                                    "required": [
-                                        "type",
-                                        "title",
-                                        "status",
-                                        "detail"
                                     ]
                                 }
                             }
@@ -393,6 +431,47 @@
                                                 "detail"
                                             ]
                                         }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Book changed meanwhile",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "enum": [
+                                                "http://localhost:8090/problems/book-changed-meanwhile"
+                                            ]
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Book changed meanwhile"
+                                            ]
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "enum": [
+                                                409
+                                            ]
+                                        },
+                                        "detail": {
+                                            "type": "string",
+                                            "description": "The message of the refusal, as the domain wrote it."
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "title",
+                                        "status",
+                                        "detail"
                                     ]
                                 }
                             }
@@ -1156,41 +1235,79 @@
                         }
                     },
                     "409": {
-                        "description": "Reading transition not allowed",
+                        "description": "Reading transition not allowed\n\nBook changed meanwhile",
                         "content": {
                             "application/problem+json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "type": {
-                                            "type": "string",
-                                            "format": "uri",
-                                            "enum": [
-                                                "http://localhost:8090/problems/reading-transition-not-allowed"
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/reading-transition-not-allowed"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Reading transition not allowed"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
                                             ]
                                         },
-                                        "title": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Reading transition not allowed"
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/book-changed-meanwhile"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Book changed meanwhile"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
                                             ]
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "enum": [
-                                                409
-                                            ]
-                                        },
-                                        "detail": {
-                                            "type": "string",
-                                            "description": "The message of the refusal, as the domain wrote it."
                                         }
-                                    },
-                                    "required": [
-                                        "type",
-                                        "title",
-                                        "status",
-                                        "detail"
                                     ]
                                 }
                             }
@@ -1431,7 +1548,7 @@
                         }
                     },
                     "409": {
-                        "description": "Book not owned\n\nBook already lent",
+                        "description": "Book not owned\n\nBook already lent\n\nBook changed meanwhile",
                         "content": {
                             "application/problem+json": {
                                 "schema": {
@@ -1484,6 +1601,40 @@
                                                     "type": "string",
                                                     "enum": [
                                                         "Book already lent"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/book-changed-meanwhile"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Book changed meanwhile"
                                                     ]
                                                 },
                                                 "status": {
@@ -1901,41 +2052,79 @@
                         }
                     },
                     "409": {
-                        "description": "Book not finished",
+                        "description": "Book not finished\n\nBook changed meanwhile",
                         "content": {
                             "application/problem+json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "type": {
-                                            "type": "string",
-                                            "format": "uri",
-                                            "enum": [
-                                                "http://localhost:8090/problems/book-not-finished"
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/book-not-finished"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Book not finished"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
                                             ]
                                         },
-                                        "title": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Book not finished"
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/book-changed-meanwhile"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Book changed meanwhile"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
                                             ]
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "enum": [
-                                                409
-                                            ]
-                                        },
-                                        "detail": {
-                                            "type": "string",
-                                            "description": "The message of the refusal, as the domain wrote it."
                                         }
-                                    },
-                                    "required": [
-                                        "type",
-                                        "title",
-                                        "status",
-                                        "detail"
                                     ]
                                 }
                             }
@@ -2047,41 +2236,79 @@
                         }
                     },
                     "409": {
-                        "description": "Book lent",
+                        "description": "Book lent\n\nBook changed meanwhile",
                         "content": {
                             "application/problem+json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "type": {
-                                            "type": "string",
-                                            "format": "uri",
-                                            "enum": [
-                                                "http://localhost:8090/problems/book-lent"
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/book-lent"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Book lent"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
                                             ]
                                         },
-                                        "title": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Book lent"
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/book-changed-meanwhile"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Book changed meanwhile"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
                                             ]
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "enum": [
-                                                409
-                                            ]
-                                        },
-                                        "detail": {
-                                            "type": "string",
-                                            "description": "The message of the refusal, as the domain wrote it."
                                         }
-                                    },
-                                    "required": [
-                                        "type",
-                                        "title",
-                                        "status",
-                                        "detail"
                                     ]
                                 }
                             }
@@ -2326,41 +2553,79 @@
                         }
                     },
                     "409": {
-                        "description": "Book not lent",
+                        "description": "Book not lent\n\nBook changed meanwhile",
                         "content": {
                             "application/problem+json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "type": {
-                                            "type": "string",
-                                            "format": "uri",
-                                            "enum": [
-                                                "http://localhost:8090/problems/book-not-lent"
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/book-not-lent"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Book not lent"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
                                             ]
                                         },
-                                        "title": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Book not lent"
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/book-changed-meanwhile"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Book changed meanwhile"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
                                             ]
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "enum": [
-                                                409
-                                            ]
-                                        },
-                                        "detail": {
-                                            "type": "string",
-                                            "description": "The message of the refusal, as the domain wrote it."
                                         }
-                                    },
-                                    "required": [
-                                        "type",
-                                        "title",
-                                        "status",
-                                        "detail"
                                     ]
                                 }
                             }
@@ -2604,41 +2869,79 @@
                         }
                     },
                     "409": {
-                        "description": "Reading transition not allowed",
+                        "description": "Reading transition not allowed\n\nBook changed meanwhile",
                         "content": {
                             "application/problem+json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "type": {
-                                            "type": "string",
-                                            "format": "uri",
-                                            "enum": [
-                                                "http://localhost:8090/problems/reading-transition-not-allowed"
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/reading-transition-not-allowed"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Reading transition not allowed"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
                                             ]
                                         },
-                                        "title": {
-                                            "type": "string",
-                                            "enum": [
-                                                "Reading transition not allowed"
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "format": "uri",
+                                                    "enum": [
+                                                        "http://localhost:8090/problems/book-changed-meanwhile"
+                                                    ]
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "Book changed meanwhile"
+                                                    ]
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "enum": [
+                                                        409
+                                                    ]
+                                                },
+                                                "detail": {
+                                                    "type": "string",
+                                                    "description": "The message of the refusal, as the domain wrote it."
+                                                }
+                                            },
+                                            "required": [
+                                                "type",
+                                                "title",
+                                                "status",
+                                                "detail"
                                             ]
-                                        },
-                                        "status": {
-                                            "type": "integer",
-                                            "enum": [
-                                                409
-                                            ]
-                                        },
-                                        "detail": {
-                                            "type": "string",
-                                            "description": "The message of the refusal, as the domain wrote it."
                                         }
-                                    },
-                                    "required": [
-                                        "type",
-                                        "title",
-                                        "status",
-                                        "detail"
                                     ]
                                 }
                             }

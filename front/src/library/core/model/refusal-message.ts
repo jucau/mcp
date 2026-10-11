@@ -36,6 +36,8 @@ export const refusalMessage = (refusal: Refusal, book: Book, attempted: BookActi
             return `${title} n'est pas prêté : il n'y a rien à rendre.`;
         case 'book-lent':
             return `${title} est prêté à ${book.lentTo ?? "quelqu'un"} : récupérez-le avant de le retirer.`;
+        case 'book-changed-meanwhile':
+            return `${title} vient d'être modifié ailleurs : rechargez la page avant de recommencer.`;
         case 'unknown-book':
         case 'invalid-book-id':
             return `${title} n'est plus dans la bibliothèque.`;

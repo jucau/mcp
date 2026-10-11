@@ -8,6 +8,7 @@ use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
 use App\Library\Application\Book\StartReading\StartReading;
 use App\Library\Application\Book\StartReading\StartReadingHandler;
+use App\Library\Domain\Book\BookChangedMeanwhile;
 use App\Library\Domain\Book\InvalidBookId;
 use App\Library\Domain\Book\ReadingTransitionNotAllowed;
 use App\Library\Domain\Book\UnknownBook;
@@ -27,6 +28,7 @@ final readonly class StartReadingController
      * @throws UnknownBook
      * @throws InvalidBookId
      * @throws ReadingTransitionNotAllowed
+     * @throws BookChangedMeanwhile
      */
     public function __invoke(Request $request, string $book, CurrentReader $reader): BookResource
     {

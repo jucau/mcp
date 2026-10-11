@@ -6,6 +6,7 @@ namespace App\Library\Infrastructure\Persistence\Eloquent\Repositories;
 
 use App\Library\Domain\Book\Author;
 use App\Library\Domain\Book\Book;
+use App\Library\Domain\Book\BookChangedMeanwhile;
 use App\Library\Domain\Book\BookId;
 use App\Library\Domain\Book\BookRepository;
 use App\Library\Domain\Book\Borrower;
@@ -25,30 +26,15 @@ use Illuminate\Database\UniqueConstraintViolationException;
 
 final class EloquentBookRepository implements BookRepository
 {
-    public function save(Book $book): void
-    {
-        $record = BookRecord::query()->where('uuid', $book->id()->value)->first() ?? new BookRecord();
-        $record->uuid = $book->id()->value;
-        $record->reader_id = $book->reader()->value;
-        $record->title = $book->title()->value;
-        $record->author = $book->author()->value;
-        $record->isbn = $book->isbn()?->value;
-        $record->owned = $book->isOwned();
-        $record->reading_status = $book->readingStatus()->value;
-        $record->started_on = $this->toCarbon($book->startedOn());
-        $record->finished_on = $this->toCarbon($book->finishedOn());
-        $record->rating = $book->rating()?->value;
-        $record->loan_borrower = $book->loan()?->borrower->value;
-        $record->lent_on = $this->toCarbon($book->loan()?->lentOn);
+    private const string ISBN_INDEX = 'books_reader_id_isbn_unique';
 
-        try {
-            $record->save();
-        } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
-            $isbn = $book->isbn();
-
-            throw $isbn instanceof Isbn ? DuplicateIsbn::isbn($isbn) : $uniqueConstraintViolationException;
-        }
-    }
+    /**
+     * The version of each book as this repository last read or wrote it: the optimistic lock compares it with the
+     * one in the database, so the aggregate never has to carry a number that means nothing to the domain.
+     *
+     * @var array<string, int>
+     */
+    private array $versions = [];
 
     public function get(ReaderId $reader, BookId $id): Book
     {
@@ -56,6 +42,8 @@ final class EloquentBookRepository implements BookRepository
             ->where('reader_id', $reader->value)
             ->where('uuid', $id->value)
             ->first() ?? throw UnknownBook::withId($id);
+
+        $this->versions[$id->value] = $record->version;
 
         return Book::reconstitute(
             BookId::fromString($record->uuid),
@@ -74,9 +62,79 @@ final class EloquentBookRepository implements BookRepository
         );
     }
 
+    public function save(Book $book): void
+    {
+        $uuid = $book->id()->value;
+        $version = $this->versions[$uuid] ?? null;
+
+        $this->versions[$uuid] = $version === null ? $this->insert($book) : $this->update($book, $version);
+    }
+
     public function remove(ReaderId $reader, BookId $id): void
     {
-        BookRecord::query()->where('reader_id', $reader->value)->where('uuid', $id->value)->delete();
+        $book = BookRecord::query()->where('reader_id', $reader->value)->where('uuid', $id->value);
+        $version = $this->versions[$id->value] ?? null;
+
+        $removed = $version === null ? $book->delete() : (clone $book)->where('version', $version)->delete();
+
+        if ($removed === 0 && $book->exists()) {
+            throw BookChangedMeanwhile::sinceItWasRead();
+        }
+
+        unset($this->versions[$id->value]);
+    }
+
+    private function insert(Book $book): int
+    {
+        $record = new BookRecord();
+        $record->forceFill(['uuid' => $book->id()->value, 'version' => 1, ...$this->stateOf($book)]);
+
+        try {
+            $record->save();
+        } catch (UniqueConstraintViolationException $uniqueConstraintViolationException) {
+            $isbn = $book->isbn();
+
+            // The only other unique index is the one on the uuid: someone else saved this very book first.
+            throw $isbn instanceof Isbn && str_contains($uniqueConstraintViolationException->getMessage(), self::ISBN_INDEX)
+                ? DuplicateIsbn::isbn($isbn)
+                : BookChangedMeanwhile::sinceItWasRead();
+        }
+
+        return 1;
+    }
+
+    private function update(Book $book, int $version): int
+    {
+        $updated = BookRecord::query()
+            ->where('uuid', $book->id()->value)
+            ->where('version', $version)
+            ->update(['version' => $version + 1, ...$this->stateOf($book)]);
+
+        if ($updated === 0) {
+            throw BookChangedMeanwhile::sinceItWasRead();
+        }
+
+        return $version + 1;
+    }
+
+    /**
+     * @return array<string, bool|int|string|CarbonImmutable|null>
+     */
+    private function stateOf(Book $book): array
+    {
+        return [
+            'reader_id' => $book->reader()->value,
+            'title' => $book->title()->value,
+            'author' => $book->author()->value,
+            'isbn' => $book->isbn()?->value,
+            'owned' => $book->isOwned(),
+            'reading_status' => $book->readingStatus()->value,
+            'started_on' => $this->toCarbon($book->startedOn()),
+            'finished_on' => $this->toCarbon($book->finishedOn()),
+            'rating' => $book->rating()?->value,
+            'loan_borrower' => $book->loan()?->borrower->value,
+            'lent_on' => $this->toCarbon($book->loan()?->lentOn),
+        ];
     }
 
     private function toCarbon(?DateTimeImmutable $day): ?CarbonImmutable

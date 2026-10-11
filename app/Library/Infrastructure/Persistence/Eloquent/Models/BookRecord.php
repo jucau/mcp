@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string $reader_id
+ * @property int $version
  * @mixin \Eloquent
  */
 final class BookRecord extends Model
@@ -42,6 +43,7 @@ final class BookRecord extends Model
             'finished_on' => 'immutable_date',
             'lent_on' => 'immutable_date',
             'rating' => 'integer',
+            'version' => 'integer',
         ];
     }
 }

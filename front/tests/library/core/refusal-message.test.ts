@@ -37,6 +37,12 @@ describe('telling the reader why the library refused', () => {
         ['book-not-lent', {}, 'return', "« Dune » n'est pas prêté : il n'y a rien à rendre."],
         ['book-lent', { lentTo: 'Paul' }, 'remove', '« Dune » est prêté à Paul : récupérez-le avant de le retirer.'],
         ['book-lent', {}, 'remove', "« Dune » est prêté à quelqu'un : récupérez-le avant de le retirer."],
+        [
+            'book-changed-meanwhile',
+            {},
+            'lend',
+            "« Dune » vient d'être modifié ailleurs : rechargez la page avant de recommencer.",
+        ],
         ['unknown-book', {}, 'return', "« Dune » n'est plus dans la bibliothèque."],
         ['invalid-book-id', {}, 'acquire', "« Dune » n'est plus dans la bibliothèque."],
     ])('%s, %o, %s', (type, book, attempted, message) => {

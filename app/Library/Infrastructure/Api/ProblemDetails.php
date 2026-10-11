@@ -7,6 +7,7 @@ namespace App\Library\Infrastructure\Api;
 use App\Library\Application\Book\Catalog\CatalogUnavailable;
 use App\Library\Application\Book\Catalog\NotInCatalog;
 use App\Library\Domain\Book\BookAlreadyLent;
+use App\Library\Domain\Book\BookChangedMeanwhile;
 use App\Library\Domain\Book\BookLent;
 use App\Library\Domain\Book\BookNotFinished;
 use App\Library\Domain\Book\BookNotLent;
@@ -44,6 +45,7 @@ final class ProblemDetails
             BookLent::class,
             BookNotOwned::class,
             BookNotFinished::class,
+            BookChangedMeanwhile::class,
             DuplicateIsbn::class => Response::HTTP_CONFLICT,
             InvalidIsbn::class, InvalidRating::class, InvalidText::class, FinishedBeforeStarted::class => Response::HTTP_UNPROCESSABLE_ENTITY,
             InvalidReaderId::class => Response::HTTP_INTERNAL_SERVER_ERROR,

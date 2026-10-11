@@ -19,4 +19,9 @@ final class InMemoryBookRepositoryTest extends TestCase
     {
         return $this->books ??= new InMemoryBookRepository();
     }
+
+    protected function anotherSession(): BookRepository
+    {
+        return ($this->books ??= new InMemoryBookRepository())->anotherSession();
+    }
 }

@@ -44,7 +44,8 @@ final class LibraryServiceProvider extends ServiceProvider
     #[\Override]
     public function register(): void
     {
-        $this->app->bind(BookRepository::class, EloquentBookRepository::class);
+        // One repository per request: it remembers the version of the books it read, for the optimistic lock.
+        $this->app->scoped(BookRepository::class, EloquentBookRepository::class);
         $this->app->bind(BookQueries::class, EloquentBookQueries::class);
         // Read when today is asked, not when a handler is built: an entry point that names every date itself, like
         // the demo seeder, has no current reader, and must still get its handlers.

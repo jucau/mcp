@@ -8,6 +8,7 @@ use App\Library\Application\Book\FinishReading\FinishReading;
 use App\Library\Application\Book\FinishReading\FinishReadingHandler;
 use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
+use App\Library\Domain\Book\BookChangedMeanwhile;
 use App\Library\Domain\Book\FinishedBeforeStarted;
 use App\Library\Domain\Book\InvalidBookId;
 use App\Library\Domain\Book\ReadingTransitionNotAllowed;
@@ -29,6 +30,7 @@ final readonly class FinishReadingController
      * @throws InvalidBookId
      * @throws ReadingTransitionNotAllowed
      * @throws FinishedBeforeStarted
+     * @throws BookChangedMeanwhile
      */
     public function __invoke(Request $request, string $book, CurrentReader $reader): BookResource
     {

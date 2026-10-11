@@ -6,6 +6,10 @@ namespace App\Library\Domain\Book;
 
 interface BookRepository
 {
+    /**
+     * @throws DuplicateIsbn when the reader already has a book with this ISBN
+     * @throws BookChangedMeanwhile when the book was changed or removed since this repository last read or saved it
+     */
     public function save(Book $book): void;
 
     /**
@@ -13,5 +17,8 @@ interface BookRepository
      */
     public function get(ReaderId $reader, BookId $id): Book;
 
+    /**
+     * @throws BookChangedMeanwhile when the book was changed since this repository last read or saved it
+     */
     public function remove(ReaderId $reader, BookId $id): void;
 }

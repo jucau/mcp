@@ -8,6 +8,7 @@ use App\Library\Application\Book\Query\BookQueries;
 use App\Library\Application\Book\Query\BookView;
 use App\Library\Application\Book\RateBook\RateBook;
 use App\Library\Application\Book\RateBook\RateBookHandler;
+use App\Library\Domain\Book\BookChangedMeanwhile;
 use App\Library\Domain\Book\BookNotFinished;
 use App\Library\Domain\Book\InvalidBookId;
 use App\Library\Domain\Book\InvalidRating;
@@ -29,6 +30,7 @@ final readonly class RateBookController
      * @throws InvalidBookId
      * @throws InvalidRating
      * @throws BookNotFinished
+     * @throws BookChangedMeanwhile
      */
     public function __invoke(Request $request, string $book, CurrentReader $reader): BookResource
     {

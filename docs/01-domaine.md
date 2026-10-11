@@ -95,7 +95,8 @@ les invariants testables.
 
 **Erreurs de domaine** : `InvalidBookId`, `InvalidText`, `InvalidIsbn`, `InvalidRating`,
 `ReadingTransitionNotAllowed`, `FinishedBeforeStarted`, `BookNotFinished`,
-`BookNotOwned`, `BookAlreadyLent`, `BookNotLent`, `BookLent`, `DuplicateIsbn`, `UnknownBook`. Chacune porte
+`BookNotOwned`, `BookAlreadyLent`, `BookNotLent`, `BookLent`, `DuplicateIsbn`, `UnknownBook`,
+`BookChangedMeanwhile`. Chacune porte
 un message **compréhensible par un humain… et par un modèle** : à l'étape 3, c'est ce texte qui remontera au
 LLM dans une erreur de tool.
 
@@ -107,6 +108,24 @@ lui-même : il ne peut pas garantir une règle qui porte sur **l'ensemble** des 
 **au bord** : contrainte d'unicité en base sur (lecteur, ISBN), traduite par le repository en exception de domaine
 `DuplicateIsbn`. Pas de pré-vérification applicative (elle serait sujette à une course), même pattern
 que `ddd/` (ADR-0007 de Comptoir).
+
+## Deux écritures en même temps
+
+Chaque use case d'écriture **lit** le livre, le fait **changer**, puis le **sauve**. Entre la lecture et la sauvegarde,
+une autre requête peut avoir changé le même livre : sans garde-fou, la seconde sauvegarde écraserait la première, et
+un livre pourrait se retrouver prêté deux fois sans que `BookAlreadyLent` ait jamais été levée. Le cas n'est pas
+théorique : un agent MCP et le front écrivent dans la même bibliothèque.
+
+La réponse est un **verrou optimiste** ([ADR-0035](./decisions/0035-verrou-optimiste-dans-le-repository.md)) :
+
+- chaque livre stocké porte un **numéro de version** ;
+- le repository retient la version de chaque livre **qu'il a lu ou écrit**, et ne sauve (ni ne retire) que si celle
+  de la base est restée la même ;
+- sinon, il lève `BookChangedMeanwhile` : « ce livre a changé entre-temps, relis-le ».
+
+L'appelant rejoue alors sa demande, et c'est le domaine qui répond sur l'état réel : `BookAlreadyLent`, par exemple.
+Comme l'ISBN unique, cette règle ne peut pas être tenue par l'agrégat, qui ne voit que lui-même : elle est tenue
+**au bord**, par le repository. **L'agrégat ne porte pas la version** : ce nombre ne veut rien dire pour le domaine.
 
 ## Value objects
 

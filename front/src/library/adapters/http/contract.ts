@@ -317,7 +317,11 @@ export interface operations {
                     };
                 };
             };
-            /** @description Reading transition not allowed */
+            /**
+             * @description Reading transition not allowed
+             *
+             *     Book changed meanwhile
+             */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -331,6 +335,18 @@ export interface operations {
                         type: "http://localhost:8090/problems/reading-transition-not-allowed";
                         /** @enum {string} */
                         title: "Reading transition not allowed";
+                        /** @enum {integer} */
+                        status: 409;
+                        /** @description The message of the refusal, as the domain wrote it. */
+                        detail: string;
+                    } | {
+                        /**
+                         * Format: uri
+                         * @enum {string}
+                         */
+                        type: "http://localhost:8090/problems/book-changed-meanwhile";
+                        /** @enum {string} */
+                        title: "Book changed meanwhile";
                         /** @enum {integer} */
                         status: 409;
                         /** @description The message of the refusal, as the domain wrote it. */
@@ -435,6 +451,27 @@ export interface operations {
                         title: "Invalid book id";
                         /** @enum {integer} */
                         status: 404;
+                        /** @description The message of the refusal, as the domain wrote it. */
+                        detail: string;
+                    };
+                };
+            };
+            /** @description Book changed meanwhile */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": {
+                        /**
+                         * Format: uri
+                         * @enum {string}
+                         */
+                        type: "http://localhost:8090/problems/book-changed-meanwhile";
+                        /** @enum {string} */
+                        title: "Book changed meanwhile";
+                        /** @enum {integer} */
+                        status: 409;
                         /** @description The message of the refusal, as the domain wrote it. */
                         detail: string;
                     };
@@ -712,7 +749,11 @@ export interface operations {
                     };
                 };
             };
-            /** @description Reading transition not allowed */
+            /**
+             * @description Reading transition not allowed
+             *
+             *     Book changed meanwhile
+             */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -726,6 +767,18 @@ export interface operations {
                         type: "http://localhost:8090/problems/reading-transition-not-allowed";
                         /** @enum {string} */
                         title: "Reading transition not allowed";
+                        /** @enum {integer} */
+                        status: 409;
+                        /** @description The message of the refusal, as the domain wrote it. */
+                        detail: string;
+                    } | {
+                        /**
+                         * Format: uri
+                         * @enum {string}
+                         */
+                        type: "http://localhost:8090/problems/book-changed-meanwhile";
+                        /** @enum {string} */
+                        title: "Book changed meanwhile";
                         /** @enum {integer} */
                         status: 409;
                         /** @description The message of the refusal, as the domain wrote it. */
@@ -847,6 +900,8 @@ export interface operations {
              * @description Book not owned
              *
              *     Book already lent
+             *
+             *     Book changed meanwhile
              */
             409: {
                 headers: {
@@ -873,6 +928,18 @@ export interface operations {
                         type: "http://localhost:8090/problems/book-already-lent";
                         /** @enum {string} */
                         title: "Book already lent";
+                        /** @enum {integer} */
+                        status: 409;
+                        /** @description The message of the refusal, as the domain wrote it. */
+                        detail: string;
+                    } | {
+                        /**
+                         * Format: uri
+                         * @enum {string}
+                         */
+                        type: "http://localhost:8090/problems/book-changed-meanwhile";
+                        /** @enum {string} */
+                        title: "Book changed meanwhile";
                         /** @enum {integer} */
                         status: 409;
                         /** @description The message of the refusal, as the domain wrote it. */
@@ -1076,7 +1143,11 @@ export interface operations {
                     };
                 };
             };
-            /** @description Book not finished */
+            /**
+             * @description Book not finished
+             *
+             *     Book changed meanwhile
+             */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -1090,6 +1161,18 @@ export interface operations {
                         type: "http://localhost:8090/problems/book-not-finished";
                         /** @enum {string} */
                         title: "Book not finished";
+                        /** @enum {integer} */
+                        status: 409;
+                        /** @description The message of the refusal, as the domain wrote it. */
+                        detail: string;
+                    } | {
+                        /**
+                         * Format: uri
+                         * @enum {string}
+                         */
+                        type: "http://localhost:8090/problems/book-changed-meanwhile";
+                        /** @enum {string} */
+                        title: "Book changed meanwhile";
                         /** @enum {integer} */
                         status: 409;
                         /** @description The message of the refusal, as the domain wrote it. */
@@ -1257,7 +1340,11 @@ export interface operations {
                     };
                 };
             };
-            /** @description Book lent */
+            /**
+             * @description Book lent
+             *
+             *     Book changed meanwhile
+             */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -1271,6 +1358,18 @@ export interface operations {
                         type: "http://localhost:8090/problems/book-lent";
                         /** @enum {string} */
                         title: "Book lent";
+                        /** @enum {integer} */
+                        status: 409;
+                        /** @description The message of the refusal, as the domain wrote it. */
+                        detail: string;
+                    } | {
+                        /**
+                         * Format: uri
+                         * @enum {string}
+                         */
+                        type: "http://localhost:8090/problems/book-changed-meanwhile";
+                        /** @enum {string} */
+                        title: "Book changed meanwhile";
                         /** @enum {integer} */
                         status: 409;
                         /** @description The message of the refusal, as the domain wrote it. */
@@ -1340,7 +1439,11 @@ export interface operations {
                     };
                 };
             };
-            /** @description Book not lent */
+            /**
+             * @description Book not lent
+             *
+             *     Book changed meanwhile
+             */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -1354,6 +1457,18 @@ export interface operations {
                         type: "http://localhost:8090/problems/book-not-lent";
                         /** @enum {string} */
                         title: "Book not lent";
+                        /** @enum {integer} */
+                        status: 409;
+                        /** @description The message of the refusal, as the domain wrote it. */
+                        detail: string;
+                    } | {
+                        /**
+                         * Format: uri
+                         * @enum {string}
+                         */
+                        type: "http://localhost:8090/problems/book-changed-meanwhile";
+                        /** @enum {string} */
+                        title: "Book changed meanwhile";
                         /** @enum {integer} */
                         status: 409;
                         /** @description The message of the refusal, as the domain wrote it. */
@@ -1457,7 +1572,11 @@ export interface operations {
                     };
                 };
             };
-            /** @description Reading transition not allowed */
+            /**
+             * @description Reading transition not allowed
+             *
+             *     Book changed meanwhile
+             */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -1471,6 +1590,18 @@ export interface operations {
                         type: "http://localhost:8090/problems/reading-transition-not-allowed";
                         /** @enum {string} */
                         title: "Reading transition not allowed";
+                        /** @enum {integer} */
+                        status: 409;
+                        /** @description The message of the refusal, as the domain wrote it. */
+                        detail: string;
+                    } | {
+                        /**
+                         * Format: uri
+                         * @enum {string}
+                         */
+                        type: "http://localhost:8090/problems/book-changed-meanwhile";
+                        /** @enum {string} */
+                        title: "Book changed meanwhile";
                         /** @enum {integer} */
                         status: 409;
                         /** @description The message of the refusal, as the domain wrote it. */

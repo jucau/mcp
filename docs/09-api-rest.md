@@ -82,7 +82,7 @@ soit. L'adaptateur doit donc classer chaque refus du domaine.
 | Refus du domaine | Statut | Pourquoi |
 |---|---|---|
 | `UnknownBook`, `InvalidBookId` (dans l'URL) | `404` | l'URL ne désigne aucun livre du lecteur |
-| `ReadingTransitionNotAllowed`, `BookAlreadyLent`, `BookNotLent`, `BookLent`, `BookNotOwned`, `BookNotFinished`, `DuplicateIsbn` | `409` | la demande est bien formée, mais l'état du livre l'interdit |
+| `ReadingTransitionNotAllowed`, `BookAlreadyLent`, `BookNotLent`, `BookLent`, `BookNotOwned`, `BookNotFinished`, `DuplicateIsbn`, `BookChangedMeanwhile` | `409` | la demande est bien formée, mais l'état du livre l'interdit |
 | `InvalidIsbn`, `InvalidRating`, `InvalidText`, `FinishedBeforeStarted` | `422` | une valeur fournie ne respecte pas une règle du domaine |
 | `InvalidReaderId` | `500` | le lecteur vient du compte, pas de la requête : un lecteur invalide est une panne du serveur, et son message ne sort pas |
 | forme invalide (champ manquant, mauvais type) | `422` | refusée avant le use case, comme dans les tools ; un champ inconnu est ignoré, comme dans les tools |

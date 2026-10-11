@@ -55,3 +55,4 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0032](./0032-client-http-type-par-le-contrat.md) | Le client HTTP du front est typé par le contrat OpenAPI | Accepté |
 | [0033](./0033-refus-traduits-par-leur-type.md) | Le front traduit les refus par leur type, et retombe sur le message du domaine | Accepté |
 | [0034](./0034-catalogue-ouvert-derriere-un-port.md) | Le catalogue ouvert est un port, et `lookup_book` un tool séparé | Accepté |
+| [0035](./0035-verrou-optimiste-dans-le-repository.md) | Un verrou optimiste, tenu par le repository | Accepté |
