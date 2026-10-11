@@ -20,5 +20,5 @@ interface BookRepository
     /**
      * @throws BookChangedMeanwhile when the book was changed since this repository last read or saved it
      */
-    public function remove(ReaderId $reader, BookId $id): void;
+    public function remove(Removal $removal): void;
 }

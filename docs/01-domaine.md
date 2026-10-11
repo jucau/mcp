@@ -88,7 +88,7 @@ jamais.
 | `rate(Rating)` | B-5 |
 | `lendTo(Borrower, on)` | B-6, B-7 |
 | `markAsReturned()` | un livre non prêté ne peut pas être rendu |
-| `ensureRemovable()` | B-8 — appelé par le use case `RemoveBook` avant suppression |
+| `ensureRemovable()` | B-8 — vérifié par `Removal::of(Book)`, la **preuve de retrait** que le repository exige ([ADR-0037](./decisions/0037-une-preuve-de-retrait.md)) |
 
 Les dates sont **passées** au domaine, jamais lues par lui (pas de « maintenant » caché) : c'est ce qui rend
 les invariants testables.

@@ -16,6 +16,7 @@ use App\Library\Domain\Book\Loan;
 use App\Library\Domain\Book\Rating;
 use App\Library\Domain\Book\ReaderId;
 use App\Library\Domain\Book\ReadingStatus;
+use App\Library\Domain\Book\Removal;
 use App\Library\Domain\Book\Title;
 use App\Library\Domain\Book\UnknownBook;
 use App\Library\Infrastructure\Persistence\Eloquent\Models\BookRecord;
@@ -70,9 +71,10 @@ final class EloquentBookRepository implements BookRepository
         $this->versions[$uuid] = $version === null ? $this->insert($book) : $this->update($book, $version);
     }
 
-    public function remove(ReaderId $reader, BookId $id): void
+    public function remove(Removal $removal): void
     {
-        $book = BookRecord::query()->where('reader_id', $reader->value)->where('uuid', $id->value);
+        $id = $removal->book;
+        $book = BookRecord::query()->where('reader_id', $removal->reader->value)->where('uuid', $id->value);
         $version = $this->versions[$id->value] ?? null;
 
         $removed = $version === null ? $book->delete() : (clone $book)->where('version', $version)->delete();

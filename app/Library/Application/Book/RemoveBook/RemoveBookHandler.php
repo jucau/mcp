@@ -7,6 +7,7 @@ namespace App\Library\Application\Book\RemoveBook;
 use App\Library\Domain\Book\BookId;
 use App\Library\Domain\Book\BookRepository;
 use App\Library\Domain\Book\ReaderId;
+use App\Library\Domain\Book\Removal;
 
 final readonly class RemoveBookHandler
 {
@@ -18,8 +19,6 @@ final readonly class RemoveBookHandler
     {
         $book = $this->books->get(ReaderId::fromString($command->readerId), BookId::fromString($command->bookId));
 
-        $book->ensureRemovable();
-
-        $this->books->remove($book->reader(), $book->id());
+        $this->books->remove(Removal::of($book));
     }
 }

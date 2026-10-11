@@ -11,6 +11,7 @@ use App\Library\Domain\Book\BookRepository;
 use App\Library\Domain\Book\DuplicateIsbn;
 use App\Library\Domain\Book\Isbn;
 use App\Library\Domain\Book\ReaderId;
+use App\Library\Domain\Book\Removal;
 use App\Library\Domain\Book\UnknownBook;
 use Webmozart\Assert\Assert;
 
@@ -71,20 +72,16 @@ final class InMemoryBookRepository implements BookRepository
         return $this->snapshot($row['book']);
     }
 
-    public function remove(ReaderId $reader, BookId $id): void
+    public function remove(Removal $removal): void
     {
-        $row = $this->stored->rows[$id->value] ?? null;
-        $version = $this->versions[$id->value] ?? null;
+        $id = $removal->book->value;
+        $version = $this->versions[$id] ?? null;
 
-        if ($row !== null && $row['book']->reader()->equals($reader)) {
-            if ($version !== null && $version !== $row['version']) {
-                throw BookChangedMeanwhile::sinceItWasRead();
-            }
-
-            unset($this->stored->rows[$id->value]);
+        if (isset($this->stored->rows[$id]) && $version !== null && $version !== $this->stored->rows[$id]['version']) {
+            throw BookChangedMeanwhile::sinceItWasRead();
         }
 
-        unset($this->versions[$id->value]);
+        unset($this->stored->rows[$id], $this->versions[$id]);
     }
 
     private function snapshot(Book $book): Book

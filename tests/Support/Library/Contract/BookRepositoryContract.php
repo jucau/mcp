@@ -11,6 +11,7 @@ use App\Library\Domain\Book\BookRepository;
 use App\Library\Domain\Book\Borrower;
 use App\Library\Domain\Book\DuplicateIsbn;
 use App\Library\Domain\Book\Rating;
+use App\Library\Domain\Book\Removal;
 use App\Library\Domain\Book\UnknownBook;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\Test;
@@ -82,7 +83,7 @@ trait BookRepositoryContract
         $book = Books::aBook();
         $repository->save($book);
 
-        $repository->remove($book->reader(), $book->id());
+        $repository->remove(Removal::of($book));
 
         $this->expectException(UnknownBook::class);
 
@@ -99,18 +100,6 @@ trait BookRepositoryContract
         $this->expectException(UnknownBook::class);
 
         $repository->get(Readers::me(), $book->id());
-    }
-
-    #[Test]
-    public function the_book_of_another_reader_cannot_be_removed(): void
-    {
-        $repository = $this->bookRepository();
-        $book = Books::aBook(reader: Readers::someoneElse());
-        $repository->save($book);
-
-        $repository->remove(Readers::me(), $book->id());
-
-        $this->assertEquals($book, $repository->get(Readers::someoneElse(), $book->id()));
     }
 
     #[Test]
@@ -229,7 +218,7 @@ trait BookRepositoryContract
         $this->lendThrough($this->anotherSession(), $book, 'Marie');
 
         try {
-            $mine->remove($book->reader(), $book->id());
+            $mine->remove(Removal::of($book));
             $this->fail('A book lent in the meantime was removed.');
         } catch (BookChangedMeanwhile) {
             $this->assertSame('Marie', $this->anotherSession()->get($book->reader(), $book->id())->loan()?->borrower->value);
@@ -242,7 +231,7 @@ trait BookRepositoryContract
         $mine = $this->bookRepository();
         $book = Books::aBook();
         $mine->save($book);
-        $this->anotherSession()->remove($book->reader(), $book->id());
+        $this->anotherSession()->remove(Removal::of($book));
 
         $book->lendTo(Borrower::fromString('Paul'), new DateTimeImmutable('2026-04-02'));
 
@@ -262,9 +251,9 @@ trait BookRepositoryContract
         $mine = $this->bookRepository();
         $book = Books::aBook();
         $mine->save($book);
-        $this->anotherSession()->remove($book->reader(), $book->id());
+        $this->anotherSession()->remove(Removal::of($book));
 
-        $mine->remove($book->reader(), $book->id());
+        $mine->remove(Removal::of($book));
 
         $this->expectException(UnknownBook::class);
 
@@ -278,7 +267,7 @@ trait BookRepositoryContract
         $this->bookRepository()->save($book);
         $this->lendThrough($this->anotherSession(), $book, 'Marie');
 
-        $this->anotherSession()->remove($book->reader(), $book->id());
+        $this->anotherSession()->remove(Removal::of($book));
 
         $this->expectException(UnknownBook::class);
 

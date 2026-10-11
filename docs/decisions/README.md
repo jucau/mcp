@@ -57,3 +57,4 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0034](./0034-catalogue-ouvert-derriere-un-port.md) | Le catalogue ouvert est un port, et `lookup_book` un tool séparé | Accepté, complété par 0036 |
 | [0035](./0035-verrou-optimiste-dans-le-repository.md) | Un verrou optimiste, tenu par le repository | Accepté |
 | [0036](./0036-un-refus-est-un-type-du-projet.md) | Un refus est un type du projet, `Refusal` | Accepté |
+| [0037](./0037-une-preuve-de-retrait.md) | Le repository ne retire un livre que sur preuve | Accepté |
