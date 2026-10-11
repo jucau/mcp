@@ -33,6 +33,7 @@ n'importe quel intermédiaire) sans qu'aucun argument métier ne le justifie.
 | chercher | `search_books` | `GET /api/books?query=…&reading_status=…&owned=…&lent=…&page=…&per_page=…` | `200`, une page |
 | consulter un livre | resource `library://books/{id}` | `GET /api/books/{id}` | `200`, le livre |
 | consulter une étagère | resources `library://shelves/…` | `GET /api/shelves/{shelf}` | `200`, les livres |
+| retrouver par son ISBN | `lookup_book` | `GET /api/catalog/{isbn}` | `200`, la fiche du catalogue ([11](./11-monde-ouvert.md)) |
 | ajouter | `add_book` | `POST /api/books` | `201`, `Location`, le livre |
 | retirer | `remove_book` | `DELETE /api/books/{id}` | `204` |
 | commencer la lecture | `start_reading` | `POST /api/books/{id}/start-reading` | `200`, le livre |

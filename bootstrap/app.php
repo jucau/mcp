@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Library\Application\Book\Catalog\CatalogUnavailable;
+use App\Library\Application\Book\Catalog\NotInCatalog;
 use App\Library\Infrastructure\Api\AnnounceResourceMetadata;
 use App\Library\Infrastructure\Api\ProblemDetails;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
@@ -29,6 +31,9 @@ return Application::configure(basePath: dirname(__DIR__))
         );
         $exceptions->render(
             fn (DomainException $refusal, Request $request) => $request->is('api/*') ? ProblemDetails::forRefusal($refusal) : null,
+        );
+        $exceptions->render(
+            fn (NotInCatalog|CatalogUnavailable $noEntry, Request $request) => $request->is('api/*') ? ProblemDetails::forCatalog($noEntry) : null,
         );
         $exceptions->render(
             fn (ValidationException $invalid, Request $request) => $request->is('api/*') ? ProblemDetails::forInvalidRequest($invalid) : null,

@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { aBook } from '../../support/library/books';
 import { InMemoryLibrary } from '../../support/library/in-memory-library';
@@ -56,6 +56,70 @@ describe('adding a book from the front', () => {
             "Un livre avec l'ISBN 9780441172719 est déjà dans la bibliothèque",
         );
         expect(within(form).getByLabelText('Titre')).toHaveValue('Dune');
+    });
+
+    it('fills the title and the author from the ISBN, then adds the book', async () => {
+        const library = new InMemoryLibrary();
+        library.knows({ isbn: '9780441172719', title: 'Dune', author: 'Frank Herbert', publishedIn: 1965, pages: 896 });
+        const { user, form } = await openTheForm(library);
+
+        await user.type(within(form).getByLabelText('ISBN (facultatif)'), ' 9780441172719 ');
+        await user.click(within(form).getByRole('button', { name: "Compléter depuis l'ISBN" }));
+
+        await waitFor(() => {
+            expect(within(form).getByLabelText('Titre')).toHaveValue('Dune');
+        });
+        expect(within(form).getByLabelText('Auteur')).toHaveValue('Frank Herbert');
+        expect(within(form).getByLabelText('ISBN (facultatif)')).toHaveValue('9780441172719');
+
+        await user.click(within(form).getByRole('button', { name: 'Ajouter' }));
+
+        expect(await screen.findByRole('article', { name: 'Fiche du livre « Dune »' })).toHaveTextContent(
+            'ISBN 9780441172719',
+        );
+    });
+
+    it('tells why the catalog gave nothing, and keeps what was typed', async () => {
+        const { user, form } = await openTheForm(new InMemoryLibrary());
+
+        await user.type(within(form).getByLabelText('Titre'), 'Dune');
+        await user.type(within(form).getByLabelText('ISBN (facultatif)'), '9780441172719');
+        await user.click(within(form).getByRole('button', { name: "Compléter depuis l'ISBN" }));
+
+        expect(await within(form).findByRole('status')).toHaveTextContent(
+            "Le catalogue ne connaît pas l'ISBN 9780441172719 : saisissez le titre et l'auteur.",
+        );
+        expect(within(form).getByLabelText('Titre')).toHaveValue('Dune');
+    });
+
+    it('forgets the last refusal when the catalog is asked again', async () => {
+        const library = new InMemoryLibrary();
+        library.knows({ isbn: '9780441172719', title: 'Dune', author: null, publishedIn: null, pages: null });
+        library.refuseNext('catalog-unavailable');
+        const { user, form } = await openTheForm(library);
+
+        await user.type(within(form).getByLabelText('Auteur'), 'herbert');
+        await user.type(within(form).getByLabelText('ISBN (facultatif)'), '9780441172719');
+        await user.click(within(form).getByRole('button', { name: "Compléter depuis l'ISBN" }));
+        expect(await within(form).findByRole('status')).toHaveTextContent('Le catalogue ne répond pas');
+
+        await user.click(within(form).getByRole('button', { name: "Compléter depuis l'ISBN" }));
+
+        await waitFor(() => {
+            expect(within(form).getByLabelText('Titre')).toHaveValue('Dune');
+        });
+        expect(within(form).getByLabelText('Auteur')).toHaveValue('herbert');
+        expect(within(form).queryByRole('status')).not.toBeInTheDocument();
+    });
+
+    it('has nothing to look up without an ISBN', async () => {
+        const { user, form } = await openTheForm(new InMemoryLibrary());
+
+        expect(within(form).getByRole('button', { name: "Compléter depuis l'ISBN" })).toBeDisabled();
+
+        await user.type(within(form).getByLabelText('ISBN (facultatif)'), '   ');
+
+        expect(within(form).getByRole('button', { name: "Compléter depuis l'ISBN" })).toBeDisabled();
     });
 
     it('asks for a title and an author before calling the library', async () => {

@@ -8,6 +8,7 @@ use App\Library\Infrastructure\Api\Controllers\AcquireBookController;
 use App\Library\Infrastructure\Api\Controllers\AddBookController;
 use App\Library\Infrastructure\Api\Controllers\FinishReadingController;
 use App\Library\Infrastructure\Api\Controllers\LendBookController;
+use App\Library\Infrastructure\Api\Controllers\LookUpBookController;
 use App\Library\Infrastructure\Api\Controllers\RateBookController;
 use App\Library\Infrastructure\Api\Controllers\RemoveBookController;
 use App\Library\Infrastructure\Api\Controllers\ReturnBookController;
@@ -38,4 +39,5 @@ Route::middleware([
     Route::post('/books/{book}/return', ReturnBookController::class)->name('returnBook');
     Route::post('/books/{book}/acquire', AcquireBookController::class)->name('acquireBook');
     Route::get('/shelves/{shelf}', ShowShelfController::class)->name('showShelf');
+    Route::get('/catalog/{isbn}', LookUpBookController::class)->name('lookUpBook');
 });

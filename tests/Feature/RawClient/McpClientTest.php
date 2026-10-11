@@ -61,7 +61,7 @@ final class McpClientTest extends TestCase
 
         $this->assertSame(2, $ping['id']);
         $this->assertSame(3, $tools['id']);
-        $this->assertCount(10, (array) data_get($tools, 'result.tools'));
+        $this->assertCount(11, (array) data_get($tools, 'result.tools'));
         $client->close();
     }
 

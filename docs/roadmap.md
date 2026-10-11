@@ -161,11 +161,23 @@ serveur, et un client typé par le contrat de l'API.*
 - [x] L'ajout d'un livre
 - [ ] Le bout en bout (Playwright), et pour de vrai dans un navigateur : la case laissée ouverte à l'étape 9
 
+## Étape 11 — Sortir du monde fermé
+
+*Apprendre : ce qu'entraîne un tool qui interroge un service tiers — un port sortant, des échecs qui ne sont pas des
+refus du domaine, et un contenu que personne ici n'a écrit.*
+
+- [x] Documenter le monde ouvert ([11](./11-monde-ouvert.md),
+  [ADR-0034](./decisions/0034-catalogue-ouvert-derriere-un-port.md))
+- [x] Le cœur : le port `BookCatalog`, le use case `LookUpBook`, la doublure en mémoire et son trait de contrat
+- [x] L'adaptateur Open Library, borné, et aucun test qui sorte sur le réseau
+- [x] Le tool `lookup_book`, `openWorldHint` à `true`
+- [x] L'API : `GET /api/catalog/{isbn}`, `404` et `503` en *Problem Details*
+- [x] Le front : le formulaire d'ajout se complète depuis l'ISBN
+
 ## Plus tard (idées, sans engagement)
 
 - Notifications de progression pour un tool long (import d'une liste de livres)
 - *MCP Apps* : un tool qui rend une interface (`RendersApp`)
-- Un tool qui s'appuie sur une API ouverte (métadonnées ISBN) : `openWorldHint`
 - Des **scopes par tool** et le *step-up* (`403 insufficient_scope`) : `laravel/mcp` n'en gère qu'un (`mcp:use`),
   il faudra déclarer et annoncer les nôtres ([07](./07-authentification.md))
 - Les ***Client ID Metadata Documents*** côté serveur d'autorisation : Claude Code s'en passe aujourd'hui (il a

@@ -84,6 +84,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/catalog/{isbn}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["lookUpBook"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/books/{book}/rate": {
         parameters: {
             query?: never;
@@ -181,6 +197,14 @@ export interface components {
             rating: number | null;
             lent_to: string | null;
             lent_on: string | null;
+        };
+        /** CatalogEntryResource */
+        CatalogEntryResource: {
+            isbn: string;
+            title: string;
+            author: string | null;
+            published_in: number | null;
+            pages: number | null;
         };
         /**
          * ReadingStatus
@@ -891,6 +915,94 @@ export interface operations {
                         title: "Invalid text";
                         /** @enum {integer} */
                         status: 422;
+                        /** @description The message of the refusal, as the domain wrote it. */
+                        detail: string;
+                    };
+                };
+            };
+        };
+    };
+    lookUpBook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                isbn: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `CatalogEntryResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["CatalogEntryResource"];
+                    };
+                };
+            };
+            401: components["responses"]["AuthenticationException"];
+            /** @description Not in catalog */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": {
+                        /**
+                         * Format: uri
+                         * @enum {string}
+                         */
+                        type: "http://localhost:8090/problems/not-in-catalog";
+                        /** @enum {string} */
+                        title: "Not in catalog";
+                        /** @enum {integer} */
+                        status: 404;
+                        /** @description The message of the refusal, as the domain wrote it. */
+                        detail: string;
+                    };
+                };
+            };
+            /** @description Invalid isbn */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": {
+                        /**
+                         * Format: uri
+                         * @enum {string}
+                         */
+                        type: "http://localhost:8090/problems/invalid-isbn";
+                        /** @enum {string} */
+                        title: "Invalid isbn";
+                        /** @enum {integer} */
+                        status: 422;
+                        /** @description The message of the refusal, as the domain wrote it. */
+                        detail: string;
+                    };
+                };
+            };
+            /** @description Catalog unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": {
+                        /**
+                         * Format: uri
+                         * @enum {string}
+                         */
+                        type: "http://localhost:8090/problems/catalog-unavailable";
+                        /** @enum {string} */
+                        title: "Catalog unavailable";
+                        /** @enum {integer} */
+                        status: 503;
                         /** @description The message of the refusal, as the domain wrote it. */
                         detail: string;
                     };

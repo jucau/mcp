@@ -7,6 +7,7 @@ namespace Tests;
 use App\Library\Infrastructure\Reader\ConfiguredReader;
 use App\Library\Infrastructure\Reader\CurrentReader;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Http;
 use Tests\Support\Library\Readers;
 
 abstract class TestCase extends BaseTestCase
@@ -17,5 +18,6 @@ abstract class TestCase extends BaseTestCase
 
         config(['library.reader' => Readers::ME]);
         $this->app->bind(CurrentReader::class, ConfiguredReader::class);
+        Http::preventStrayRequests();
     }
 }

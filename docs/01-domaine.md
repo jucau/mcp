@@ -155,6 +155,11 @@ la casse ni des accents), ISBN exact, statut de lecture, possédé ou non, prêt
 année donnée. Les **étagères** ne sont que des recherches pré-filtrées : « à lire » (possédé, pas commencé, à la
 maison), « en cours », « prêtés », « liste d'envies ».
 
+**Hors de la bibliothèque** (`LookUpBook/` et `Catalog/`) : `LookUpBook` retrouve le titre et l'auteur d'un livre
+depuis son ISBN, dans un catalogue public. C'est le seul use case qui ne lit ni n'écrit aucun livre du lecteur, et
+le seul qui n'agit pour aucun lecteur. Il valide l'ISBN avec le domaine, puis interroge le port `BookCatalog`
+([11](./11-monde-ouvert.md)).
+
 ## Ce que ça donnera en MCP (aperçu de l'étape 2)
 
 Le domaine ne sait **rien** de MCP. L'adaptateur MCP traduira :

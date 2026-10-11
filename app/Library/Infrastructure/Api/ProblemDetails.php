@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Library\Infrastructure\Api;
 
+use App\Library\Application\Book\Catalog\CatalogUnavailable;
+use App\Library\Application\Book\Catalog\NotInCatalog;
 use App\Library\Domain\Book\BookAlreadyLent;
 use App\Library\Domain\Book\BookLent;
 use App\Library\Domain\Book\BookNotFinished;
@@ -30,12 +32,12 @@ final class ProblemDetails
     public const string INVALID_REQUEST = 'invalid-request';
 
     /**
-     * @param class-string<DomainException> $refusal
+     * @param class-string $refusal
      */
     public static function statusOf(string $refusal): int
     {
         return match ($refusal) {
-            UnknownBook::class, InvalidBookId::class => Response::HTTP_NOT_FOUND,
+            UnknownBook::class, InvalidBookId::class, NotInCatalog::class => Response::HTTP_NOT_FOUND,
             ReadingTransitionNotAllowed::class,
             BookAlreadyLent::class,
             BookNotLent::class,
@@ -45,6 +47,7 @@ final class ProblemDetails
             DuplicateIsbn::class => Response::HTTP_CONFLICT,
             InvalidIsbn::class, InvalidRating::class, InvalidText::class, FinishedBeforeStarted::class => Response::HTTP_UNPROCESSABLE_ENTITY,
             InvalidReaderId::class => Response::HTTP_INTERNAL_SERVER_ERROR,
+            CatalogUnavailable::class => Response::HTTP_SERVICE_UNAVAILABLE,
             default => throw new LogicException(sprintf('The refusal %s has no HTTP status: give it one.', $refusal)),
         };
     }
@@ -62,6 +65,11 @@ final class ProblemDetails
             $status,
             $status === Response::HTTP_INTERNAL_SERVER_ERROR ? 'The server could not serve this request.' : $refusal->getMessage(),
         );
+    }
+
+    public static function forCatalog(NotInCatalog|CatalogUnavailable $noEntry): JsonResponse
+    {
+        return self::problem(self::typeOf($noEntry::class), self::statusOf($noEntry::class), $noEntry->getMessage());
     }
 
     public static function forInvalidRequest(ValidationException $invalid): JsonResponse

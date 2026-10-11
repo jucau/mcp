@@ -98,7 +98,7 @@ ses listes changent en cours de session.
 ← {"jsonrpc":"2.0","id":2,"result":{…}}
 ```
 
-**3. Un tool.** `tools/list` renvoie les dix tools avec leurs schémas. `tools/call` renvoie le résultat **deux
+**3. Un tool.** `tools/list` renvoie les onze tools avec leurs schémas. `tools/call` renvoie le résultat **deux
 fois** : en texte (`content`), pour les clients qui ne lisent que ça, et en objet (`structuredContent`), conforme à
 l'`outputSchema`.
 

@@ -1,4 +1,5 @@
 import type { Book } from '../../../src/library/core/model/book';
+import type { CatalogEntry } from '../../../src/library/core/model/catalog-entry';
 import type { NewBook } from '../../../src/library/core/model/new-book';
 import type { BookSearch } from '../../../src/library/core/model/book-search';
 import type { Page } from '../../../src/library/core/model/page';
@@ -15,6 +16,7 @@ export const TODAY = '2026-10-11';
  */
 export class InMemoryLibrary implements Library {
     private readonly books: Map<string, Book>;
+    private readonly catalog = new Map<string, CatalogEntry>();
     private refusal: Refusal | undefined;
 
     constructor(...books: Book[]) {
@@ -23,6 +25,12 @@ export class InMemoryLibrary implements Library {
 
     refuseNext(type: string, detail = `Refused: ${type}.`): void {
         this.refusal = { type, detail };
+    }
+
+    knows(...entries: CatalogEntry[]): void {
+        for (const entry of entries) {
+            this.catalog.set(entry.isbn, entry);
+        }
     }
 
     book(bookId: string): Book | undefined {
@@ -45,6 +53,21 @@ export class InMemoryLibrary implements Library {
             perPage,
             total: found.length,
         });
+    }
+
+    lookUp(isbn: string): Promise<Outcome<CatalogEntry>> {
+        const refusal = this.refusal;
+        const entry = this.catalog.get(isbn);
+        this.refusal = undefined;
+
+        if (refusal !== undefined || entry === undefined) {
+            return Promise.resolve({
+                ok: false,
+                refusal: refusal ?? { type: 'not-in-catalog', detail: 'No such entry.' },
+            });
+        }
+
+        return Promise.resolve({ ok: true, value: entry });
     }
 
     add(book: NewBook): Promise<Outcome<Book>> {

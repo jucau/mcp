@@ -1515,6 +1515,170 @@
                 }
             }
         },
+        "/catalog/{isbn}": {
+            "get": {
+                "operationId": "lookUpBook",
+                "tags": [
+                    "LookUpBook"
+                ],
+                "parameters": [
+                    {
+                        "name": "isbn",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`CatalogEntryResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/CatalogEntryResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid isbn",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "enum": [
+                                                "http://localhost:8090/problems/invalid-isbn"
+                                            ]
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Invalid isbn"
+                                            ]
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "enum": [
+                                                422
+                                            ]
+                                        },
+                                        "detail": {
+                                            "type": "string",
+                                            "description": "The message of the refusal, as the domain wrote it."
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "title",
+                                        "status",
+                                        "detail"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not in catalog",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "enum": [
+                                                "http://localhost:8090/problems/not-in-catalog"
+                                            ]
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Not in catalog"
+                                            ]
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "enum": [
+                                                404
+                                            ]
+                                        },
+                                        "detail": {
+                                            "type": "string",
+                                            "description": "The message of the refusal, as the domain wrote it."
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "title",
+                                        "status",
+                                        "detail"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "Catalog unavailable",
+                        "content": {
+                            "application/problem+json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "enum": [
+                                                "http://localhost:8090/problems/catalog-unavailable"
+                                            ]
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Catalog unavailable"
+                                            ]
+                                        },
+                                        "status": {
+                                            "type": "integer",
+                                            "enum": [
+                                                503
+                                            ]
+                                        },
+                                        "detail": {
+                                            "type": "string",
+                                            "description": "The message of the refusal, as the domain wrote it."
+                                        }
+                                    },
+                                    "required": [
+                                        "type",
+                                        "title",
+                                        "status",
+                                        "detail"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/books/{book}/rate": {
             "post": {
                 "operationId": "rateBook",
@@ -2572,6 +2736,43 @@
                     "lent_on"
                 ],
                 "title": "BookResource"
+            },
+            "CatalogEntryResource": {
+                "type": "object",
+                "properties": {
+                    "isbn": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "author": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "published_in": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "pages": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "isbn",
+                    "title",
+                    "author",
+                    "published_in",
+                    "pages"
+                ],
+                "title": "CatalogEntryResource"
             },
             "ReadingStatus": {
                 "type": "string",

@@ -30,6 +30,9 @@
 | rendre (un prêt) | `markAsReturned` | comportement | côté lecteur qui a prêté : « on me l'a rendu » |
 | retirer (de la bibliothèque) | `RemoveBook` | use case | suppression définitive |
 | étagère | `Shelf` | lecture | une recherche pré-filtrée, pas un objet du domaine |
+| catalogue | `BookCatalog` | port | un catalogue public, hors de la bibliothèque ; il ne sait rien du lecteur |
+| fiche (du catalogue) | `CatalogEntry` | lecture | ce que le catalogue sait d'un ISBN ; ce n'est **pas** un livre de la bibliothèque |
+| retrouver (par son ISBN) | `LookUpBook` | use case | interroge le catalogue, ne change rien |
 
 **Pièges évités**
 

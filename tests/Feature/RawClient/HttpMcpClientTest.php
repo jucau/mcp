@@ -61,7 +61,7 @@ final class HttpMcpClientTest extends TestCase
 
         $this->assertSame(1, $discover['message']['id']);
         $this->assertSame(2, $tools['message']['id']);
-        $this->assertCount(10, (array) data_get($tools['message'], 'result.tools'));
+        $this->assertCount(11, (array) data_get($tools['message'], 'result.tools'));
     }
 
     #[Test]

@@ -3,6 +3,7 @@ import { NotSignedIn } from '../../../auth/core/model/not-signed-in';
 import type { Authorization } from '../../../auth/core/ports/authorization';
 import type { Book } from '../../core/model/book';
 import type { BookSearch } from '../../core/model/book-search';
+import type { CatalogEntry } from '../../core/model/catalog-entry';
 import type { NewBook } from '../../core/model/new-book';
 import type { Page } from '../../core/model/page';
 import type { Outcome } from '../../core/model/refusal';
@@ -42,6 +43,25 @@ export class HttpLibrary implements Library {
             page: data.meta.current_page,
             perPage: data.meta.per_page,
             total: data.meta.total,
+        };
+    }
+
+    async lookUp(isbn: string): Promise<Outcome<CatalogEntry>> {
+        const { data, error, response } = await this.client.GET('/catalog/{isbn}', { params: { path: { isbn } } });
+
+        if (data === undefined) {
+            return refusal(error, response);
+        }
+
+        return {
+            ok: true,
+            value: {
+                isbn: data.data.isbn,
+                title: data.data.title,
+                author: data.data.author,
+                publishedIn: data.data.published_in,
+                pages: data.data.pages,
+            },
         };
     }
 
@@ -117,7 +137,7 @@ const bearer = (authorization: Authorization): Middleware => ({
 });
 
 const refusal = (problem: unknown, response: Response): { ok: false; refusal: { type: string; detail: string } } => {
-    if (![404, 409, 422].includes(response.status) || !isProblem(problem)) {
+    if (![404, 409, 422, 503].includes(response.status) || !isProblem(problem)) {
         throw failure(response);
     }
 

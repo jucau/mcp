@@ -33,6 +33,9 @@ directe : nos deux premiers tools, qui annonçaient `"annotations": {}`, se pré
 connaît pas. Le hint sert au host (l'application : Claude Code, Claude Desktop) pour décider de son UX, par
 exemple demander ou non confirmation. Il ne remplace ni une autorisation, ni une règle métier.
 
+**Un seul de nos tools sort du monde fermé** : `lookup_book`, qui interroge un catalogue public. Ce que
+`openWorldHint` entraîne a son chapitre ([11](./11-monde-ouvert.md)).
+
 **Annotation et description ne parlent pas à la même personne.** L'annotation s'adresse au **host**, le
 logiciel. La description s'adresse au **modèle**. Un tool destructif le dit donc aux deux : `destructiveHint` pour
 que le host protège l'utilisateur, et « only when the user explicitly asks » pour que le modèle ne l'appelle pas

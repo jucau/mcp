@@ -2,8 +2,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId, useState } from 'react';
 import { addRefusalMessage } from '../core/model/add-refusal-message';
 import type { Book } from '../core/model/book';
+import { lookUpRefusalMessage } from '../core/model/look-up-refusal-message';
 import type { NewBook } from '../core/model/new-book';
+import { prefilled } from '../core/model/prefilled';
 import { addBook } from '../core/use-cases/add-book';
+import { lookUpBook } from '../core/use-cases/look-up-book';
 import styles from './AddBookForm.module.css';
 import { useLibrary } from './library-context';
 
@@ -27,6 +30,17 @@ export function AddBookForm({ onAdded, onCancel }: Props) {
                 onAdded(outcome.value);
             } else {
                 setRefusal(addRefusalMessage(outcome.refusal, submitted));
+            }
+        },
+    });
+
+    const lookUp = useMutation({
+        mutationFn: (isbn: string) => lookUpBook(library)(isbn),
+        onSuccess: (outcome, isbn) => {
+            if (outcome.ok) {
+                setBook((typed) => prefilled(typed, outcome.value));
+            } else {
+                setRefusal(lookUpRefusalMessage(outcome.refusal, isbn));
             }
         },
     });
@@ -57,9 +71,21 @@ export function AddBookForm({ onAdded, onCancel }: Props) {
             }}
         >
             <h2>Ajouter un livre</h2>
+            {field('isbn', 'ISBN (facultatif)', false)}
+            <div className={styles.buttons}>
+                <button
+                    type="button"
+                    disabled={book.isbn.trim() === '' || lookUp.isPending}
+                    onClick={() => {
+                        setRefusal(undefined);
+                        lookUp.mutate(book.isbn);
+                    }}
+                >
+                    Compléter depuis l&apos;ISBN
+                </button>
+            </div>
             {field('title', 'Titre', true)}
             {field('author', 'Auteur', true)}
-            {field('isbn', 'ISBN (facultatif)', false)}
 
             <fieldset className={styles.owned}>
                 <legend>Ce livre</legend>

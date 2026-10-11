@@ -218,6 +218,10 @@ Ce que les tests ont fait voir :
 « Ajouter un livre » ouvre un formulaire à la place de la fiche : titre, auteur, ISBN facultatif, et le choix entre
 « je l'ai déjà » et « va sur ma liste d'envies ». Le livre ajouté ouvre sa fiche, et la liste et ses compteurs suivent.
 
+« Compléter depuis l'ISBN » interroge le catalogue par l'API ([11](./11-monde-ouvert.md)) et remplit le titre et
+l'auteur, que le lecteur peut encore corriger avant d'ajouter. Rien n'est enregistré à ce stade. Si le catalogue ne
+connaît pas l'ISBN ou ne répond pas, l'écran le dit et garde ce qui était saisi : on ajoute alors à la main.
+
 - **Ses refus ne portent sur aucun livre existant** : un ISBN déjà présent (`duplicate-isbn`), invalide
   (`invalid-isbn`), un titre vide une fois les espaces retirés (`invalid-text`). Leur message se construit donc avec
   ce que le lecteur a tapé (`addRefusalMessage`), et la saisie est gardée pour qu'il la corrige.
