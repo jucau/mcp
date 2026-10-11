@@ -1,10 +1,12 @@
 import type { Book } from '../model/book';
 import type { BookSearch } from '../model/book-search';
+import type { NewBook } from '../model/new-book';
 import type { Page } from '../model/page';
 import type { Outcome } from '../model/refusal';
 
 export interface Library {
     search(criteria: BookSearch): Promise<Page<Book>>;
+    add(book: NewBook): Promise<Outcome<Book>>;
     startReading(bookId: string): Promise<Outcome<Book>>;
     finishReading(bookId: string): Promise<Outcome<Book>>;
     abandonReading(bookId: string): Promise<Outcome<Book>>;

@@ -82,7 +82,7 @@ export function BookCard({ book, onChange, onRemove }: Props) {
     );
 
     return (
-        <article className={styles.card} aria-label={`Fiche de ${book.title}`}>
+        <article className={styles.card} aria-label={`Fiche du livre « ${book.title} »`}>
             <div className={styles.call}>
                 <span>Fiche</span>
                 <span>{book.isbn === null ? 'Sans ISBN' : `ISBN ${book.isbn}`}</span>

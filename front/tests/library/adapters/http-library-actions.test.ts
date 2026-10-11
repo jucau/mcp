@@ -136,3 +136,34 @@ describe('acting on a book over HTTP', () => {
         await expect(library().acquire(ID)).rejects.toThrow('The API answered 409.');
     });
 });
+
+describe('adding a book over HTTP', () => {
+    const received: unknown[] = [];
+    const added = setupServer(
+        http.post(`${API}/books`, async ({ request }) => {
+            received.push(await request.json());
+
+            return HttpResponse.json({ data: { ...book, title: 'Dune', reading_status: 'to_read' } }, { status: 201 });
+        }),
+    );
+
+    beforeAll(() => {
+        server.close();
+        added.listen({ onUnhandledRequest: 'error' });
+    });
+    afterAll(() => {
+        added.close();
+    });
+
+    it('posts the book, without an empty ISBN, and gives back the book added', async () => {
+        const outcome = await new HttpLibrary(new URL(API), new SignedIn()).add({
+            title: 'Dune',
+            author: 'Frank Herbert',
+            isbn: '  ',
+            owned: false,
+        });
+
+        expect(received).toEqual([{ title: 'Dune', author: 'Frank Herbert', owned: false }]);
+        expect(outcome).toMatchObject({ ok: true, value: { title: 'Dune', readingStatus: 'to_read' } });
+    });
+});

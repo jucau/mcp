@@ -1,8 +1,10 @@
 import type { Book } from '../../../src/library/core/model/book';
+import type { NewBook } from '../../../src/library/core/model/new-book';
 import type { BookSearch } from '../../../src/library/core/model/book-search';
 import type { Page } from '../../../src/library/core/model/page';
 import type { Outcome, Refusal } from '../../../src/library/core/model/refusal';
 import type { Library } from '../../../src/library/core/ports/library';
+import { aBook } from './books';
 
 export const PER_PAGE = 20;
 export const TODAY = '2026-10-11';
@@ -43,6 +45,25 @@ export class InMemoryLibrary implements Library {
             perPage,
             total: found.length,
         });
+    }
+
+    add(book: NewBook): Promise<Outcome<Book>> {
+        const refusal = this.refusal;
+        this.refusal = undefined;
+
+        if (refusal !== undefined) {
+            return Promise.resolve({ ok: false, refusal });
+        }
+
+        const added = aBook({
+            title: book.title.trim(),
+            author: book.author.trim(),
+            isbn: book.isbn.trim() || null,
+            owned: book.owned,
+        });
+        this.books.set(added.id, added);
+
+        return Promise.resolve({ ok: true, value: added });
     }
 
     startReading(bookId: string): Promise<Outcome<Book>> {

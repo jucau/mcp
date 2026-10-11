@@ -28,6 +28,26 @@
     gap: 18px;
 }
 
+.tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.search {
+    flex: 1 1 260px;
+}
+
+.add {
+    font: 600 14px var(--body);
+    color: var(--card);
+    background: var(--ink);
+    border: 1px solid var(--ink);
+    border-radius: 6px;
+    padding: 9px 16px;
+    cursor: pointer;
+}
+
 .search input {
     width: 100%;
     font: 16px var(--body);

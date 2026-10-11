@@ -213,6 +213,22 @@ Ce que les tests ont fait voir :
   à l'autre, alors qu'un type de problème devrait être un identifiant stable. Le front n'en lit que le dernier segment.
   C'est à corriger côté API.
 
+## L'ajout d'un livre
+
+« Ajouter un livre » ouvre un formulaire à la place de la fiche : titre, auteur, ISBN facultatif, et le choix entre
+« je l'ai déjà » et « va sur ma liste d'envies ». Le livre ajouté ouvre sa fiche, et la liste et ses compteurs suivent.
+
+- **Ses refus ne portent sur aucun livre existant** : un ISBN déjà présent (`duplicate-isbn`), invalide
+  (`invalid-isbn`), un titre vide une fois les espaces retirés (`invalid-text`). Leur message se construit donc avec
+  ce que le lecteur a tapé (`addRefusalMessage`), et la saisie est gardée pour qu'il la corrige.
+- **Un ISBN vide n'est pas envoyé** : c'est encore une affaire de traduction, dans l'adaptateur HTTP.
+- **Le titre et l'auteur sont requis dans le formulaire** (`required`), pour éviter un aller-retour inutile. Ce
+  n'est pas une règle recopiée : l'API les exige aussi, et c'est elle qui juge un titre fait d'espaces.
+
+Le français, encore : la fiche s'annonçait aux lecteurs d'écran comme « Fiche de Le Sorceleur ». Avec un titre qui
+commence par un article, *de* + *le* devient *du*. Plutôt que d'accorder, le nom accessible dit « Fiche du livre
+« Le Sorceleur » », correct pour tous les titres.
+
 ## Ce qu'on vérifiera
 
 - **Les couches** : le cœur ne dépend ni de React ni des adaptateurs ; seule la racine de composition branche un

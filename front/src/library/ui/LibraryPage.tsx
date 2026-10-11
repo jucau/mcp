@@ -5,6 +5,7 @@ import { pageCount } from '../core/model/page';
 import type { Shelf } from '../core/model/shelf';
 import { countShelves } from '../core/use-cases/count-shelves';
 import { searchBooks } from '../core/use-cases/search-books';
+import { AddBookForm } from './AddBookForm';
 import { BookCard } from './BookCard';
 import { BookList } from './BookList';
 import { books } from './format';
@@ -19,6 +20,7 @@ export function LibraryPage() {
     const [typed, setTyped] = useState('');
     const [page, setPage] = useState(1);
     const [selected, setSelected] = useState<Book>();
+    const [adding, setAdding] = useState(false);
     const card = useRef<HTMLDivElement>(null);
     const text = useDeferredValue(typed.trim());
 
@@ -38,19 +40,31 @@ export function LibraryPage() {
     return (
         <div className={styles.layout}>
             <section className={styles.library} aria-label="La bibliothèque">
-                <search className={styles.search}>
-                    <input
-                        id="search"
-                        type="search"
-                        value={typed}
-                        placeholder="Un titre, un auteur…"
-                        aria-label="Chercher un livre"
-                        autoComplete="off"
-                        onChange={(event) => {
-                            browse({ text: event.target.value });
+                <div className={styles.tools}>
+                    <search className={styles.search}>
+                        <input
+                            id="search"
+                            type="search"
+                            value={typed}
+                            placeholder="Un titre, un auteur…"
+                            aria-label="Chercher un livre"
+                            autoComplete="off"
+                            onChange={(event) => {
+                                browse({ text: event.target.value });
+                            }}
+                        />
+                    </search>
+                    <button
+                        type="button"
+                        className={styles.add}
+                        onClick={() => {
+                            setAdding(true);
+                            card.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
                         }}
-                    />
-                </search>
+                    >
+                        Ajouter un livre
+                    </button>
+                </div>
 
                 <ShelfFilters
                     current={shelf}
@@ -84,7 +98,17 @@ export function LibraryPage() {
                 )}
             </section>
             <div ref={card} className={styles.aside}>
-                {selected === undefined ? (
+                {adding ? (
+                    <AddBookForm
+                        onAdded={(book) => {
+                            setAdding(false);
+                            setSelected(book);
+                        }}
+                        onCancel={() => {
+                            setAdding(false);
+                        }}
+                    />
+                ) : selected === undefined ? (
                     <p className={styles.hint}>Choisissez un livre pour ouvrir sa fiche.</p>
                 ) : (
                     <BookCard

@@ -3,6 +3,7 @@ import { NotSignedIn } from '../../../auth/core/model/not-signed-in';
 import type { Authorization } from '../../../auth/core/ports/authorization';
 import type { Book } from '../../core/model/book';
 import type { BookSearch } from '../../core/model/book-search';
+import type { NewBook } from '../../core/model/new-book';
 import type { Page } from '../../core/model/page';
 import type { Outcome } from '../../core/model/refusal';
 import type { Library } from '../../core/ports/library';
@@ -42,6 +43,16 @@ export class HttpLibrary implements Library {
             perPage: data.meta.per_page,
             total: data.meta.total,
         };
+    }
+
+    add(book: NewBook): Promise<Outcome<Book>> {
+        const isbn = book.isbn.trim();
+
+        return this.act(
+            this.client.POST('/books', {
+                body: { title: book.title, author: book.author, owned: book.owned, ...(isbn === '' ? {} : { isbn }) },
+            }),
+        );
     }
 
     startReading(bookId: string): Promise<Outcome<Book>> {

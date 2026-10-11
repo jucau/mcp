@@ -10,7 +10,7 @@ const open = async (library: InMemoryLibrary, title: string) => {
     renderApp(library);
     await user.click(await screen.findByRole('button', { name: new RegExp(title) }));
 
-    return { user, card: () => screen.getByRole('article', { name: `Fiche de ${title}` }) };
+    return { user, card: () => screen.getByRole('article', { name: `Fiche du livre « ${title} »` }) };
 };
 
 const row = (title: string) =>
