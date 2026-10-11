@@ -105,17 +105,19 @@ Stack : **nginx (8090) → php-fpm 8.5 → postgres 18** ([ADR-0005](docs/decisi
 
 ## Qualité (`make`)
 
-**`make quality` est la porte unique**, lancée **en entier** et **verte** avant chaque commit — jamais un
-sous-ensemble. Les outils qui écrivent corrigent au passage : la porte passe **avant** le commit, sinon la
-correction arrive dans un commit de rattrapage.
+**La porte a deux moitiés** : **`make quality`** pour le back, **`make quality-front`** pour le front. Chacune se
+lance **en entier** et **verte** avant chaque commit qui touche son côté — jamais un sous-ensemble de ses outils ; un
+changement de l'API touche les deux. Les outils qui écrivent corrigent au passage : la porte passe **avant** le
+commit, sinon la correction arrive dans un commit de rattrapage.
 
-Le front est **dans la porte** : `front-contract` (les types du client, générés depuis le contrat) et `front-format`
-écrivent, `front-lint`, `front-typecheck`, `front-test` et `front-mutation` (Stryker, MSI 100 sur le cœur) vérifient.
+`make quality-front` : **openapi** (le contrat à jour, pour ne jamais juger le front sur un contrat périmé) →
+`front-contract` (les types du client, générés depuis le contrat) → `front-format` (écrivent), puis `front-lint`,
+`front-typecheck`, `front-test` et `front-mutation` (Stryker, MSI 100 sur le cœur) vérifient.
 
-**`make ci`** simule une CI : base de test neuve, la porte entière, puis les données de démo seedées sur la base
-de test (jamais celle de dev) avant de la revider.
+**`make ci`** simule une CI : base de test neuve, **les deux moitiés de la porte**, puis les données de démo seedées
+sur la base de test (jamais celle de dev) avant de la revider.
 
-Ordre : **ide-helper** → **rector** → **pint** (écrivent ; pint en dernier, il importe et raccourcit les
+Ordre de `make quality` : **ide-helper** → **rector** → **pint** (écrivent ; pint en dernier, il importe et raccourcit les
 noms qualifiés qu'ide-helper et rector écrivent) → **openapi** (écrit le contrat de l'API, que les tests vérifient) →
 **stan** → **ark** → **test** → **infection**.
 Configs : `config/ide-helper.php`, `rector.php`, `pint.json`, `config/scramble.php`, `phpstan.neon` (Larastan, niveau **max**),

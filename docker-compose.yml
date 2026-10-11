@@ -32,6 +32,13 @@ services:
             - "127.0.0.1:5173:5173"
         volumes:
             - ./:/app
+        healthcheck:
+            test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1:5173"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
+            # The first start installs the dependencies before it serves anything.
+            start_period: 300s
         networks: [marquepage]
 
     postgres:

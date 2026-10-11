@@ -10,8 +10,8 @@ client écrit à la main finirait par diverger d'elle sans que personne ne le vo
 
 ## Décision
 
-- **openapi-typescript génère les types** du client depuis `docs/api/openapi.json`, dans la porte, juste après
-  l'export du contrat. Le fichier généré est versionné, comme le contrat.
+- **openapi-typescript génère les types** du client depuis `docs/api/openapi.json`, dans la porte du front
+  (`make quality-front`), juste après l'export du contrat. Le fichier généré est versionné, comme le contrat.
 - **openapi-fetch** les utilise : chemins, paramètres, corps et réponses sont typés.
 - **Seul l'adaptateur HTTP** voit ces types : il traduit les réponses vers le modèle du cœur, et les *Problem Details*
   en refus. Le cœur ne dépend pas du contrat de l'API, il définit le sien.

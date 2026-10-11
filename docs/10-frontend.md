@@ -104,7 +104,7 @@ BFF, le navigateur ne ferait plus d'OAuth. Le risque se réduit ainsi :
 | OAuth | **oauth4webapi** | une bibliothèque minimaliste et certifiée : PKCE et la découverte ne s'écrivent pas à la main |
 | Tests | **Vitest 4** et **Testing Library** ; **Playwright** pour le bout en bout | les use cases se testent avec le double en mémoire, comme côté back. Vitest 5 existe, mais le runner de Stryker n'en tue aucun mutant (voir plus bas) |
 | Qualité | **ESLint** (typescript-eslint strict), **Prettier**, la règle **`no-restricted-imports`** par couche, **Stryker** sur le cœur | la même exigence que le back : MSI à 100 % sur le cœur |
-| Outillage | un service **`node`** (Node 24 LTS) dans le compose, les cibles `make front-*` | tout tourne dans un conteneur, et **le front entre dans `make quality`** : la porte reste unique |
+| Outillage | un service **`node`** (Node 24 LTS) dans le compose, les cibles `make front-*` | tout tourne dans un conteneur, et **le front a sa porte, `make quality-front`**, que `make ci` joue avec celle du back |
 
 ## Ce que le socle a appris
 
