@@ -62,7 +62,7 @@ ci: test-db quality quality-front seed-check
 # Back
 # ======================================================================================================================
 
-.PHONY: quality ide-helper rector pint openapi stan ark test infection coverage \
+.PHONY: quality ide-helper rector pint openapi stan ark test infection coverage metrics \
         test-db seed-check migrate fresh seed composer artisan tinker \
         inspector raw-session raw-http-session benchmark mcp-log
 
@@ -115,6 +115,11 @@ coverage:
 	@cat storage/logs/coverage-summary.log
 	@grep -qE '^ +Lines: +100\.00%' storage/logs/coverage-summary.log \
 		|| { echo 'A line no test runs: see storage/coverage/index.html'; exit 1; }
+
+# Outside the gate: figures to read, not thresholds to hold. PhpMetrics still runs on a parser that PHP 8.5
+# deprecates, and it asks Packagist for the latest version of each dependency.
+metrics:
+	$(EXEC) php -d error_reporting='E_ALL & ~E_DEPRECATED' vendor/bin/phpmetrics --report-html=storage/metrics app
 
 test-db:
 	$(DC) exec -T postgres psql -U marquepage -d marquepage -tc "SELECT 1 FROM pg_database WHERE datname = 'marquepage_testing'" | grep -q 1 || $(DC) exec -T postgres createdb -U marquepage marquepage_testing

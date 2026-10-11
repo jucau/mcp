@@ -52,6 +52,7 @@ make install
 | `make raw-session` | un client MCP écrit à la main (`client/`) joue une session complète et affiche chaque ligne JSON-RPC |
 | `make test` | PHPUnit (BDD Postgres dédiée `marquepage_testing`) |
 | `make coverage` | la couverture PHPUnit (pcov) : résumé dans le terminal, rapport HTML dans `storage/coverage/index.html` ; échoue sous 100 % des lignes |
+| `make metrics` | les métriques du code (PhpMetrics) : résumé dans le terminal, rapport HTML dans `storage/metrics/index.html` ; hors porte |
 | `make test-db` | (re)crée + migre la BDD de test |
 | `make migrate` / `make fresh` / `make seed` | migrations / reset / reset + données de démo |
 | `make artisan ARGS="…"` | une commande artisan (ex. `make artisan ARGS="migrate:status"`) |

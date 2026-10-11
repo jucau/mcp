@@ -26,6 +26,7 @@
 /public/storage
 /storage/*.key
 /storage/coverage
+/storage/metrics
 /storage/pail
 /storage/phpstan
 /storage/rector
