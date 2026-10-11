@@ -6,6 +6,7 @@ namespace Tests\Feature\Library;
 
 use App\Library\Infrastructure\Auth\ProtectedResource;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Sleep;
 use Laravel\Passport\ClientRepository;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -19,6 +20,14 @@ final class LoginTest extends TestCase
 
     private const string EMAIL = Readers::ME . '@marque-page.test';
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // A failed login is held for 200 ms so that its duration tells nothing: asserted below, never waited for.
+        Sleep::fake();
+    }
+
     #[Test]
     public function the_right_credentials_open_a_session_for_the_account(): void
     {
@@ -27,6 +36,7 @@ final class LoginTest extends TestCase
         $this->post('/login', ['email' => self::EMAIL, 'password' => 'secret'])->assertRedirect('/');
 
         $this->assertAuthenticatedAs($account, 'web');
+        Sleep::assertNeverSlept();
     }
 
     #[Test]
@@ -70,6 +80,7 @@ final class LoginTest extends TestCase
             ->assertSessionHasErrors(['email' => 'These credentials do not match any account.']);
 
         $this->assertGuest('web');
+        Sleep::assertSleptTimes(1);
     }
 
     #[Test]
@@ -79,6 +90,7 @@ final class LoginTest extends TestCase
             ->assertSessionHasErrors(['email' => 'These credentials do not match any account.']);
 
         $this->assertGuest('web');
+        Sleep::assertSleptTimes(1);
     }
 
     /**
