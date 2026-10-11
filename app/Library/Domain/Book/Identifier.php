@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Library\Domain\Book;
 
-use DomainException;
+use App\Library\Domain\Refusal;
 use Ramsey\Uuid\Uuid;
 
 abstract readonly class Identifier
@@ -29,5 +29,5 @@ abstract readonly class Identifier
         return $this->value === $other->value;
     }
 
-    abstract protected static function invalid(string $value): DomainException;
+    abstract protected static function invalid(string $value): Refusal;
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Library\Infrastructure\Mcp\Tools;
 
-use DomainException;
+use App\Library\Domain\Refusal;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\JsonSchema\Types\StringType;
 use Laravel\Mcp\Request;
@@ -18,10 +18,10 @@ abstract class LibraryTool extends Tool
     {
         try {
             return $this->respond($request);
-        } catch (DomainException $domainException) {
-            // A business refusal is for the model to read and act on. Left to the SDK, its message would only
-            // reach the model with APP_DEBUG on, and be replaced by a generic internal error in production.
-            return Response::error($domainException->getMessage());
+        } catch (Refusal $refusal) {
+            // A refusal is for the model to read and act on. Left to the SDK, its message would only reach the
+            // model with APP_DEBUG on, and be replaced by a generic internal error in production.
+            return Response::error($refusal->getMessage());
         }
     }
 

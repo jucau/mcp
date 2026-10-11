@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Library\Domain\Book;
 
-use DomainException;
+use App\Library\Domain\Refusal;
+use RuntimeException;
 
-final class BookNotFinished extends DomainException
+final class BookNotFinished extends RuntimeException implements Refusal
 {
     public static function cannotBeRated(Title $title): self
     {

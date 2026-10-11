@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Library\Infrastructure\Mcp\Tools;
 
-use App\Library\Application\Book\Catalog\CatalogUnavailable;
-use App\Library\Application\Book\Catalog\NotInCatalog;
 use App\Library\Application\Book\LookUpBook\LookUpBook;
 use App\Library\Application\Book\LookUpBook\LookUpBookHandler;
 use App\Library\Infrastructure\Mcp\CatalogEntryPresenter;
@@ -55,20 +53,14 @@ final class LookUpBookTool extends LibraryTool
         return $this->presenter->schema($schema);
     }
 
-    protected function respond(Request $request): Response|ResponseFactory
+    protected function respond(Request $request): ResponseFactory
     {
         $arguments = ValidatedData::of($request->validate([
             'isbn' => ['required', 'string'],
         ]));
 
-        try {
-            $entry = $this->lookUpBook->handle(new LookUpBook($arguments->string('isbn')));
-        } catch (NotInCatalog|CatalogUnavailable $noEntry) {
-            // Neither is a refusal of the domain, so LibraryTool lets them through: the model must still read them,
-            // in production too, to know it has to ask the user instead.
-            return Response::error($noEntry->getMessage());
-        }
-
-        return Response::structured($this->presenter->present($entry));
+        return Response::structured($this->presenter->present(
+            $this->lookUpBook->handle(new LookUpBook($arguments->string('isbn'))),
+        ));
     }
 }

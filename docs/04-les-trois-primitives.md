@@ -248,7 +248,7 @@ différence se voit en HTTP : `-32603` y devient un `500`, `-32602` un `400`.
 
 **Le même piège que pour les tools** : une exception levée dans une resource n'est transmise qu'avec
 `APP_DEBUG`, et remplacée en production par « An internal server error occurred. ». Les resources étendent donc
-`LibraryResource`, qui traduit toute `DomainException` en `ValidationException` : son message survit en
+`LibraryResource`, qui traduit tout refus (`Refusal`) en `ValidationException` : son message survit en
 production, et son code est le bon ([ADR-0011](./decisions/0011-resources-etageres-et-livre.md),
 [ADR-0017](./decisions/0017-refus-de-resource-en-parametres-invalides.md)).
 

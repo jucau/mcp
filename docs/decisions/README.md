@@ -28,7 +28,7 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0005](./0005-environnement-docker-uniquement.md) | Environnement 100 % Docker, piloté par un Makefile | Accepté |
 | [0006](./0006-architecture-hexagonale-ciblee.md) | Architecture hexagonale ciblée, MCP comme adaptateur primaire | Accepté |
 | [0007](./0007-un-agregat-book-pret-en-value-object.md) | Un seul agrégat `Book`, le prêt en value object | Accepté |
-| [0008](./0008-tools-adaptateurs-minces-refus-metier.md) | Les tools sont des adaptateurs minces qui transmettent les refus métier | Accepté |
+| [0008](./0008-tools-adaptateurs-minces-refus-metier.md) | Les tools sont des adaptateurs minces qui transmettent les refus métier | Accepté, complété par 0036 |
 | [0009](./0009-quatre-annotations-explicites-par-tool.md) | Chaque tool déclare explicitement ses quatre annotations | Accepté |
 | [0010](./0010-instants-en-utc-jours-du-lecteur.md) | Les instants en UTC, les jours dans le fuseau du lecteur | Accepté |
 | [0011](./0011-resources-etageres-et-livre.md) | Les resources : quatre étagères fixes, un livre par template, les refus transmis | Accepté, erreurs remplacées par 0017 |
@@ -54,5 +54,6 @@ Un ADR est **immuable** une fois accepté : si on change d'avis, on en écrit un
 | [0031](./0031-tenter-puis-afficher-le-refus.md) | L'écran propose les actions, et c'est l'API qui refuse | Accepté, affichage complété par 0033 |
 | [0032](./0032-client-http-type-par-le-contrat.md) | Le client HTTP du front est typé par le contrat OpenAPI | Accepté |
 | [0033](./0033-refus-traduits-par-leur-type.md) | Le front traduit les refus par leur type, et retombe sur le message du domaine | Accepté |
-| [0034](./0034-catalogue-ouvert-derriere-un-port.md) | Le catalogue ouvert est un port, et `lookup_book` un tool séparé | Accepté |
+| [0034](./0034-catalogue-ouvert-derriere-un-port.md) | Le catalogue ouvert est un port, et `lookup_book` un tool séparé | Accepté, complété par 0036 |
 | [0035](./0035-verrou-optimiste-dans-le-repository.md) | Un verrou optimiste, tenu par le repository | Accepté |
+| [0036](./0036-un-refus-est-un-type-du-projet.md) | Un refus est un type du projet, `Refusal` | Accepté |

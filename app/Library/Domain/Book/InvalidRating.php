@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Library\Domain\Book;
 
-use DomainException;
+use App\Library\Domain\Refusal;
+use RuntimeException;
 
-final class InvalidRating extends DomainException
+final class InvalidRating extends RuntimeException implements Refusal
 {
     public static function outOfRange(int $value, int $min, int $max): self
     {

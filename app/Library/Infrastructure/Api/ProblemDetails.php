@@ -21,7 +21,7 @@ use App\Library\Domain\Book\InvalidReaderId;
 use App\Library\Domain\Book\InvalidText;
 use App\Library\Domain\Book\ReadingTransitionNotAllowed;
 use App\Library\Domain\Book\UnknownBook;
-use DomainException;
+use App\Library\Domain\Refusal;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -33,7 +33,7 @@ final class ProblemDetails
     public const string INVALID_REQUEST = 'invalid-request';
 
     /**
-     * @param class-string $refusal
+     * @param class-string<Refusal> $refusal
      */
     public static function statusOf(string $refusal): int
     {
@@ -54,12 +54,8 @@ final class ProblemDetails
         };
     }
 
-    public static function forRefusal(DomainException $refusal): ?JsonResponse
+    public static function forRefusal(Refusal $refusal): JsonResponse
     {
-        if (! str_starts_with($refusal::class, 'App\\Library\\Domain\\')) {
-            return null;
-        }
-
         $status = self::statusOf($refusal::class);
 
         return self::problem(
@@ -67,11 +63,6 @@ final class ProblemDetails
             $status,
             $status === Response::HTTP_INTERNAL_SERVER_ERROR ? 'The server could not serve this request.' : $refusal->getMessage(),
         );
-    }
-
-    public static function forCatalog(NotInCatalog|CatalogUnavailable $noEntry): JsonResponse
-    {
-        return self::problem(self::typeOf($noEntry::class), self::statusOf($noEntry::class), $noEntry->getMessage());
     }
 
     public static function forInvalidRequest(ValidationException $invalid): JsonResponse

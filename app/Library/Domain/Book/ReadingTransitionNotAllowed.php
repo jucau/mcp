@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Library\Domain\Book;
 
-use DomainException;
+use App\Library\Domain\Refusal;
+use RuntimeException;
 
-final class ReadingTransitionNotAllowed extends DomainException
+final class ReadingTransitionNotAllowed extends RuntimeException implements Refusal
 {
     public static function from(Title $title, ReadingStatus $status, string $action): self
     {

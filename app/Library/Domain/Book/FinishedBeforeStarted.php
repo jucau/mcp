@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Library\Domain\Book;
 
+use App\Library\Domain\Refusal;
 use DateTimeImmutable;
-use DomainException;
+use RuntimeException;
 
-final class FinishedBeforeStarted extends DomainException
+final class FinishedBeforeStarted extends RuntimeException implements Refusal
 {
     public static function on(Title $title, DateTimeImmutable $finishedOn, DateTimeImmutable $startedOn): self
     {

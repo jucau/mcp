@@ -1,6 +1,7 @@
 # ADR-0034 — Le catalogue ouvert est un port, et `lookup_book` un tool séparé
 
-- **Statut** : Accepté (2026-10-11)
+- **Statut** : Accepté (2026-10-11). Complété par l'[ADR-0036](./0036-un-refus-est-un-type-du-projet.md) : les deux
+  exceptions du catalogue sont des `Refusal`, que les adaptateurs traduisent comme les autres.
 
 ## Contexte
 

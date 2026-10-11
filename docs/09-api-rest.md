@@ -106,10 +106,11 @@ Un refus de **forme** (la validation de Laravel) prend le même format, avec le 
 `errors`, une extension que la RFC 9457 permet. Le `401`, lui, garde la réponse de Laravel : il dit seulement qu'il
 faut un token, et c'est l'en-tête `WWW-Authenticate` qui dit où l'obtenir.
 
-Un piège : le jour où le domaine ajoute un refus, l'adaptateur ne le saura pas. Un test parcourt donc **toutes** les
-`DomainException` du domaine et vérifie qu'elles ont un statut : un oubli fait échouer la porte, au lieu de finir en
-`500`. Et seules les exceptions **du domaine** deviennent des *Problem Details* : `DomainException` est une classe de
-PHP, qu'une bibliothèque peut lever aussi, et son message n'est pas fait pour sortir.
+Un piège : le jour où le cœur ajoute un refus, l'adaptateur ne le saura pas. Un test parcourt donc **tous** les
+refus du domaine et de l'application et vérifie qu'ils ont un statut : un oubli fait échouer la porte, au lieu de
+finir en `500`. Et seuls les **refus** deviennent des *Problem Details* : ils se reconnaissent à l'interface `Refusal`
+([ADR-0036](./decisions/0036-un-refus-est-un-type-du-projet.md)), que seul le projet peut donner. Toute autre
+exception est une panne, dont le message n'est pas fait pour sortir.
 
 ## La forme des entrées : HTTP n'a pas de types
 
@@ -454,8 +455,8 @@ MCP n'a besoin d'aucune documentation, il interroge le serveur.
 - **Les tests** : une classe de base qui lie un lecteur pour tous masque la règle « fermé par défaut ». C'est
   arrivé deux fois : avec le seeder, dont `make seed` était cassé depuis l'ADR-0021, et avec l'API, où le test qui
   tranche s'authentifie avec un **autre** lecteur.
-- **PHP** : `DomainException` est une classe standard, qu'une bibliothèque peut lever. Seules celles du domaine
-  deviennent des *Problem Details*.
+- **PHP** : `DomainException` est une classe standard, qu'une bibliothèque peut lever. Un refus se reconnaît donc à
+  un type du projet, `Refusal`, pas à elle.
 - **Les contrats** : un exemple ne se vérifie pas, et un `null` n'a pas de sens dans une query string.
 - **L'observation** : l'essai de Claude Code en `127.0.0.1` ne permettait pas de conclure ce que j'en ai d'abord
   tiré. Il a fallu corriger la doc. Une observation dit ce qu'elle montre, pas plus.

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Library\Domain\Book;
 
-use DomainException;
+use App\Library\Domain\Refusal;
+use RuntimeException;
 
-final class InvalidText extends DomainException
+final class InvalidText extends RuntimeException implements Refusal
 {
     public static function blank(string $label): self
     {

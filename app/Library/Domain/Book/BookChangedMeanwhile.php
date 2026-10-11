@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Library\Domain\Book;
 
-use DomainException;
+use App\Library\Domain\Refusal;
+use RuntimeException;
 
-final class BookChangedMeanwhile extends DomainException
+final class BookChangedMeanwhile extends RuntimeException implements Refusal
 {
     public static function sinceItWasRead(): self
     {

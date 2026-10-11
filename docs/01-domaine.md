@@ -93,7 +93,8 @@ jamais.
 Les dates sont **passées** au domaine, jamais lues par lui (pas de « maintenant » caché) : c'est ce qui rend
 les invariants testables.
 
-**Erreurs de domaine** : `InvalidBookId`, `InvalidText`, `InvalidIsbn`, `InvalidRating`,
+**Refus du domaine** (ils implémentent tous `Refusal`,
+[ADR-0036](./decisions/0036-un-refus-est-un-type-du-projet.md)) : `InvalidBookId`, `InvalidText`, `InvalidIsbn`, `InvalidRating`,
 `ReadingTransitionNotAllowed`, `FinishedBeforeStarted`, `BookNotFinished`,
 `BookNotOwned`, `BookAlreadyLent`, `BookNotLent`, `BookLent`, `DuplicateIsbn`, `UnknownBook`,
 `BookChangedMeanwhile`. Chacune porte

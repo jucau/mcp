@@ -79,10 +79,11 @@ Un monde ouvert apporte des échecs que la base ne connaissait pas :
 | ISBN inconnu du catalogue | `NotInCatalog` | `isError` | `404` `not-in-catalog` |
 | Délai dépassé, panne, quota, réponse illisible | `CatalogUnavailable` | `isError` | `503` `catalog-unavailable` |
 
-**Les deux derniers ne sont pas des refus du domaine** : aucune règle de la bibliothèque n'est en jeu. Ce sont des
-exceptions de la couche application, qui appartiennent au contrat du port. Chaque adaptateur primaire les traduit
-lui-même. Elles atteignent pourtant le modèle, en production comme en dev : sans titre ni auteur, il doit savoir qu'il
-lui faut les demander au lecteur.
+**Les deux derniers ne sont pas des règles du domaine** : aucune règle de la bibliothèque n'est en jeu. Ce sont des
+exceptions de la couche application, qui appartiennent au contrat du port. Ce sont pourtant des **refus**, au sens de
+l'interface `Refusal` ([ADR-0036](./decisions/0036-un-refus-est-un-type-du-projet.md)) : une réponse écrite pour
+l'appelant. Les adaptateurs les traduisent donc comme n'importe quel refus, et ils atteignent le modèle en production
+comme en dev : sans titre ni auteur, il doit savoir qu'il lui faut les demander au lecteur.
 
 **Tout échec du catalogue devient `CatalogUnavailable`**, qu'il s'agisse d'un délai dépassé, d'un `500`, d'un `429`
 ou d'un corps qui n'est pas du JSON. Vu de l'appelant, la conséquence est la même : pas de fiche maintenant. Le

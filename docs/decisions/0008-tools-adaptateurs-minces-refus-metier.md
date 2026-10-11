@@ -1,6 +1,7 @@
 # ADR-0008 — Les tools sont des adaptateurs minces qui transmettent les refus métier
 
-- **Statut** : Accepté (2026-09-26)
+- **Statut** : Accepté (2026-09-26). Complété par l'[ADR-0036](./0036-un-refus-est-un-type-du-projet.md) : un refus
+  se reconnaît désormais à l'interface `Refusal`, plus à `DomainException`.
 
 ## Contexte
 

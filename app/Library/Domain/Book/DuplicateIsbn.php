@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Library\Domain\Book;
 
-use DomainException;
+use App\Library\Domain\Refusal;
+use RuntimeException;
 
-final class DuplicateIsbn extends DomainException
+final class DuplicateIsbn extends RuntimeException implements Refusal
 {
     public static function isbn(Isbn $isbn): self
     {

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Library\Domain\Book;
 
-use DomainException;
+use App\Library\Domain\Refusal;
+use RuntimeException;
 
-final class BookNotLent extends DomainException
+final class BookNotLent extends RuntimeException implements Refusal
 {
     public static function cannotBeReturned(Title $title): self
     {

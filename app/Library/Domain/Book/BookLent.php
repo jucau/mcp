@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Library\Domain\Book;
 
-use DomainException;
+use App\Library\Domain\Refusal;
+use RuntimeException;
 
-final class BookLent extends DomainException
+final class BookLent extends RuntimeException implements Refusal
 {
     public static function cannotBeRemoved(Title $title, Borrower $borrower): self
     {
