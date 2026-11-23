@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "jucau/marque-page",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "A learning project: an MCP server on Laravel to manage a personal library in natural language from an AI agent.",
+    "keywords": ["laravel", "mcp", "model-context-protocol", "hexagonal-architecture"],
     "license": "MIT",
     "require": {
         "php": "^8.3",

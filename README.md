@@ -84,3 +84,7 @@ seulement). Détails dans [docs/03](docs/03-premier-serveur-mcp.md).
   dans `.mcp.json`, plus des guidelines ([`AGENTS.md`](AGENTS.md)) et des skills (`.claude/skills/`). Il
   passe par `docker compose exec` : la stack doit être démarrée (`make start`).
 - **Pao** : quand un agent lance `make quality`, la sortie des outils devient une ligne JSON par outil.
+
+## Licence
+
+[MIT](LICENSE)
